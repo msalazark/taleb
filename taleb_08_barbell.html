@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Estrategia Barbell — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.barbell-icon{font-size:3.5rem;margin:1.5rem 0;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* RUIN SLIDER */
+.ruin-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.ruin-slider-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;}
+.ruin-end-label{font-size:.75rem;color:var(--text3);white-space:nowrap;font-family:'IBM Plex Mono',monospace;}
+.ruin-slider{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--red) 50%,var(--accent2));outline:none;}
+.ruin-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--text);cursor:pointer;border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.ruin-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--text);cursor:pointer;border:3px solid var(--bg);}
+.ruin-readout{text-align:center;margin-bottom:1rem;}
+.ruin-readout-val{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;color:var(--text);}
+.ruin-result-row{display:flex;gap:1.5rem;justify-content:center;margin:1.25rem 0;flex-wrap:wrap;}
+.ruin-result{text-align:center;}
+.ruin-result-val{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:600;}
+.ruin-result-lbl{font-size:.7rem;color:var(--text3);margin-top:.2rem;}
+.ruin-insight{font-size:.85rem;color:var(--text);line-height:1.65;padding-top:1rem;border-top:1px solid var(--border);margin-top:.5rem;}
+.ruin-zone-marker{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:.4rem .9rem;border-radius:16px;display:inline-block;margin:0 auto 1rem;}
+.ruin-zone-marker.danger{background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+.ruin-zone-marker.safe{background:rgba(74,158,255,.12);color:var(--blue);border:1px solid rgba(74,158,255,.3);}
+.ruin-zone-marker.barbell{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+.ruin-zone-row{text-align:center;}
+
+/* BARBELL BUILDER */
+.builder-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.barbell-visual{display:flex;align-items:center;gap:0;margin:1.5rem 0;}
+.bb-weight{flex-shrink:0;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1.1rem;transition:all .4s;}
+.bb-weight.safe{background:rgba(74,158,255,.18);border:2px solid var(--blue);color:var(--blue);}
+.bb-weight.risk{background:rgba(232,89,60,.18);border:2px solid var(--accent);color:var(--accent);}
+.bb-bar{flex:1;height:6px;background:var(--border);position:relative;}
+.bb-mid-warning{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:18px;background:rgba(231,76,60,.08);border-top:1px dashed rgba(231,76,60,.3);border-bottom:1px dashed rgba(231,76,60,.3);}
+.builder-sliders{margin-top:1.5rem;}
+.builder-slider-group{margin-bottom:1.25rem;}
+.builder-slider-label{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.5rem;}
+.builder-slider-label .lbl-safe{color:var(--blue);}
+.builder-slider-label .lbl-risk{color:var(--accent);}
+.builder-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg3);outline:none;}
+.builder-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg);}
+.builder-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg);}
+.builder-result{background:var(--bg3);border-radius:var(--radius-sm);padding:1.1rem;margin-top:1.25rem;font-size:.85rem;color:var(--text);line-height:1.6;}
+.builder-result strong{color:var(--accent2);}
+.career-examples{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;margin-top:1rem;}
+.career-ex{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .8rem;font-size:.78rem;color:var(--text2);}
+.career-ex strong{color:var(--text);display:block;margin-bottom:.2rem;font-size:.8rem;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 08</span>
+    <span class="header-title" id="hdr-title">La Estrategia Barbell</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">El lugar más peligroso<br>es el del medio</h1>
+  <div class="barbell-icon">🏋️</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Todos buscan el "punto intermedio seguro" — ni muy arriesgado, ni muy conservador. Taleb dice que ese punto medio es exactamente donde vive el riesgo oculto.</p>
+  <button class="btn-primary" onclick="startRuin()" id="s1-btn">Ver por qué → Empezar</button>
+</section>
+
+<!-- S2 RUIN VISUALIZER -->
+<section id="sec-ruin">
+  <div class="section-tag" id="s2-tag">Parte 2 · El Problema del Medio</div>
+  <h2 id="s2-h2">Mueve el slider. Mira el riesgo de ruina.</h2>
+  <p id="s2-p">Este slider representa cuánto de tu capital (tiempo, dinero, energía) está en posiciones "moderadamente arriesgadas" — ni completamente seguras, ni completamente especulativas y acotadas.</p>
+  <div class="ruin-box">
+    <div class="ruin-zone-row">
+      <span class="ruin-zone-marker" id="ruin-zone">—</span>
+    </div>
+    <div class="ruin-slider-row">
+      <span class="ruin-end-label" id="ruin-left-label">100% seguro</span>
+      <input type="range" class="ruin-slider" id="ruin-slider" min="0" max="100" value="50">
+      <span class="ruin-end-label" id="ruin-right-label">100% arriesgado</span>
+    </div>
+    <div class="ruin-readout">
+      <span class="ruin-readout-val" id="ruin-readout">50% en zona moderada</span>
+    </div>
+    <canvas id="ruinChart" height="160"></canvas>
+    <div class="ruin-result-row">
+      <div class="ruin-result"><div class="ruin-result-val" id="ruin-val" style="color:var(--red)">—</div><div class="ruin-result-lbl" id="ruin-val-lbl">Probabilidad de ruina</div></div>
+      <div class="ruin-result"><div class="ruin-result-val" id="upside-val" style="color:var(--green)">—</div><div class="ruin-result-lbl" id="upside-val-lbl">Potencial de upside</div></div>
+    </div>
+    <div class="ruin-insight" id="ruin-insight">El punto medio combina lo peor de ambos mundos: suficiente exposición para sufrir pérdidas grandes, pero sin la asimetría necesaria para capturar ganancias extremas. Mueve el slider a los extremos (0% o 100%) y compáralo con una estrategia barbell real.</div>
+  </div>
+</section>
+
+<!-- S3 BARBELL BUILDER -->
+<section id="sec-builder">
+  <div class="section-tag" id="s3-tag">Parte 3 · Construye tu Barbell de Carrera</div>
+  <h2 id="s3-h2">Trabajo estable + apuestas paralelas</h2>
+  <p id="s3-p">La estrategia barbell aplicada a tu carrera: una base de ingreso seguro, y un porcentaje pequeño dedicado a apuestas de alto riesgo y alta recompensa potencial. Sin término medio peligroso.</p>
+  <div class="builder-box">
+    <div class="barbell-visual">
+      <div class="bb-weight safe" id="bb-weight-safe">90%</div>
+      <div class="bb-bar"><div class="bb-mid-warning"></div></div>
+      <div class="bb-weight risk" id="bb-weight-risk">10%</div>
+    </div>
+    <div class="builder-sliders">
+      <div class="builder-slider-group">
+        <div class="builder-slider-label">
+          <span class="lbl-safe" id="builder-safe-lbl">🛡️ Base estable (trabajo seguro, ingreso predecible)</span>
+          <span id="builder-safe-pct">90%</span>
+        </div>
+        <input type="range" class="builder-slider" id="builder-slider" min="60" max="95" value="90">
+      </div>
+    </div>
+    <div class="builder-result" id="builder-result"></div>
+    <div class="career-examples" id="career-examples"></div>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">¿Por qué funciona el barbell?</h2>
+  <p id="s4-p">Tres marcos para entender la estrategia bimodal de Taleb.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Vives en el medio peligroso?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Tienes $10,000 ahorrados. ¿Cómo los distribuyes?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('middle',this)">
+        <div class="d-emoji">📊</div>
+        <div class="d-title" id="d1a-t">Todo en riesgo moderado</div>
+        <div class="d-desc" id="d1a-d">Fondos indexados balanceados, mezcla de acciones y bonos — ni muy seguro ni muy arriesgado.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('barbell',this)">
+        <div class="d-emoji">🏋️</div>
+        <div class="d-title" id="d1b-t">Barbell: 90% seguro + 10% extremo</div>
+        <div class="d-desc" id="d1b-d">$9,000 en efectivo/bonos del tesoro, $1,000 en apuestas especulativas de alto potencial.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-middle">
+      <strong id="cs-t">Elegiste el punto medio peligroso.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">El riesgo moderado tiene una falsa sensación de seguridad: suficiente exposición para sufrir en una crisis severa, pero sin la asimetría necesaria para capturar un evento extremo positivo.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-barbell">
+      <strong id="cb-t">Aplicaste la estrategia barbell.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cb-p">Tu pérdida máxima está acotada al 10% en el peor escenario. Pero tu upside no tiene techo si la apuesta especulativa funciona. Esto es exactamente lo que Taleb recomienda.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde en tu vida estás actualmente en el "medio peligroso" en vez de un barbell real?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Si conoces tu vulnerabilidad a errores de predicción, y aceptas que la mayoría de los eventos de 'riesgo' vienen de cisnes negros, una estrategia consiste en ser hiperconservador e hiperagresivo al mismo tiempo, en vez de ligeramente agresivo."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Antifrágil (2012)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_07_antifragil.html">← 07 Frágil/Robusto/Antifrágil</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">09 Skin in the Game →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"La Estrategia Barbell",
+  s1tag:"Parte 1 · El Gancho",s1h1:"El lugar más peligroso\nes el del medio",
+  s1p:"Todos buscan el 'punto intermedio seguro' — ni muy arriesgado, ni muy conservador. Taleb dice que ese punto medio es exactamente donde vive el riesgo oculto.",
+  s1btn:"Ver por qué → Empezar",
+  s2tag:"Parte 2 · El Problema del Medio",s2h2:"Mueve el slider. Mira el riesgo de ruina.",
+  s2p:"Este slider representa cuánto de tu capital (tiempo, dinero, energía) está en posiciones 'moderadamente arriesgadas' — ni completamente seguras, ni completamente especulativas y acotadas.",
+  ruinLeftLabel:"100% seguro",ruinRightLabel:"100% arriesgado",
+  ruinValLbl:"Probabilidad de ruina",upsideValLbl:"Potencial de upside",
+  ruinInsight:"El punto medio combina lo peor de ambos mundos: suficiente exposición para sufrir pérdidas grandes, pero sin la asimetría necesaria para capturar ganancias extremas. Mueve el slider a los extremos (0% o 100%) y compáralo con una estrategia barbell real.",
+  zoneNames:{safe:"ZONA SEGURA",danger:"ZONA PELIGROSA — EL MEDIO",risky:"ZONA ESPECULATIVA"},
+  s3tag:"Parte 3 · Construye tu Barbell de Carrera",s3h2:"Trabajo estable + apuestas paralelas",
+  s3p:"La estrategia barbell aplicada a tu carrera: una base de ingreso seguro, y un porcentaje pequeño dedicado a apuestas de alto riesgo y alta recompensa potencial. Sin término medio peligroso.",
+  builderSafeLbl:"🛡️ Base estable (trabajo seguro, ingreso predecible)",
+  s4tag:"Parte 4 · La Teoría",s4h2:"¿Por qué funciona el barbell?",s4p:"Tres marcos para entender la estrategia bimodal de Taleb.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Vives en el medio peligroso?",
+  tn1:"DILEMA · 01",
+  tq1:"Tienes $10,000 ahorrados. ¿Cómo los distribuyes?",
+  d1aT:"Todo en riesgo moderado",d1aD:"Fondos indexados balanceados, mezcla de acciones y bonos — ni muy seguro ni muy arriesgado.",
+  d1bT:"Barbell: 90% seguro + 10% extremo",d1bD:"$9,000 en efectivo/bonos del tesoro, $1,000 en apuestas especulativas de alto potencial.",
+  csT:"Elegiste el punto medio peligroso.",csP:"El riesgo moderado tiene una falsa sensación de seguridad: suficiente exposición para sufrir en una crisis severa, pero sin la asimetría necesaria para capturar un evento extremo positivo.",
+  cbT:"Aplicaste la estrategia barbell.",cbP:"Tu pérdida máxima está acotada al 10% en el peor escenario. Pero tu upside no tiene techo si la apuesta especulativa funciona. Esto es exactamente lo que Taleb recomienda.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Dónde en tu vida estás actualmente en el 'medio peligroso' en vez de un barbell real?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Mis ahorros e inversiones","Mi tiempo libre y hobbies","Mi desarrollo profesional","Mis relaciones sociales","Mi salud y ejercicio","Mis proyectos creativos"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Si conoces tu vulnerabilidad a errores de predicción, y aceptas que la mayoría de los eventos de \'riesgo\' vienen de cisnes negros, una estrategia consiste en ser hiperconservador e hiperagresivo al mismo tiempo, en vez de ligeramente agresivo."',
+  careerExamples:[
+    {t:"Base estable",d:"Trabajo de tiempo completo, freelance recurrente, consultoría establecida"},
+    {t:"Apuesta extrema",d:"Startup propia, inversión en cripto, escribir un libro, proyecto creativo arriesgado"},
+    {t:"Lo que se evita",d:"Cambiar de carrera 'a medias', un MBA genérico sin propósito claro, diversificar sin foco"},
+  ],
+  theories:[
+    {icon:"🏋️",name:"El origen financiero del barbell",body:`<p>Taleb describió la estrategia barbell en <em>Antifrágil</em> (2012) como una alternativa al riesgo moderado tradicional en gestión de portafolios. En lugar de poner el 100% del capital en activos de riesgo "medio" (acciones balanceadas, bonos corporativos), propone una distribución bimodal.</p><div class="quote-block"><p>"Si pones el 90% en instrumentos extremadamente seguros... y el 10% en apuestas extremadamente especulativas... no puedes tener un resultado mediocre. Tu pérdida máxima es del 10%, mientras tu ganancia potencial es ilimitada."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><p>El nombre viene de la imagen de una barra de pesas: peso concentrado en los dos extremos, nada en el medio.</p><div class="tag-list"><span class="tag">Barbell</span><span class="tag">Gestión de portafolio</span><span class="tag">Bimodal</span></div>`},
+    {icon:"⚠️",name:"Por qué el 'riesgo moderado' es la trampa",body:`<p>La intuición común dice que el riesgo moderado es "prudente" — ni demasiado conservador, ni demasiado arriesgado. Taleb argumenta lo contrario: el riesgo moderado expone tu capital a pérdidas significativas sin darte la asimetría necesaria para capturar ganancias extremas.</p><p>En términos matemáticos, una distribución de riesgo "media" tiene una varianza alta sin la convexidad que compensa esa varianza. Es la peor combinación posible: suficiente exposición para doler, sin suficiente potencial para compensar.</p><div class="quote-block"><p>"En lugar de tener un solo activo de riesgo 'medio', es mejor tener algunos activos altamente especulativos, lo más especulativo posible... combinado con algo ultra-seguro."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Riesgo moderado</span><span class="tag">Varianza</span><span class="tag">Trampa del medio</span></div>`},
+    {icon:"🎯",name:"Barbell más allá de las finanzas",body:`<p>Taleb extiende el concepto barbell a casi todas las áreas de la vida: tiempo (90% rutina estable + 10% experimentación radical), dieta (ayuno extremo + comidas abundantes, en vez de comer "moderadamente" todo el tiempo), incluso filosofía personal (estoicismo riguroso + libertad radical de pensamiento).</p><p>El patrón común: evitar el término medio tibio que no te protege del desastre ni te expone al extraordinario.</p><div class="quote-block"><p>"Lo que necesitas no es estar en el medio promedio del riesgo. Necesitas combinar la protección máxima con la exposición máxima a la suerte positiva."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Aplicación general</span><span class="tag">Estoicismo</span><span class="tag">Vida cotidiana</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un profesional invierte el 100% de su tiempo libre en 'mejorar un poco en todo' — un poco de networking, un poco de cursos, un poco de side projects, sin foco. Según la lógica barbell, ¿qué error comete?",opts:["Ninguno — diversificar el esfuerzo siempre es buena estrategia","Está en el 'medio peligroso' — ni construye una base sólida en algo, ni tiene una apuesta extrema concentrada","El error es no dedicar el 100% del tiempo a un solo objetivo","El error es no consultar a un mentor antes de planificar"],correct:1,feedOk:"Exacto. Diluir el esfuerzo en muchas direcciones moderadas es la versión profesional del 'riesgo medio' financiero: no construye una ventaja sólida en ningún lado, y no genera la concentración necesaria para una apuesta de alto impacto.",feedKo:"El problema con la dispersión moderada es que no genera ni la seguridad de una base sólida, ni la concentración de esfuerzo necesaria para un resultado extraordinario. Es el equivalente profesional de la 'zona peligrosa' del barbell."},
+    {q:"¿Por qué Taleb dice que la pérdida máxima en una estrategia barbell está 'acotada' incluso cuando incluye apuestas extremadamente especulativas?",opts:["Porque las apuestas especulativas siempre tienen seguro incluido","Porque solo una pequeña porción del capital total está expuesta a esas apuestas — el resto está en máxima seguridad","Porque Taleb recomienda diversificar las apuestas especulativas entre muchos activos","Porque las apuestas especulativas legalmente tienen un límite de pérdida"],correct:1,feedOk:"Correcto. Aunque la porción especulativa puede perderse por completo (100% de esa parte), representa solo un 10-20% del capital total — por lo que la pérdida máxima del conjunto está naturalmente acotada.",feedKo:"La clave está en el tamaño de la porción, no en la naturaleza de la apuesta. Si solo el 10% del capital está en posiciones especulativas, ese 10% puede perderse por completo y aun así la pérdida total del portafolio es manejable."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"📊",title:"Vives en el medio peligroso",desc:"Buscas equilibrio en todo, pero ese equilibrio puede ser justo donde está el riesgo oculto.",taleb:"'El riesgo moderado es la peor combinación posible.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"⚖️",title:"Empiezas a ver la trampa del medio",desc:"Reconoces el patrón. El siguiente paso: rediseñar tu distribución hacia los extremos.",taleb:"'No necesitas estar en el promedio del riesgo.' — Antifrágil",color:"#f39c12"},
+    {min:70,emoji:"🏋️",title:"Piensas en bimodal",desc:"Distingues entre seguridad extrema y apuestas extremas, evitando el término medio.",taleb:"'Combina la protección máxima con la exposición máxima a la suerte.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🎯",title:"Nivel Barbell",desc:"Aplicas activamente la estrategia bimodal en múltiples áreas de tu vida.",taleb:"'No puedes tener un resultado mediocre si estás en los extremos.' — Antifrágil (2012)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"The Barbell Strategy",
+  s1tag:"Part 1 · The Hook",s1h1:"The most dangerous place\nis the middle",
+  s1p:"Everyone seeks the 'safe middle ground' — not too risky, not too conservative. Taleb says that middle point is exactly where the hidden risk lives.",
+  s1btn:"See why → Start",
+  s2tag:"Part 2 · The Middle Problem",s2h2:"Move the slider. Watch the ruin risk.",
+  s2p:"This slider represents how much of your capital (time, money, energy) is in 'moderately risky' positions — neither fully safe, nor fully speculative and bounded.",
+  ruinLeftLabel:"100% safe",ruinRightLabel:"100% risky",
+  ruinValLbl:"Probability of ruin",upsideValLbl:"Upside potential",
+  ruinInsight:"The middle point combines the worst of both worlds: enough exposure to suffer large losses, but without the asymmetry needed to capture extreme gains. Move the slider to the extremes (0% or 100%) and compare it to a real barbell strategy.",
+  zoneNames:{safe:"SAFE ZONE",danger:"DANGER ZONE — THE MIDDLE",risky:"SPECULATIVE ZONE"},
+  s3tag:"Part 3 · Build Your Career Barbell",s3h2:"Stable job + parallel bets",
+  s3p:"The barbell strategy applied to your career: a base of secure income, and a small percentage dedicated to high-risk, high-potential-reward bets. No dangerous middle ground.",
+  builderSafeLbl:"🛡️ Stable base (safe job, predictable income)",
+  s4tag:"Part 4 · The Theory",s4h2:"Why does the barbell work?",s4p:"Three frameworks for understanding Taleb's bimodal strategy.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you live in the dangerous middle?",
+  tn1:"DILEMMA · 01",
+  tq1:"You have $10,000 saved. How do you distribute it?",
+  d1aT:"All in moderate risk",d1aD:"Balanced index funds, a mix of stocks and bonds — not too safe, not too risky.",
+  d1bT:"Barbell: 90% safe + 10% extreme",d1bD:"$9,000 in cash/treasury bonds, $1,000 in high-potential speculative bets.",
+  csT:"You chose the dangerous middle ground.",csP:"Moderate risk has a false sense of security: enough exposure to suffer in a severe crisis, but without the asymmetry needed to capture an extreme positive event.",
+  cbT:"You applied the barbell strategy.",cbP:"Your maximum loss is bounded at 10% in the worst case. But your upside is uncapped if the speculative bet pays off. This is exactly what Taleb recommends.",
+  tn3:"REFLECTION · 03",
+  tq3:"Where in your life are you currently in the 'dangerous middle' instead of a real barbell?",
+  refHint:"Examples to trigger reflection:",
+  chips:["My savings and investments","My free time and hobbies","My professional development","My social relationships","My health and exercise","My creative projects"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"If you know your vulnerability to prediction errors, and accept that most \'risk\' events come from black swans, one strategy is to be hyperconservative and hyperaggressive at the same time, rather than mildly aggressive."',
+  careerExamples:[
+    {t:"Stable base",d:"Full-time job, recurring freelance work, established consulting"},
+    {t:"Extreme bet",d:"Your own startup, crypto investment, writing a book, a risky creative project"},
+    {t:"What to avoid",d:"Switching careers 'halfway', a generic MBA without clear purpose, diversifying without focus"},
+  ],
+  theories:[
+    {icon:"🏋️",name:"The financial origin of the barbell",body:`<p>Taleb described the barbell strategy in <em>Antifragile</em> (2012) as an alternative to traditional moderate risk in portfolio management. Instead of putting 100% of capital in "medium" risk assets (balanced stocks, corporate bonds), he proposes a bimodal distribution.</p><div class="quote-block"><p>"If you put 90% in extremely safe instruments... and 10% in extremely speculative bets... you cannot have a mediocre outcome. Your maximum loss is 10%, while your potential gain is unlimited."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><p>The name comes from the image of a barbell weight: weight concentrated at the two ends, nothing in the middle.</p><div class="tag-list"><span class="tag">Barbell</span><span class="tag">Portfolio management</span><span class="tag">Bimodal</span></div>`},
+    {icon:"⚠️",name:"Why 'moderate risk' is the trap",body:`<p>Common intuition says moderate risk is "prudent" — neither too conservative nor too risky. Taleb argues the opposite: moderate risk exposes your capital to significant losses without giving you the asymmetry needed to capture extreme gains.</p><p>Mathematically, a "medium" risk distribution has high variance without the convexity that compensates for that variance. It's the worst possible combination: enough exposure to hurt, without enough potential to compensate.</p><div class="quote-block"><p>"Instead of having a single 'medium' risk asset, it is better to have some assets that are highly speculative, as speculative as possible... combined with something ultra-safe."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">Moderate risk</span><span class="tag">Variance</span><span class="tag">Middle trap</span></div>`},
+    {icon:"🎯",name:"Barbell beyond finance",body:`<p>Taleb extends the barbell concept to nearly every area of life: time (90% stable routine + 10% radical experimentation), diet (extreme fasting + abundant meals, instead of eating "moderately" all the time), even personal philosophy (rigorous stoicism + radical freedom of thought).</p><p>The common pattern: avoiding the lukewarm middle ground that neither protects you from disaster nor exposes you to the extraordinary.</p><div class="quote-block"><p>"What you need is not to be at the average of risk. You need to combine maximum protection with maximum exposure to positive luck."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">General application</span><span class="tag">Stoicism</span><span class="tag">Daily life</span></div>`},
+  ],
+  mcqs:[
+    {q:"A professional invests 100% of their free time 'getting a little better at everything' — a bit of networking, a bit of courses, a bit of side projects, with no focus. According to barbell logic, what mistake are they making?",opts:["None — diversifying effort is always a good strategy","They're in the 'dangerous middle' — neither building a solid base in anything, nor having a concentrated extreme bet","The mistake is not dedicating 100% of time to a single goal","The mistake is not consulting a mentor before planning"],correct:1,feedOk:"Exactly. Diluting effort across many moderate directions is the professional version of financial 'medium risk': it builds no solid advantage anywhere, and doesn't generate the concentration needed for a high-impact bet.",feedKo:"The problem with moderate dispersion is that it generates neither the safety of a solid base, nor the concentration of effort needed for an extraordinary outcome. It's the professional equivalent of the barbell's 'danger zone'."},
+    {q:"Why does Taleb say maximum loss in a barbell strategy is 'bounded' even when it includes extremely speculative bets?",opts:["Because speculative bets always include insurance","Because only a small portion of total capital is exposed to those bets — the rest is in maximum safety","Because Taleb recommends diversifying speculative bets across many assets","Because speculative bets legally have a loss limit"],correct:1,feedOk:"Correct. Although the speculative portion can be lost entirely (100% of that part), it represents only 10-20% of total capital — so the maximum loss of the whole is naturally bounded.",feedKo:"The key is the size of the portion, not the nature of the bet. If only 10% of capital is in speculative positions, that 10% can be lost entirely and the total portfolio loss is still manageable."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"📊",title:"You live in the dangerous middle",desc:"You seek balance in everything, but that balance may be exactly where the hidden risk lives.",taleb:"'Moderate risk is the worst possible combination.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"⚖️",title:"You're starting to see the middle trap",desc:"You recognize the pattern. Next step: redesign your distribution toward the extremes.",taleb:"'You don't need to be at the average of risk.' — Antifragile",color:"#f39c12"},
+    {min:70,emoji:"🏋️",title:"You think bimodal",desc:"You distinguish between extreme safety and extreme bets, avoiding the middle ground.",taleb:"'Combine maximum protection with maximum exposure to luck.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🎯",title:"Barbell Level",desc:"You actively apply the bimodal strategy across multiple areas of your life.",taleb:"'You cannot have a mediocre outcome if you're at the extremes.' — Antifragile (2012)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', ruinChartInst=null;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');updateRuinChart();}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    'ruin-left-label':'ruinLeftLabel','ruin-right-label':'ruinRightLabel',
+    'ruin-val-lbl':'ruinValLbl','upside-val-lbl':'upsideValLbl','ruin-insight':'ruinInsight',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','builder-safe-lbl':'builderSafeLbl',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cb-t':'cbT','cb-p':'cbP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderTheoryCards();renderChips();renderCareerExamples();updateRuinChart();updateBuilder();
+}
+
+/* RUIN VISUALIZER */
+function startRuin(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-ruin').scrollIntoView({behavior:'smooth'});}
+
+document.getElementById('ruin-slider').addEventListener('input',updateRuinChart);
+
+function ruinRiskAt(x){
+  // x: 0-100. Risk of ruin peaks in the middle (inverted-U-ish but skewed: real risk is highest around 50-70)
+  // Using a function that's low at extremes, high in middle-high zone
+  return Math.round(8 + 70*Math.exp(-Math.pow((x-58)/26,2)));
+}
+function upsideAt(x){
+  // Upside: low in the middle, moderate at 100% risky, but barbell-like behavior isn't captured here (pure single-position)
+  // For pure single allocation: upside grows roughly linearly with risk exposure but capped realistically
+  return Math.round(5 + x*0.85);
+}
+
+function updateRuinChart(){
+  const x=parseInt(document.getElementById('ruin-slider').value);
+  const risk=ruinRiskAt(x);
+  const upside=upsideAt(x);
+  document.getElementById('ruin-val').textContent=risk+'%';
+  document.getElementById('upside-val').textContent=upside+'%';
+  document.getElementById('ruin-readout').textContent=
+    lang==='es'?`${x}% en zona moderada / arriesgada`:`${x}% in moderate / risky zone`;
+
+  // Zone marker
+  const zoneEl=document.getElementById('ruin-zone');
+  let zoneClass,zoneText;
+  if(x<=15){zoneClass='safe';zoneText=T[lang].zoneNames.safe;}
+  else if(x>=85){zoneClass='barbell';zoneText=T[lang].zoneNames.risky;}
+  else {zoneClass='danger';zoneText=T[lang].zoneNames.danger;}
+  zoneEl.className='ruin-zone-marker '+zoneClass;
+  zoneEl.textContent=zoneText;
+
+  // Build curve
+  const labels=[];const riskData=[];
+  for(let v=0;v<=100;v+=5){labels.push(v+'%');riskData.push(ruinRiskAt(v));}
+  const markerIdx=Math.round(x/5);
+
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const gridC=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  const textC=isDark?'#4a5568':'#aaa';
+  const pointRadius=riskData.map((_,i)=>i===markerIdx?7:0);
+
+  const ctx=document.getElementById('ruinChart').getContext('2d');
+  if(ruinChartInst)ruinChartInst.destroy();
+  ruinChartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{
+      label:lang==='es'?'Riesgo de ruina (%)':'Risk of ruin (%)',
+      data:riskData,borderColor:'#e74c3c',backgroundColor:'rgba(231,76,60,.1)',fill:true,tension:.4,
+      pointRadius:pointRadius,pointBackgroundColor:'#e74c3c',pointBorderColor:isDark?'#0a0d12':'#fff',pointBorderWidth:2,borderWidth:2.5
+    }]},
+    options:{responsive:true,animation:{duration:250},plugins:{legend:{display:true,labels:{color:textC,font:{family:"'IBM Plex Mono'",size:10},boxWidth:12}}},
+      scales:{x:{grid:{color:gridC},ticks:{color:textC,font:{size:9},maxTicksLimit:11}},y:{grid:{color:gridC},ticks:{color:textC}}}}
+  });
+}
+
+/* BARBELL BUILDER */
+document.getElementById('builder-slider').addEventListener('input',updateBuilder);
+function updateBuilder(){
+  const safePct=parseInt(document.getElementById('builder-slider').value);
+  const riskPct=100-safePct;
+  document.getElementById('builder-safe-pct').textContent=safePct+'%';
+  document.getElementById('bb-weight-safe').textContent=safePct+'%';
+  document.getElementById('bb-weight-risk').textContent=riskPct+'%';
+  const safeSize=40+safePct*0.4;
+  const riskSize=40+riskPct*0.4;
+  document.getElementById('bb-weight-safe').style.width=safeSize+'px';
+  document.getElementById('bb-weight-safe').style.height=safeSize+'px';
+  document.getElementById('bb-weight-risk').style.width=riskSize+'px';
+  document.getElementById('bb-weight-risk').style.height=riskSize+'px';
+
+  const result=document.getElementById('builder-result');
+  if(lang==='es'){
+    result.innerHTML=`Con <strong>${safePct}%</strong> en tu base estable y <strong>${riskPct}%</strong> en apuestas paralelas: si tus apuestas fracasan por completo, pierdes solo el ${riskPct}% de tu capacidad total — tu base sigue intacta. Si una apuesta funciona, el upside no tiene techo predefinido. Esto es radicalmente distinto a "dedicar 50% a un plan B genérico", que te deja vulnerable en ambos frentes.`;
+  } else {
+    result.innerHTML=`With <strong>${safePct}%</strong> in your stable base and <strong>${riskPct}%</strong> in parallel bets: if your bets fail completely, you only lose ${riskPct}% of your total capacity — your base remains intact. If one bet works, the upside has no predefined ceiling. This is radically different from "dedicating 50% to a generic plan B," which leaves you vulnerable on both fronts.`;
+  }
+}
+function renderCareerExamples(){
+  const wrap=document.getElementById('career-examples');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].careerExamples.forEach(ex=>{
+    const el=document.createElement('div');el.className='career-ex';
+    el.innerHTML=`<strong>${ex.t}</strong>${ex.d}`;
+    wrap.appendChild(el);
+  });
+}
+
+/* THEORY */
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-middle').classList.toggle('show',type==='middle');
+  document.getElementById('cons-barbell').classList.toggle('show',type==='barbell');
+  dilemmaScore=type==='barbell'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

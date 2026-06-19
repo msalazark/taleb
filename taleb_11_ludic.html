@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Ludic Fallacy — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* BANKROLL HUD */
+.bankroll-hud{position:sticky;top:54px;z-index:90;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1.1rem;margin-bottom:1.25rem;display:none;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.bankroll-hud.show{display:flex;}
+.bankroll-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+.bankroll-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;color:var(--accent2);}
+.phase-badge{font-family:'IBM Plex Mono',monospace;font-size:.62rem;padding:3px 9px;border-radius:10px;letter-spacing:.06em;}
+.phase-badge.casino{background:rgba(74,158,255,.15);color:var(--blue);border:1px solid rgba(74,158,255,.3);}
+.phase-badge.real{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+
+/* MATCH CARD */
+.match-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;}
+.match-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;}
+.match-teams{font-weight:600;font-size:1rem;}
+.match-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);}
+.match-odds-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.85rem;}
+.odd-btn{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .5rem;text-align:center;cursor:pointer;transition:all .2s;}
+.odd-btn:hover:not(:disabled){border-color:var(--accent2);}
+.odd-btn:disabled{cursor:default;opacity:.5;}
+.odd-btn.chosen{border-color:var(--accent2);background:rgba(242,166,35,.12);opacity:1;}
+.odd-team{font-size:.78rem;color:var(--text2);margin-bottom:.25rem;}
+.odd-val{font-family:'IBM Plex Mono',monospace;font-size:.95rem;font-weight:600;color:var(--accent2);}
+.bet-amount-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;}
+.bet-amount-row span{font-size:.8rem;color:var(--text2);white-space:nowrap;}
+.bet-slider{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--bg3);outline:none;}
+.bet-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent2);cursor:pointer;border:2px solid var(--bg);}
+.bet-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent2);cursor:pointer;border:2px solid var(--bg);}
+.bet-amount-val{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--accent2);min-width:50px;text-align:right;}
+.place-bet-btn{width:100%;background:var(--accent);color:#fff;border:none;padding:.65rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;}
+.place-bet-btn:disabled{opacity:.4;cursor:default;}
+
+/* RESULT REVEAL */
+.match-result{display:none;margin-top:1rem;padding:1rem 1.1rem;border-radius:var(--radius-sm);font-size:.85rem;line-height:1.6;}
+.match-result.show{display:block;}
+.match-result.win{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.match-result.lose{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.hidden-var-box{margin-top:.65rem;padding:.65rem .8rem;border-radius:var(--radius-sm);background:rgba(155,89,182,.08);border:1px solid rgba(155,89,182,.25);font-size:.8rem;}
+.hidden-var-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--purple);letter-spacing:.06em;margin-bottom:.3rem;display:block;}
+
+/* PHASE TRANSITION */
+.phase-transition{display:none;text-align:center;padding:2.5rem 1.5rem;background:var(--bg2);border:1px solid var(--accent2);border-radius:var(--radius);margin:1.5rem 0;}
+.phase-transition.show{display:block;}
+.phase-transition-emoji{font-size:3rem;margin-bottom:1rem;}
+
+/* RESULTS SUMMARY */
+.summary-box{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;margin-top:1.5rem;}
+.summary-box.show{display:block;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 11</span>
+    <span class="header-title" id="hdr-title">La Ludic Fallacy</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">El casino no es<br>el mundo real</h1>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">En el casino, las reglas son fijas y conocidas: sabes exactamente la probabilidad de cada resultado. En el mundo real, las reglas cambian sin aviso y casi nunca conoces todas las variables. Confundir uno con el otro es lo que Taleb llama la <strong>Ludic Fallacy</strong>.</p>
+  <button class="btn-primary" onclick="startCasino()" id="s1-btn">Apostar → Empezar</button>
+</section>
+
+<div class="bankroll-hud" id="bankroll-hud">
+  <div>
+    <div class="bankroll-label" id="bankroll-label">TU BANKROLL</div>
+    <div class="bankroll-val" id="bankroll-val">$1,000</div>
+  </div>
+  <span class="phase-badge casino" id="phase-badge">FASE CASINO</span>
+</div>
+
+<!-- S2 CASINO PHASE -->
+<section id="sec-casino">
+  <div class="section-tag" id="s2-tag">Parte 2 · Fase Casino — Reglas Conocidas</div>
+  <h2 id="s2-h2">Apuesta con las cuotas dadas</h2>
+  <p id="s2-p">5 partidos. Cada uno tiene cuotas claras y públicas. Apuesta tu bankroll virtual basándote solo en la probabilidad mostrada.</p>
+  <div id="casino-matches"></div>
+
+  <div class="phase-transition" id="phase-transition">
+    <div class="phase-transition-emoji">🌍</div>
+    <h3 id="pt-title" style="font-family:'IBM Plex Serif',serif;margin-bottom:.75rem">Ahora bienvenido al mundo real</h3>
+    <p id="pt-text" style="font-size:.9rem;color:var(--text2);max-width:480px;margin:0 auto 1rem">Los mismos 5 partidos. Las mismas cuotas iniciales. Pero esta vez, había información que el modelo de probabilidad nunca capturó — y la vas a descubrir después de apostar, no antes.</p>
+    <button class="btn-primary" onclick="startRealWorld()" id="pt-btn">Entrar al mundo real →</button>
+  </div>
+</section>
+
+<!-- S3 REAL WORLD PHASE -->
+<section id="sec-real" style="display:none">
+  <div class="section-tag" id="s3-tag">Parte 3 · Fase Mundo Real — Reglas Ocultas</div>
+  <h2 id="s3-h2">Las mismas cuotas. Variables que no veías.</h2>
+  <p id="s3-p">Aposta de nuevo con las mismas cuotas nominales. Esta vez, cada resultado revela una variable oculta que el modelo de probabilidad pura nunca pudo capturar.</p>
+  <div id="real-matches"></div>
+
+  <div class="summary-box" id="summary-box">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">📊</div>
+    <h3 id="sb-title" style="font-family:'IBM Plex Serif',serif;margin-bottom:.5rem">Resultado final</h3>
+    <p id="sb-text" style="font-size:.9rem;color:var(--text2);max-width:480px;margin:0 auto"></p>
+    <button class="btn-accent" onclick="showTheory()" id="sb-btn">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">¿Por qué el casino nos engaña?</h2>
+  <p id="s4-p">Tres marcos para entender la diferencia entre riesgo medible e incertidumbre real.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Distingues juego de mundo real?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Un modelo de riesgo bancario calcula que cierto evento de pérdida ocurre 1 vez cada 10,000 años, basándose en datos históricos de los últimos 50 años. ¿Qué haces con ese número?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('trust',this)">
+        <div class="d-emoji">📊</div>
+        <div class="d-title" id="d1a-t">Confío en el modelo</div>
+        <div class="d-desc" id="d1a-d">El cálculo es matemáticamente riguroso. Si dice 1 en 10,000 años, lo tomo como probabilidad real.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('doubt',this)">
+        <div class="d-emoji">🌍</div>
+        <div class="d-title" id="d1b-t">Dudo de la precisión</div>
+        <div class="d-desc" id="d1b-d">50 años de datos no pueden capturar eventos extremos del mundo real. El número es una ilusión de precisión.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-trust">
+      <strong id="cs-t">Caíste en la Ludic Fallacy.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Tratar un modelo estadístico del mundo real como si fuera un juego con reglas fijas y conocidas es exactamente el error que Taleb identifica. El mundo real no tiene "reglas del juego" estables como un casino.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-doubt">
+      <strong id="cd-t">Evitaste la Ludic Fallacy.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cd-p">Reconociste que los modelos de probabilidad del mundo real tienen una falsa precisión. 50 años de datos no capturan eventos de baja frecuencia y alto impacto — el modelo confunde "lo que he visto" con "lo que es posible".</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde en tu vida tratas algo como un "juego con reglas fijas" cuando en realidad es incertidumbre real del mundo?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"La Ludic Fallacy es el error de aplicar la lógica de los juegos al mundo real, ignorando que el mundo real tiene una estructura de incertidumbre completamente diferente."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · El Cisne Negro (2007)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_10_agencia.html">← 10 Problema de Agencia</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">12 Via Negativa →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"La Ludic Fallacy",
+  s1tag:"Parte 1 · El Gancho",s1h1:"El casino no es\nel mundo real",
+  s1p:"En el casino, las reglas son fijas y conocidas: sabes exactamente la probabilidad de cada resultado. En el mundo real, las reglas cambian sin aviso y casi nunca conoces todas las variables. Confundir uno con el otro es lo que Taleb llama la <strong>Ludic Fallacy</strong>.",
+  s1btn:"Apostar → Empezar",
+  bankrollLabel:"TU BANKROLL",
+  phaseCasino:"FASE CASINO",phaseReal:"FASE MUNDO REAL",
+  s2tag:"Parte 2 · Fase Casino — Reglas Conocidas",s2h2:"Apuesta con las cuotas dadas",
+  s2p:"5 partidos. Cada uno tiene cuotas claras y públicas. Apuesta tu bankroll virtual basándote solo en la probabilidad mostrada.",
+  ptTitle:"Ahora bienvenido al mundo real",
+  ptText:"Los mismos 5 partidos. Las mismas cuotas iniciales. Pero esta vez, había información que el modelo de probabilidad nunca capturó — y la vas a descubrir después de apostar, no antes.",
+  ptBtn:"Entrar al mundo real →",
+  s3tag:"Parte 3 · Fase Mundo Real — Reglas Ocultas",s3h2:"Las mismas cuotas. Variables que no veías.",
+  s3p:"Apuesta de nuevo con las mismas cuotas nominales. Esta vez, cada resultado revela una variable oculta que el modelo de probabilidad pura nunca pudo capturar.",
+  s4tag:"Parte 4 · La Teoría",s4h2:"¿Por qué el casino nos engaña?",s4p:"Tres marcos para entender la diferencia entre riesgo medible e incertidumbre real.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Distingues juego de mundo real?",
+  tn1:"DILEMA · 01",
+  tq1:"Un modelo de riesgo bancario calcula que cierto evento de pérdida ocurre 1 vez cada 10,000 años, basándose en datos históricos de los últimos 50 años. ¿Qué haces con ese número?",
+  d1aT:"Confío en el modelo",d1aD:"El cálculo es matemáticamente riguroso. Si dice 1 en 10,000 años, lo tomo como probabilidad real.",
+  d1bT:"Dudo de la precisión",d1bD:"50 años de datos no pueden capturar eventos extremos del mundo real. El número es una ilusión de precisión.",
+  csT:"Caíste en la Ludic Fallacy.",csP:"Tratar un modelo estadístico del mundo real como si fuera un juego con reglas fijas y conocidas es exactamente el error que Taleb identifica. El mundo real no tiene 'reglas del juego' estables como un casino.",
+  cdT:"Evitaste la Ludic Fallacy.",cdP:"Reconociste que los modelos de probabilidad del mundo real tienen una falsa precisión. 50 años de datos no capturan eventos de baja frecuencia y alto impacto — el modelo confunde 'lo que he visto' con 'lo que es posible'.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:'¿Dónde en tu vida tratas algo como un "juego con reglas fijas" cuando en realidad es incertidumbre real del mundo?',
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Mi planificación financiera","Mis proyecciones de carrera","Mi forma de evaluar riesgos de salud","Mis expectativas sobre relaciones","Mis modelos de negocio","Mi forma de planear el futuro"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"La Ludic Fallacy es el error de aplicar la lógica de los juegos al mundo real, ignorando que el mundo real tiene una estructura de incertidumbre completamente diferente."',
+  matches:[
+    {id:0,teams:"Halcones FC vs Tigres United",odds:[{label:"Gana Halcones",val:"1.80"},{label:"Empate",val:"3.40"},{label:"Gana Tigres",val:"4.20"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"El delantero estrella de Halcones jugó con una lesión oculta que el club no reportó públicamente. El modelo de cuotas no tenía esa información."},
+    {id:1,teams:"Cóndores vs Leones del Norte",odds:[{label:"Gana Cóndores",val:"2.10"},{label:"Empate",val:"3.10"},{label:"Gana Leones",val:"3.50"}],
+     casinoResult:"win",casinoWinIdx:1,
+     realResult:"lose",realWinIdx:0,
+     hiddenVar:"El árbitro asignado tenía un historial (no público) de favorecer al equipo local en decisiones cerradas — una variable que ningún modelo de cuotas capturaba."},
+    {id:2,teams:"Marea Azul vs Trueno FC",odds:[{label:"Gana Marea",val:"1.55"},{label:"Empate",val:"4.00"},{label:"Gana Trueno",val:"5.50"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"Una tormenta inesperada cambió las condiciones de la cancha minutos antes del partido, afectando desproporcionadamente al equipo favorito que dependía de juego rápido en banda."},
+    {id:3,teams:"Real Cordillera vs Atlético Sur",odds:[{label:"Gana Cordillera",val:"2.40"},{label:"Empate",val:"3.20"},{label:"Gana Sur",val:"2.90"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:1,
+     hiddenVar:"Tres jugadores titulares de Cordillera fueron suspendidos por una infracción disciplinaria interna, revelada solo horas antes del partido — fuera del modelo de cuotas."},
+    {id:4,teams:"Vientos del Sur vs Acero FC",odds:[{label:"Gana Vientos",val:"1.95"},{label:"Empate",val:"3.30"},{label:"Gana Acero",val:"3.80"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"El dueño de Acero FC había prometido un bono millonario al equipo si ganaban este partido específico — un incentivo extremo no capturado por ningún modelo estadístico histórico."},
+  ],
+  summaryAligned:"Tus resultados en ambas fases fueron similares. Esto sería inusual — normalmente, las variables ocultas del mundo real cambian completamente el resultado esperado por el modelo de probabilidad pura.",
+  summaryMisaligned:"Tu desempeño cayó significativamente en la fase del mundo real, a pesar de usar exactamente las mismas cuotas que en el casino. Eso es la Ludic Fallacy en acción: las cuotas nominales eran 'correctas' matemáticamente, pero el mundo real tenía variables que ningún modelo de probabilidad pura podía capturar.",
+  theories:[
+    {icon:"🎲",name:"La Ludic Fallacy según Taleb",body:`<p>Taleb introdujo el término en <em>El Cisne Negro</em> (2007), derivado de "ludus" (juego en latín), para describir el error de aplicar la estructura de probabilidad de los juegos formales al mundo real desestructurado.</p><div class="quote-block"><p>"El error es tomar el mundo del juego, donde las probabilidades son conocidas, claras y no controvertidas, y aplicarlo a la vida real, donde nunca conoces las reglas completamente, y mucho menos las probabilidades."</p><cite>— Nassim Taleb, El Cisne Negro (2007)</cite></div><p>En un casino, sabes exactamente que hay 6 caras en un dado. En el mundo real, ni siquiera sabes cuántas "caras" tiene el evento que estás evaluando.</p><div class="tag-list"><span class="tag">Ludic Fallacy</span><span class="tag">Cisne Negro</span><span class="tag">Probabilidad formal</span></div>`},
+    {icon:"⚖️",name:"Frank Knight: riesgo vs incertidumbre",body:`<p>El economista Frank Knight (1885–1972) hizo una distinción fundamental en 1921 que Taleb retoma constantemente: <strong>riesgo</strong> es cuando conoces la distribución de probabilidad (como una ruleta), mientras <strong>incertidumbre</strong> (o "incertidumbre knightiana") es cuando ni siquiera conoces esa distribución.</p><p>La mayoría de los modelos financieros y de gestión de riesgo tratan toda incertidumbre como si fuera riesgo medible — exactamente el error de la Ludic Fallacy.</p><div class="quote-block"><p>"Un riesgo medible, o 'riesgo' propiamente dicho... es tan diferente de uno no medible que en realidad no es, en absoluto, un riesgo."</p><cite>— Frank Knight, Risk, Uncertainty and Profit (1921)</cite></div><div class="tag-list"><span class="tag">Frank Knight</span><span class="tag">Incertidumbre knightiana</span><span class="tag">Riesgo medible</span></div>`},
+    {icon:"🃏",name:"El casino como mundo cerrado",body:`<p>Taleb usa el casino como metáfora precisa porque es uno de los pocos entornos donde el riesgo está genuinamente acotado y conocido: las reglas no cambian a mitad del juego, no hay variables ocultas relevantes, y la distribución de resultados es estable y verificable.</p><p>El error de los "quants" (analistas cuantitativos) de Wall Street, según Taleb, fue tratar a los mercados financieros como si fueran ese mismo casino cerrado — cuando en realidad los mercados están sujetos a eventos estructuralmente impredecibles que ningún modelo de probabilidad puede anticipar.</p><div class="quote-block"><p>"Los casinos son de los pocos lugares del mundo donde la probabilidad es conocida con precisión casi perfecta — y por eso son el peor lugar para aprender sobre la incertidumbre real."</p><cite>— Nassim Taleb, El Cisne Negro (2007)</cite></div><div class="tag-list"><span class="tag">Casino</span><span class="tag">Quants</span><span class="tag">Mercados financieros</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un actuario calcula la probabilidad de que una persona viva hasta los 90 años usando tablas de mortalidad de los últimos 30 años. ¿Cuál es la limitación principal de este enfoque según la lógica de la Ludic Fallacy?",opts:["Las tablas de mortalidad son siempre inexactas matemáticamente","El cálculo asume que las condiciones futuras (medicina, pandemias, estilo de vida) seguirán el mismo patrón que el pasado reciente, ignorando posibles cambios estructurales","Los actuarios no deberían usar estadística en absoluto","El cálculo es válido porque se basa en datos reales y verificables"],correct:1,feedOk:"Exacto. El problema no es que los datos sean falsos, sino que el modelo asume implícitamente que el futuro replicará la estructura del pasado — exactamente el supuesto que falla cuando ocurre algo estructuralmente nuevo (una pandemia, un avance médico radical, etc.).",feedKo:"El problema no es la exactitud matemática de las tablas en sí, sino el supuesto implícito de que el futuro se comportará como el pasado reciente. Eso es válido en un casino (las reglas no cambian) pero no necesariamente en el mundo real."},
+    {q:"Según Frank Knight, ¿cuál es la diferencia clave entre 'riesgo' e 'incertidumbre'?",opts:["El riesgo es siempre menor que la incertidumbre en magnitud","En el riesgo conoces la distribución de probabilidad; en la incertidumbre, ni siquiera conoces esa distribución","La incertidumbre solo aplica a eventos financieros","No hay diferencia real entre ambos conceptos"],correct:1,feedOk:"Correcto. Esta distinción de 1921 es central para entender la Ludic Fallacy: tratar incertidumbre genuina (donde ni conoces las probabilidades) como si fuera riesgo medible (como un juego de dados) es el error fundamental.",feedKo:"La diferencia no es de magnitud ni de dominio (financiero vs no financiero). Es que en el riesgo conoces la distribución completa de resultados posibles; en la incertidumbre knightiana, ni siquiera sabes cuáles son todos los resultados posibles."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🎰",title:"Sigues pensando en modo casino",desc:"Confías en modelos de probabilidad sin cuestionar sus límites. Es común — pero peligroso en el mundo real.",taleb:"'El error es tratar el mundo como un juego con reglas conocidas.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a cuestionar los modelos",desc:"Reconoces cuándo un cálculo de probabilidad puede estar mal calibrado para el mundo real.",taleb:"'Pregúntate siempre: ¿qué variables no captura este modelo?' — Taleb (parafraseado)",color:"#f39c12"},
+    {min:70,emoji:"🌍",title:"Distingues riesgo de incertidumbre",desc:"Aplicas la distinción de Knight: sabes cuándo estás en un casino y cuándo en el mundo real.",taleb:"'Riesgo medible e incertidumbre genuina son animales completamente distintos.' — Knight / Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🃏",title:"Nivel Anti-Ludic",desc:"Detectas activamente cuándo te están vendiendo certeza falsa disfrazada de probabilidad.",taleb:"'Los casinos son el peor lugar para aprender sobre la incertidumbre real.' — El Cisne Negro (2007)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"The Ludic Fallacy",
+  s1tag:"Part 1 · The Hook",s1h1:"The casino isn't\nthe real world",
+  s1p:"In a casino, the rules are fixed and known: you know exactly the probability of each outcome. In the real world, rules change without warning and you almost never know all the variables. Confusing one with the other is what Taleb calls the <strong>Ludic Fallacy</strong>.",
+  s1btn:"Bet → Start",
+  bankrollLabel:"YOUR BANKROLL",
+  phaseCasino:"CASINO PHASE",phaseReal:"REAL WORLD PHASE",
+  s2tag:"Part 2 · Casino Phase — Known Rules",s2h2:"Bet with the given odds",
+  s2p:"5 matches. Each has clear, public odds. Bet your virtual bankroll based solely on the shown probability.",
+  ptTitle:"Now welcome to the real world",
+  ptText:"The same 5 matches. The same initial odds. But this time, there was information the probability model never captured — and you'll discover it after betting, not before.",
+  ptBtn:"Enter the real world →",
+  s3tag:"Part 3 · Real World Phase — Hidden Rules",s3h2:"The same odds. Variables you couldn't see.",
+  s3p:"Bet again with the same nominal odds. This time, each result reveals a hidden variable that the pure probability model could never capture.",
+  s4tag:"Part 4 · The Theory",s4h2:"Why does the casino deceive us?",s4p:"Three frameworks for understanding the difference between measurable risk and real uncertainty.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Can you tell game from real world?",
+  tn1:"DILEMMA · 01",
+  tq1:"A bank risk model calculates that a certain loss event occurs once every 10,000 years, based on historical data from the last 50 years. What do you do with that number?",
+  d1aT:"I trust the model",d1aD:"The calculation is mathematically rigorous. If it says 1 in 10,000 years, I take it as real probability.",
+  d1bT:"I doubt the precision",d1bD:"50 years of data can't capture extreme real-world events. The number is an illusion of precision.",
+  csT:"You fell for the Ludic Fallacy.",csP:"Treating a real-world statistical model as if it were a game with fixed, known rules is exactly the error Taleb identifies. The real world doesn't have stable 'game rules' like a casino.",
+  cdT:"You avoided the Ludic Fallacy.",cdP:"You recognized that real-world probability models have false precision. 50 years of data don't capture low-frequency, high-impact events — the model confuses 'what I've seen' with 'what's possible'.",
+  tn3:"REFLECTION · 03",
+  tq3:'Where in your life do you treat something as a "game with fixed rules" when it\'s actually real uncertainty in the world?',
+  refHint:"Examples to trigger reflection:",
+  chips:["My financial planning","My career projections","How I assess health risks","My expectations about relationships","My business models","How I plan for the future"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"The Ludic Fallacy is the error of applying the logic of games to the real world, ignoring that the real world has a completely different structure of uncertainty."',
+  matches:[
+    {id:0,teams:"Hawks FC vs Tigers United",odds:[{label:"Hawks win",val:"1.80"},{label:"Draw",val:"3.40"},{label:"Tigers win",val:"4.20"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"Hawks' star striker played with a hidden injury the club never publicly reported. The odds model had no access to that information."},
+    {id:1,teams:"Condors vs Northern Lions",odds:[{label:"Condors win",val:"2.10"},{label:"Draw",val:"3.10"},{label:"Lions win",val:"3.50"}],
+     casinoResult:"win",casinoWinIdx:1,
+     realResult:"lose",realWinIdx:0,
+     hiddenVar:"The assigned referee had an (unpublicized) history of favoring the home team on close calls — a variable no odds model captured."},
+    {id:2,teams:"Blue Tide vs Thunder FC",odds:[{label:"Tide wins",val:"1.55"},{label:"Draw",val:"4.00"},{label:"Thunder wins",val:"5.50"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"An unexpected storm changed pitch conditions minutes before kickoff, disproportionately affecting the favorite, who relied on fast wing play."},
+    {id:3,teams:"Real Cordillera vs Atlético Sur",odds:[{label:"Cordillera wins",val:"2.40"},{label:"Draw",val:"3.20"},{label:"Sur wins",val:"2.90"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:1,
+     hiddenVar:"Three Cordillera starters were suspended for an internal disciplinary infraction, revealed only hours before the match — outside the odds model."},
+    {id:4,teams:"Southern Winds vs Steel FC",odds:[{label:"Winds win",val:"1.95"},{label:"Draw",val:"3.30"},{label:"Steel wins",val:"3.80"}],
+     casinoResult:"win",casinoWinIdx:0,
+     realResult:"lose",realWinIdx:2,
+     hiddenVar:"Steel FC's owner had promised the team a massive bonus if they won this specific match — an extreme incentive no historical statistical model captured."},
+  ],
+  summaryAligned:"Your results in both phases were similar. This would be unusual — normally, hidden real-world variables completely change the outcome expected by the pure probability model.",
+  summaryMisaligned:"Your performance dropped significantly in the real-world phase, despite using exactly the same odds as in the casino. That's the Ludic Fallacy in action: the nominal odds were mathematically 'correct', but the real world had variables no pure probability model could capture.",
+  theories:[
+    {icon:"🎲",name:"The Ludic Fallacy according to Taleb",body:`<p>Taleb introduced the term in <em>The Black Swan</em> (2007), derived from "ludus" (game in Latin), to describe the error of applying formal game probability structure to the unstructured real world.</p><div class="quote-block"><p>"The mistake is to take the world of games, where probabilities are known, clear, and uncontroversial, and apply it to real life, where you never fully know the rules, let alone the probabilities."</p><cite>— Nassim Taleb, The Black Swan (2007)</cite></div><p>In a casino, you know exactly that a die has 6 faces. In the real world, you don't even know how many "faces" the event you're evaluating has.</p><div class="tag-list"><span class="tag">Ludic Fallacy</span><span class="tag">Black Swan</span><span class="tag">Formal probability</span></div>`},
+    {icon:"⚖️",name:"Frank Knight: risk vs uncertainty",body:`<p>Economist Frank Knight (1885–1972) made a fundamental distinction in 1921 that Taleb constantly revisits: <strong>risk</strong> is when you know the probability distribution (like a roulette wheel), while <strong>uncertainty</strong> (or "Knightian uncertainty") is when you don't even know that distribution.</p><p>Most financial and risk management models treat all uncertainty as if it were measurable risk — exactly the error of the Ludic Fallacy.</p><div class="quote-block"><p>"A measurable risk, or 'risk' proper... is so far different from an unmeasurable one that it is not in effect an uncertainty at all."</p><cite>— Frank Knight, Risk, Uncertainty and Profit (1921)</cite></div><div class="tag-list"><span class="tag">Frank Knight</span><span class="tag">Knightian uncertainty</span><span class="tag">Measurable risk</span></div>`},
+    {icon:"🃏",name:"The casino as a closed world",body:`<p>Taleb uses the casino as a precise metaphor because it's one of the few environments where risk is genuinely bounded and known: rules don't change mid-game, there are no relevant hidden variables, and the outcome distribution is stable and verifiable.</p><p>Wall Street "quants'" error, according to Taleb, was treating financial markets as if they were that same closed casino — when in reality markets are subject to structurally unpredictable events no probability model can anticipate.</p><div class="quote-block"><p>"Casinos are among the few places in the world where probability is known with near-perfect precision — and that's why they're the worst place to learn about real uncertainty."</p><cite>— Nassim Taleb, The Black Swan (2007)</cite></div><div class="tag-list"><span class="tag">Casino</span><span class="tag">Quants</span><span class="tag">Financial markets</span></div>`},
+  ],
+  mcqs:[
+    {q:"An actuary calculates the probability of a person living to 90 using mortality tables from the last 30 years. What's the main limitation of this approach according to Ludic Fallacy logic?",opts:["Mortality tables are always mathematically inaccurate","The calculation assumes future conditions (medicine, pandemics, lifestyle) will follow the same pattern as the recent past, ignoring possible structural changes","Actuaries shouldn't use statistics at all","The calculation is valid because it's based on real, verifiable data"],correct:1,feedOk:"Exactly. The problem isn't that the data is false, but that the model implicitly assumes the future will replicate the structure of the past — exactly the assumption that fails when something structurally new occurs (a pandemic, a radical medical breakthrough, etc.).",feedKo:"The problem isn't the mathematical accuracy of the tables themselves, but the implicit assumption that the future will behave like the recent past. That's valid in a casino (rules don't change) but not necessarily in the real world."},
+    {q:"According to Frank Knight, what's the key difference between 'risk' and 'uncertainty'?",opts:["Risk is always smaller in magnitude than uncertainty","With risk you know the probability distribution; with uncertainty, you don't even know that distribution","Uncertainty only applies to financial events","There's no real difference between the two concepts"],correct:1,feedOk:"Correct. This 1921 distinction is central to understanding the Ludic Fallacy: treating genuine uncertainty (where you don't even know the probabilities) as if it were measurable risk (like a dice game) is the fundamental error.",feedKo:"The difference isn't about magnitude or domain (financial vs non-financial). It's that with risk you know the complete distribution of possible outcomes; with Knightian uncertainty, you don't even know what all the possible outcomes are."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🎰",title:"You're still in casino mode",desc:"You trust probability models without questioning their limits. Common — but dangerous in the real world.",taleb:"'The mistake is treating the world as a game with known rules.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to question models",desc:"You recognize when a probability calculation may be miscalibrated for the real world.",taleb:"'Always ask: what variables does this model not capture?' — Taleb (paraphrased)",color:"#f39c12"},
+    {min:70,emoji:"🌍",title:"You distinguish risk from uncertainty",desc:"You apply Knight's distinction: you know when you're in a casino and when in the real world.",taleb:"'Measurable risk and genuine uncertainty are completely different animals.' — Knight / Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🃏",title:"Anti-Ludic Level",desc:"You actively detect when false certainty is being sold to you disguised as probability.",taleb:"'Casinos are the worst place to learn about real uncertainty.' — The Black Swan (2007)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', currentPhase='casino', bankroll=1000;
+let casinoBets={}, realBets={}, casinoMatchIdx=0, realMatchIdx=0;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn','bankroll-label':'bankrollLabel',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p','pt-title':'ptTitle','pt-text':'ptText','pt-btn':'ptBtn',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cd-t':'cdT','cd-p':'cdP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('s1-p').innerHTML=tx.s1p;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  document.getElementById('phase-badge').textContent=currentPhase==='casino'?tx.phaseCasino:tx.phaseReal;
+  document.getElementById('phase-badge').className='phase-badge '+(currentPhase==='casino'?'casino':'real');
+  renderTheoryCards();renderChips();
+  if(document.getElementById('casino-matches').children.length>0 || casinoMatchIdx>0) renderCasinoMatches();
+}
+
+/* BANKROLL */
+function updateBankroll(){document.getElementById('bankroll-val').textContent='$'+bankroll.toLocaleString();}
+
+/* CASINO PHASE */
+function startCasino(){
+  document.getElementById('sec-hero').style.display='none';
+  document.getElementById('bankroll-hud').classList.add('show');
+  bankroll=1000;updateBankroll();
+  casinoMatchIdx=0;
+  document.getElementById('sec-casino').scrollIntoView({behavior:'smooth'});
+  renderCasinoMatches();
+}
+function renderCasinoMatches(){
+  const wrap=document.getElementById('casino-matches');
+  wrap.innerHTML='';
+  T[lang].matches.forEach((m,i)=>{
+    wrap.appendChild(buildMatchCard(m,i,'casino'));
+  });
+}
+function buildMatchCard(m,i,phase){
+  const card=document.createElement('div');card.className='match-card';card.id=`${phase}-match-${i}`;
+  const maxBet=Math.min(300,bankroll);
+  card.innerHTML=`
+    <div class="match-header"><span class="match-teams">${m.teams}</span><span class="match-num">${phase==='casino'?(lang==='es'?'PARTIDO':'MATCH'):(lang==='es'?'PARTIDO':'MATCH')} ${i+1}/5</span></div>
+    <div class="match-odds-row">
+      ${m.odds.map((o,oi)=>`<div class="odd-btn" id="${phase}-odd-${i}-${oi}" onclick="selectOdd('${phase}',${i},${oi})"><div class="odd-team">${o.label}</div><div class="odd-val">${o.val}</div></div>`).join('')}
+    </div>
+    <div class="bet-amount-row">
+      <span>${lang==='es'?'Apuesta':'Bet'}:</span>
+      <input type="range" class="bet-slider" id="${phase}-slider-${i}" min="0" max="${maxBet}" value="50" oninput="document.getElementById('${phase}-betval-${i}').textContent='$'+this.value">
+      <span class="bet-amount-val" id="${phase}-betval-${i}">$50</span>
+    </div>
+    <button class="place-bet-btn" id="${phase}-placebtn-${i}" onclick="placeBet('${phase}',${i})" disabled>${lang==='es'?'Apostar':'Place bet'}</button>
+    <div class="match-result" id="${phase}-result-${i}"></div>`;
+  return card;
+}
+function selectOdd(phase,matchIdx,oddIdx){
+  const matches=T[lang].matches;
+  document.querySelectorAll(`[id^="${phase}-odd-${matchIdx}-"]`).forEach(el=>el.classList.remove('chosen'));
+  document.getElementById(`${phase}-odd-${matchIdx}-${oddIdx}`).classList.add('chosen');
+  if(phase==='casino') casinoBets[matchIdx]={oddIdx};
+  else realBets[matchIdx]={oddIdx};
+  document.getElementById(`${phase}-placebtn-${matchIdx}`).disabled=false;
+}
+function placeBet(phase,matchIdx){
+  const betAmount=parseInt(document.getElementById(`${phase}-slider-${matchIdx}`).value);
+  if(betAmount<=0||betAmount>bankroll)return;
+  const bets=phase==='casino'?casinoBets:realBets;
+  bets[matchIdx].amount=betAmount;
+  const m=T[lang].matches[matchIdx];
+  const won = phase==='casino' ? (bets[matchIdx].oddIdx===m.casinoWinIdx) : (bets[matchIdx].oddIdx===m.realWinIdx);
+  const oddVal=parseFloat(m.odds[bets[matchIdx].oddIdx].val);
+  let delta;
+  if(won){ delta=Math.round(betAmount*(oddVal-1)); } else { delta=-betAmount; }
+  bankroll+=delta;
+  updateBankroll();
+
+  // disable inputs
+  document.querySelectorAll(`[id^="${phase}-odd-${matchIdx}-"]`).forEach(el=>el.style.pointerEvents='none');
+  document.getElementById(`${phase}-slider-${matchIdx}`).disabled=true;
+  document.getElementById(`${phase}-placebtn-${matchIdx}`).disabled=true;
+
+  const resBox=document.getElementById(`${phase}-result-${matchIdx}`);
+  resBox.className='match-result show '+(won?'win':'lose');
+  const deltaStr=delta>0?'+$'+delta:'-$'+Math.abs(delta);
+  const winnerLabel=m.odds[phase==='casino'?m.casinoWinIdx:m.realWinIdx].label;
+  let html=`<strong>${won?(lang==='es'?'✓ Ganaste':'✓ You won'):(lang==='es'?'✗ Perdiste':'✗ You lost')}</strong> (${deltaStr}). ${lang==='es'?'Resultado':'Result'}: ${winnerLabel}.`;
+  if(phase==='real'){
+    html+=`<div class="hidden-var-box"><span class="hidden-var-label">${lang==='es'?'VARIABLE OCULTA REVELADA':'HIDDEN VARIABLE REVEALED'}</span>${m.hiddenVar}</div>`;
+  }
+  resBox.innerHTML=html;
+
+  if(phase==='casino'){
+    casinoMatchIdx++;
+    if(casinoMatchIdx>=T[lang].matches.length){
+      setTimeout(()=>{document.getElementById('phase-transition').classList.add('show');document.getElementById('phase-transition').scrollIntoView({behavior:'smooth',block:'nearest'});},600);
+    }
+  } else {
+    realMatchIdx++;
+    if(realMatchIdx>=T[lang].matches.length){
+      setTimeout(()=>{showRealSummary();},600);
+    }
+  }
+}
+
+function startRealWorld(){
+  document.getElementById('sec-real').style.display='block';
+  document.getElementById('phase-badge').textContent=T[lang].phaseReal;
+  document.getElementById('phase-badge').className='phase-badge real';
+  currentPhase='real';
+  realMatchIdx=0;realBets={};
+  bankroll=1000;updateBankroll(); // reset for fair comparison
+  const wrap=document.getElementById('real-matches');
+  wrap.innerHTML='';
+  T[lang].matches.forEach((m,i)=>{wrap.appendChild(buildMatchCard(m,i,'real'));});
+  document.getElementById('sec-real').scrollIntoView({behavior:'smooth'});
+}
+
+function showRealSummary(){
+  const box=document.getElementById('summary-box');
+  box.classList.add('show');
+  document.getElementById('sb-text').textContent = bankroll<900 ? T[lang].summaryMisaligned : T[lang].summaryAligned;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-trust').classList.toggle('show',type==='trust');
+  document.getElementById('cons-doubt').classList.toggle('show',type==='doubt');
+  dilemmaScore=type==='doubt'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

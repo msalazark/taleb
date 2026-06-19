@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Problema de Linda — Kahneman & Tversky</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.hint-box{background:rgba(242,166,35,.08);border:1px solid rgba(242,166,35,.3);border-radius:var(--radius);padding:1rem 1.25rem;margin:1.5rem auto;max-width:520px;text-align:left;}
+.hint-box-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;margin-bottom:.4rem;}
+.hint-box p{margin:0;font-size:.85rem;color:var(--text2);}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* LINDA */
+.profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.profile-text{font-family:'IBM Plex Serif',serif;font-size:1.05rem;line-height:1.7;color:var(--text);}
+.linda-options{display:grid;gap:.65rem;margin-top:1.5rem;}
+.linda-opt{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem 1.1rem;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.75rem;}
+.linda-opt:hover:not(:disabled){border-color:var(--blue);}
+.linda-opt.selected{border-color:var(--accent2);background:rgba(242,166,35,.08);}
+.linda-opt:disabled{cursor:default;}
+.linda-letter{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.linda-reveal{display:none;margin-top:1.25rem;padding:1.25rem;border-radius:var(--radius);background:rgba(232,89,60,.07);border:1px solid rgba(232,89,60,.25);}
+.linda-reveal.show{display:block;}
+.linda-reveal-title{font-weight:500;color:var(--accent);margin-bottom:.6rem;font-size:.95rem;}
+.venn-visual{display:flex;align-items:center;justify-content:center;gap:0;margin:1.25rem 0;position:relative;height:140px;}
+.venn-circle{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;text-align:center;}
+.venn-a{width:160px;height:140px;background:rgba(74,158,255,.18);border:2px solid var(--blue);left:calc(50% - 130px);color:var(--blue);}
+.venn-b{width:90px;height:90px;background:rgba(232,89,60,.25);border:2px solid var(--accent);left:calc(50% - 45px);top:25px;color:var(--accent);z-index:2;}
+
+/* GENERIC EXPERIMENT BOXES */
+.exp-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.wheel-wrap{text-align:center;margin:1.25rem 0;}
+.wheel{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--accent) 0deg 36deg,var(--accent2) 36deg 72deg,var(--blue) 72deg 108deg,var(--purple) 108deg 144deg,var(--teal) 144deg 180deg,var(--green) 180deg 216deg,var(--red) 216deg 252deg,var(--accent) 252deg 288deg,var(--accent2) 288deg 324deg,var(--blue) 324deg 360deg);margin:0 auto;position:relative;transition:transform 3s cubic-bezier(.17,.67,.21,1);border:3px solid var(--border2);}
+.wheel-pointer{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:14px solid var(--text);margin:0 auto -4px;position:relative;z-index:2;}
+.wheel-result{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--accent2);margin-top:.85rem;min-height:1.8em;}
+.anchor-q{font-size:1.02rem;color:var(--text);margin:1.25rem 0 .75rem;}
+.anchor-input-row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;}
+.anchor-input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:1rem;width:120px;outline:none;}
+.anchor-input:focus{border-color:var(--accent2);}
+.anchor-submit{background:var(--accent);color:#fff;border:none;padding:.6rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;}
+.anchor-result{display:none;margin-top:1.1rem;padding:1rem 1.1rem;border-radius:var(--radius-sm);background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.25);font-size:.86rem;line-height:1.6;}
+.anchor-result.show{display:block;}
+
+/* TOM W */
+.tom-categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem;margin-top:1.25rem;}
+.tom-cat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .9rem;cursor:pointer;text-align:center;font-size:.85rem;transition:all .2s;}
+.tom-cat:hover:not(.locked){border-color:var(--accent2);}
+.tom-cat.selected{border-color:var(--accent2);background:rgba(242,166,35,.1);}
+.tom-cat.locked{cursor:default;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 04</span>
+    <span class="header-title" id="hdr-title">El Problema de Linda</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">La historia más probable<br>casi nunca es la más probable</h1>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">El experimento más famoso de la psicología cognitiva. Hasta los estadísticos entrenados caen en esta trampa. Vamos a ver si tú también.</p>
+  <div class="hint-box">
+    <div class="hint-box-label" id="hint-label">Pista sutil</div>
+    <p id="hint-text">Una historia más detallada y específica siempre suena más convincente. Pero en matemáticas, agregar detalles a una afirmación solo puede hacerla <strong>menos</strong> probable, nunca más. Recuérdalo en un momento.</p>
+  </div>
+  <button class="btn-primary" onclick="startLinda()" id="s1-btn">Conocer a Linda → Empezar</button>
+</section>
+
+<!-- S2 LINDA -->
+<section id="sec-linda">
+  <div class="section-tag" id="s2-tag">Parte 2 · El Experimento Original (1983)</div>
+  <h2 id="s2-h2">Conoce a Linda</h2>
+  <div class="profile-card">
+    <p class="profile-text" id="linda-profile">Linda tiene 31 años, es soltera, directa y muy inteligente. Estudió Filosofía. Durante sus años de estudiante, estuvo profundamente preocupada por temas de discriminación y justicia social, y también participó en manifestaciones antinucleares.</p>
+  </div>
+  <p id="linda-q" style="font-weight:500;color:var(--text)">¿Cuál de estas dos afirmaciones es más probable?</p>
+  <div class="linda-options" id="linda-options">
+    <button class="linda-opt" onclick="chooseLinda('a',this)">
+      <span class="linda-letter">A</span>
+      <span id="linda-opt-a">Linda es cajera de banco.</span>
+    </button>
+    <button class="linda-opt" onclick="chooseLinda('b',this)">
+      <span class="linda-letter">B</span>
+      <span id="linda-opt-b">Linda es cajera de banco y activista del movimiento feminista.</span>
+    </button>
+  </div>
+  <div class="linda-reveal" id="linda-reveal">
+    <div class="linda-reveal-title" id="lr-title">⚡ La trampa: la opción B es matemáticamente imposible que sea más probable que A.</div>
+    <div class="venn-visual">
+      <div class="venn-circle venn-a">A: Cajeras de banco</div>
+      <div class="venn-circle venn-b">B: Cajeras + feministas</div>
+    </div>
+    <p id="lr-p" style="font-size:.87rem;margin:0;">El conjunto "cajera de banco Y feminista" es un <strong>subconjunto</strong> del conjunto "cajera de banco". Es matemáticamente imposible que un subconjunto sea más grande que el conjunto que lo contiene. Esto se llama <strong>la falacia de la conjunción</strong>. En el experimento original de Tversky y Kahneman (1983), el 85% de los participantes — incluidos estudiantes de doctorado en estadística — eligió la opción B.</p>
+  </div>
+</section>
+
+<!-- S3 ANCLAJE -->
+<section id="sec-anchor">
+  <div class="section-tag" id="s3-tag">Parte 3 · El Experimento del Ancla (1974)</div>
+  <h2 id="s3-h2">Gira la ruleta antes de responder</h2>
+  <p id="s3-p">Este es el experimento original de Tversky y Kahneman sobre anclaje. Antes de responder una pregunta totalmente no relacionada, vas a ver un número aleatorio. Obsérvalo bien.</p>
+  <div class="exp-box">
+    <div class="wheel-wrap">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <div class="wheel-result" id="wheel-result">—</div>
+      <button class="btn-primary" onclick="spinWheel()" id="spin-btn" style="margin-top:1rem">🎡 Girar la ruleta</button>
+    </div>
+    <div id="anchor-question" style="display:none">
+      <div class="anchor-q" id="anchor-q-text">Ahora, sin pensarlo demasiado: ¿qué porcentaje de los países miembros de la ONU son africanos?</div>
+      <div class="anchor-input-row">
+        <input type="number" class="anchor-input" id="anchor-input" placeholder="0-100" min="0" max="100">
+        <span style="color:var(--text2)">%</span>
+        <button class="anchor-submit" onclick="submitAnchor()" id="anchor-submit-btn">Responder</button>
+      </div>
+      <div class="anchor-result" id="anchor-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S4 TOM W -->
+<section id="sec-tomw">
+  <div class="section-tag" id="s4-tag">Parte 4 · El Caso Tom W. (Representatividad)</div>
+  <h2 id="s4-h2">¿Qué estudia Tom?</h2>
+  <div class="profile-card">
+    <p class="profile-text" id="tomw-profile">Tom W. es muy inteligente, aunque le falta creatividad genuina. Necesita orden y claridad, y le gustan los sistemas cerrados y elegantes en los que cada elemento encaja en su lugar. Su escritura es bastante aburrida y mecánica, ocasionalmente animada por juegos de palabras y destellos de imaginación. Tiene una fuerte necesidad de competencia. Parece sentir poca empatía por los demás y no disfruta interactuar socialmente. Es egocéntrico, aunque tiene un profundo sentido moral.</p>
+  </div>
+  <p id="tomw-q" style="font-weight:500;color:var(--text)">¿Qué es más probable que estudie Tom W. en la universidad?</p>
+  <div class="tom-categories" id="tom-categories"></div>
+  <div class="linda-reveal" id="tomw-reveal">
+    <div class="linda-reveal-title" id="twr-title">⚡ La trampa de la representatividad</div>
+    <p id="twr-p" style="font-size:.87rem;margin:0;">La descripción de Tom "suena" a ingeniería informática — encaja con el estereotipo. Pero la probabilidad base importa: hay muchísimos más estudiantes de Humanidades y Educación que de Ciencias de la Computación en la mayoría de universidades. Tversky y Kahneman demostraron que la gente ignora la <strong>tasa base</strong> (base rate) cuando tiene una descripción vívida y representativa, aunque sea estadísticamente poco informativa.</p>
+  </div>
+</section>
+
+<!-- S5 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s5-tag">Parte 5 · La Teoría</div>
+  <h2 id="s5-h2">¿Por qué fallamos así?</h2>
+  <p id="s5-p">Tres marcos de Kahneman y Tversky para entender estos sesgos.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s5-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S6 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s6-tag">Parte 6 · Mini-test</div>
+  <h2 id="s6-h2">¿Puedes resistir la trampa?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Estás contratando para tu empresa. Un candidato tiene una historia de vida fascinante, muy específica y coherente con el puesto. Otro tiene un currículum genérico pero con métricas sólidas. ¿En quién confías más?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('story',this)">
+        <div class="d-emoji">📖</div>
+        <div class="d-title" id="d1a-t">La historia fascinante</div>
+        <div class="d-desc" id="d1a-d">Su narrativa encaja perfectamente con lo que busco. Se siente como la persona correcta.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('metrics',this)">
+        <div class="d-emoji">📊</div>
+        <div class="d-title" id="d1b-t">Las métricas sólidas</div>
+        <div class="d-desc" id="d1b-d">Una historia genérica con buenos resultados verificables vale más que una narrativa atractiva.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-story">
+      <strong id="cs-t">Caíste en la falacia de la conjunción.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Una historia más específica y detallada se siente más probable y más confiable — pero estadísticamente es menos probable que sea verdadera, y no garantiza desempeño.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-metrics">
+      <strong id="cm-t">Resististe la trampa de la representatividad.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cm-p">Las métricas verificables tienen mayor poder predictivo que una narrativa convincente, aunque la narrativa "se sienta" más confiable. Kahneman llamaría a esto pensar con el Sistema 2.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde has confundido una historia convincente con una probabilidad alta?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Lo que es más representativo no es necesariamente lo más probable. Pero nuestra mente confunde ambas cosas constantemente."</p>
+  <p class="footer-cite">— Daniel Kahneman · Pensar rápido, pensar despacio (2011)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_03_narrativa.html">← 03 Falacia Narrativa</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">05 Sesgo de Supervivencia →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"El Problema de Linda",
+  s1tag:"Parte 1 · El Gancho",s1h1:"La historia más probable\ncasi nunca es la más probable",
+  s1p:"El experimento más famoso de la psicología cognitiva. Hasta los estadísticos entrenados caen en esta trampa. Vamos a ver si tú también.",
+  hintLabel:"Pista sutil",
+  hintText:"Una historia más detallada y específica siempre suena más convincente. Pero en matemáticas, agregar detalles a una afirmación solo puede hacerla <strong>menos</strong> probable, nunca más. Recuérdalo en un momento.",
+  s1btn:"Conocer a Linda → Empezar",
+  s2tag:"Parte 2 · El Experimento Original (1983)",s2h2:"Conoce a Linda",
+  lindaProfile:"Linda tiene 31 años, es soltera, directa y muy inteligente. Estudió Filosofía. Durante sus años de estudiante, estuvo profundamente preocupada por temas de discriminación y justicia social, y también participó en manifestaciones antinucleares.",
+  lindaQ:"¿Cuál de estas dos afirmaciones es más probable?",
+  lindaOptA:"Linda es cajera de banco.",
+  lindaOptB:"Linda es cajera de banco y activista del movimiento feminista.",
+  lrTitle:"⚡ La trampa: la opción B es matemáticamente imposible que sea más probable que A.",
+  vennA:"A: Cajeras de banco",vennB:"B: Cajeras + feministas",
+  lrP:"El conjunto 'cajera de banco Y feminista' es un <strong>subconjunto</strong> del conjunto 'cajera de banco'. Es matemáticamente imposible que un subconjunto sea más grande que el conjunto que lo contiene. Esto se llama <strong>la falacia de la conjunción</strong>. En el experimento original de Tversky y Kahneman (1983), el 85% de los participantes — incluidos estudiantes de doctorado en estadística — eligió la opción B.",
+  s3tag:"Parte 3 · El Experimento del Ancla (1974)",s3h2:"Gira la ruleta antes de responder",
+  s3p:"Este es el experimento original de Tversky y Kahneman sobre anclaje. Antes de responder una pregunta totalmente no relacionada, vas a ver un número aleatorio. Obsérvalo bien.",
+  spinBtn:"🎡 Girar la ruleta",
+  anchorQText:"Ahora, sin pensarlo demasiado: ¿qué porcentaje de los países miembros de la ONU son africanos?",
+  anchorSubmitBtn:"Responder",
+  s4tag:"Parte 4 · El Caso Tom W. (Representatividad)",s4h2:"¿Qué estudia Tom?",
+  tomwProfile:"Tom W. es muy inteligente, aunque le falta creatividad genuina. Necesita orden y claridad, y le gustan los sistemas cerrados y elegantes en los que cada elemento encaja en su lugar. Su escritura es bastante aburrida y mecánica, ocasionalmente animada por juegos de palabras y destellos de imaginación. Tiene una fuerte necesidad de competencia. Parece sentir poca empatía por los demás y no disfruta interactuar socialmente. Es egocéntrico, aunque tiene un profundo sentido moral.",
+  tomwQ:"¿Qué es más probable que estudie Tom W. en la universidad?",
+  twrTitle:"⚡ La trampa de la representatividad",
+  twrP:"La descripción de Tom 'suena' a ingeniería informática — encaja con el estereotipo. Pero la probabilidad base importa: hay muchísimos más estudiantes de Humanidades y Educación que de Ciencias de la Computación en la mayoría de universidades. Tversky y Kahneman demostraron que la gente ignora la <strong>tasa base</strong> (base rate) cuando tiene una descripción vívida y representativa, aunque sea estadísticamente poco informativa.",
+  tomCategories:["Ciencias de la Computación","Humanidades","Educación","Ciencias Sociales","Derecho","Medicina"],
+  s5tag:"Parte 5 · La Teoría",s5h2:"¿Por qué fallamos así?",s5p:"Tres marcos de Kahneman y Tversky para entender estos sesgos.",
+  s5btn:"Hacer el mini-test →",
+  s6tag:"Parte 6 · Mini-test",s6h2:"¿Puedes resistir la trampa?",
+  tn1:"DILEMA · 01",
+  tq1:"Estás contratando para tu empresa. Un candidato tiene una historia de vida fascinante, muy específica y coherente con el puesto. Otro tiene un currículum genérico pero con métricas sólidas. ¿En quién confías más?",
+  d1aT:"La historia fascinante",d1aD:"Su narrativa encaja perfectamente con lo que busco. Se siente como la persona correcta.",
+  d1bT:"Las métricas sólidas",d1bD:"Una historia genérica con buenos resultados verificables vale más que una narrativa atractiva.",
+  csT:"Caíste en la falacia de la conjunción.",csP:"Una historia más específica y detallada se siente más probable y más confiable — pero estadísticamente es menos probable que sea verdadera, y no garantiza desempeño.",
+  cmT:"Resististe la trampa de la representatividad.",cmP:"Las métricas verificables tienen mayor poder predictivo que una narrativa convincente, aunque la narrativa 'se sienta' más confiable. Kahneman llamaría a esto pensar con el Sistema 2.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Dónde has confundido una historia convincente con una probabilidad alta?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Al contratar a alguien","Al elegir una inversión","Al evaluar un argumento político","Al juzgar a una persona nueva","Al leer noticias","Al confiar en un pronóstico"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Lo que es más representativo no es necesariamente lo más probable. Pero nuestra mente confunde ambas cosas constantemente."',
+  theories:[
+    {icon:"🔗",name:"La falacia de la conjunción",body:`<p>Amos Tversky (1937–1996) y Daniel Kahneman publicaron el experimento de Linda en 1983. Demostraron que añadir detalles específicos a un escenario hace que <strong>se sienta</strong> más probable, aunque matemáticamente solo puede hacerlo menos probable.</p><div class="quote-block"><p>"P(A y B) nunca puede ser mayor que P(A) sola. Esta es una de las leyes más básicas de la probabilidad — y una de las más violadas intuitivamente."</p><cite>— Tversky & Kahneman, Psychological Review (1983)</cite></div><p>El experimento es tan robusto que se replicó en docenas de contextos, con expertos y no expertos, y el resultado se mantiene: la mayoría elige la opción conjunta porque es más representativa de la historia.</p><div class="tag-list"><span class="tag">Falacia de conjunción</span><span class="tag">Tversky</span><span class="tag">Probabilidad</span></div>`},
+    {icon:"⚓",name:"El heurístico de anclaje y ajuste",body:`<p>En su paper de 1974 en Science, Tversky y Kahneman mostraron que las personas usan un punto de referencia inicial (el "ancla") para hacer estimaciones, incluso cuando ese ancla es completamente arbitraria — como un número de una ruleta.</p><p>En el experimento original, a un grupo le mostraban el número 10 en la ruleta, a otro el número 65. Quienes vieron el 65 daban estimaciones de países africanos en la ONU mucho más altas que quienes vieron el 10.</p><div class="quote-block"><p>"Diferentes puntos de partida producen diferentes estimaciones, que están sesgadas hacia los valores iniciales."</p><cite>— Tversky & Kahneman, Science (1974)</cite></div><div class="tag-list"><span class="tag">Anclaje</span><span class="tag">Heurísticas</span><span class="tag">Sesgo cognitivo</span></div>`},
+    {icon:"🎭",name:"El heurístico de representatividad",body:`<p>El caso de Tom W., también de Kahneman y Tversky, ilustra cómo juzgamos probabilidad por <strong>semejanza con un estereotipo</strong> en lugar de por la tasa base real.</p><p>Si el 90% de los estudiantes están en Humanidades y solo el 5% en Ciencias de la Computación, la probabilidad base ya favorece fuertemente Humanidades — pero una descripción que "encaja" con el estereotipo del programador hace que la gente ignore esa tasa base por completo.</p><div class="quote-block"><p>"La gente predice eligiendo el resultado que mejor representa los datos, sin considerar la probabilidad previa de ese resultado."</p><cite>— Kahneman & Tversky, Cognitive Psychology (1972)</cite></div><div class="tag-list"><span class="tag">Representatividad</span><span class="tag">Tasa base</span><span class="tag">Estereotipo</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un meteorólogo dice: 'Hay 70% de probabilidad de que llueva mañana, con tormentas eléctricas intensas y granizo'. Comparado con simplemente 'Hay 70% de probabilidad de que llueva', ¿qué es cierto?",opts:["La predicción detallada es más útil y por tanto más probable","La predicción detallada es matemáticamente menos o igual de probable, aunque suene más creíble","Ambas predicciones tienen exactamente la misma probabilidad siempre","La predicción detallada es más probable porque incluye más información verificable"],correct:1,feedOk:"Exacto. Agregar 'tormentas eléctricas y granizo' es añadir condiciones — convierte la predicción en una conjunción de eventos, que nunca puede ser más probable que el evento simple.",feedKo:"Cualquier detalle adicional (tormentas, granizo) convierte la afirmación en una conjunción de eventos. Por las leyes de la probabilidad, esto solo puede igualar o reducir la probabilidad total, nunca aumentarla."},
+    {q:"En el experimento del ancla, ¿qué reveló sobre la toma de decisiones humana?",opts:["Que la gente ignora completamente números irrelevantes","Que un número arbitrario e irrelevante puede sesgar estimaciones numéricas posteriores","Que solo los expertos son inmunes al anclaje","Que el anclaje solo funciona con números muy grandes"],correct:1,feedOk:"Correcto. Incluso un número generado por una ruleta —obviamente irrelevante— sesga las estimaciones posteriores. El cerebro usa el primer número como punto de referencia automáticamente.",feedKo:"El hallazgo clave es que el ancla no necesita ser relevante ni creíble. Un número de una ruleta al azar sesga las estimaciones tanto como uno con apariencia de información real."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🪤",title:"Caíste en las trampas clásicas",desc:"Como el 85% de la gente — incluidos expertos. No te sientas mal, así funciona el cerebro.",taleb:"'Lo que es representativo no siempre es probable.' — Kahneman",color:"#e74c3c"},
+    {min:40,emoji:"🔎",title:"Detectas algunas trampas",desc:"Empiezas a notar cuándo una historia te está seduciendo más de lo que debería.",taleb:"'El Sistema 2 puede corregir al Sistema 1 — pero solo si se activa a tiempo.' — Kahneman",color:"#f39c12"},
+    {min:70,emoji:"🧮",title:"Piensas en probabilidades",desc:"Distingues entre lo que suena probable y lo que matemáticamente lo es.",taleb:"'La conjunción nunca es más probable que sus partes.' — Tversky & Kahneman",color:"#2ecc71"},
+    {min:90,emoji:"🏆",title:"Nivel Sistema 2",desc:"Resististe la falacia de la conjunción, el anclaje y la representatividad. Pensamiento estadístico real.",taleb:"'Pensar rápido es fácil. Pensar despacio es poder.' — Kahneman",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"The Linda Problem",
+  s1tag:"Part 1 · The Hook",s1h1:"The most probable story\nis almost never the most probable",
+  s1p:"The most famous experiment in cognitive psychology. Even trained statisticians fall for it. Let's see if you do too.",
+  hintLabel:"Subtle hint",
+  hintText:"A more detailed, specific story always sounds more convincing. But in mathematics, adding details to a claim can only make it <strong>less</strong> probable, never more. Remember that in a moment.",
+  s1btn:"Meet Linda → Start",
+  s2tag:"Part 2 · The Original Experiment (1983)",s2h2:"Meet Linda",
+  lindaProfile:"Linda is 31 years old, single, outspoken and very bright. She majored in philosophy. As a student, she was deeply concerned with issues of discrimination and social justice, and also participated in anti-nuclear demonstrations.",
+  lindaQ:"Which of these two statements is more probable?",
+  lindaOptA:"Linda is a bank teller.",
+  lindaOptB:"Linda is a bank teller and is active in the feminist movement.",
+  lrTitle:"⚡ The trap: option B is mathematically impossible to be more probable than A.",
+  vennA:"A: Bank tellers",vennB:"B: Tellers + feminists",
+  lrP:"The set 'bank teller AND feminist' is a <strong>subset</strong> of the set 'bank teller'. It's mathematically impossible for a subset to be larger than the set containing it. This is called <strong>the conjunction fallacy</strong>. In the original Tversky and Kahneman experiment (1983), 85% of participants — including statistics PhD students — chose option B.",
+  s3tag:"Part 3 · The Anchor Experiment (1974)",s3h2:"Spin the wheel before answering",
+  s3p:"This is the original Tversky and Kahneman anchoring experiment. Before answering a totally unrelated question, you'll see a random number. Pay close attention to it.",
+  spinBtn:"🎡 Spin the wheel",
+  anchorQText:"Now, without thinking too hard: what percentage of UN member countries are African?",
+  anchorSubmitBtn:"Answer",
+  s4tag:"Part 4 · The Tom W. Case (Representativeness)",s4h2:"What does Tom study?",
+  tomwProfile:"Tom W. is of high intelligence, although lacking in true creativity. He has a need for order and clarity, and for neat and tidy systems in which every detail finds its appropriate place. His writing is rather dull and mechanical, occasionally enlivened by somewhat corny puns and flashes of imagination. He has a strong drive for competence. He seems to have little feel and little sympathy for other people, and does not enjoy interacting with others. Self-centered, he nonetheless has a deep moral sense.",
+  tomwQ:"What is Tom W. most likely studying in college?",
+  twrTitle:"⚡ The representativeness trap",
+  twrP:"Tom's description 'sounds' like computer science — it matches the stereotype. But base rates matter: there are far more Humanities and Education students than Computer Science students at most universities. Tversky and Kahneman showed that people ignore the <strong>base rate</strong> when given a vivid, representative description, even when it's statistically uninformative.",
+  tomCategories:["Computer Science","Humanities","Education","Social Sciences","Law","Medicine"],
+  s5tag:"Part 5 · The Theory",s5h2:"Why do we fail like this?",s5p:"Three frameworks from Kahneman and Tversky for understanding these biases.",
+  s5btn:"Take the mini-test →",
+  s6tag:"Part 6 · Mini-test",s6h2:"Can you resist the trap?",
+  tn1:"DILEMMA · 01",
+  tq1:"You're hiring for your company. One candidate has a fascinating, very specific life story that fits the role perfectly. Another has a generic résumé but solid metrics. Who do you trust more?",
+  d1aT:"The fascinating story",d1aD:"Their narrative fits perfectly with what I'm looking for. It feels like the right person.",
+  d1bT:"The solid metrics",d1bD:"A generic story with good verifiable results is worth more than an attractive narrative.",
+  csT:"You fell for the conjunction fallacy.",csP:"A more specific, detailed story feels more probable and trustworthy — but statistically it's less likely to be true, and doesn't guarantee performance.",
+  cmT:"You resisted the representativeness trap.",cmP:"Verifiable metrics have greater predictive power than a convincing narrative, even when the narrative 'feels' more trustworthy. Kahneman would call this System 2 thinking.",
+  tn3:"REFLECTION · 03",
+  tq3:"Where have you confused a convincing story with a high probability?",
+  refHint:"Examples to trigger reflection:",
+  chips:["When hiring someone","When choosing an investment","When evaluating a political argument","When judging someone new","When reading the news","When trusting a forecast"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"What is more representative is not necessarily more probable. But our minds confuse the two constantly."',
+  theories:[
+    {icon:"🔗",name:"The conjunction fallacy",body:`<p>Amos Tversky (1937–1996) and Daniel Kahneman published the Linda experiment in 1983. They showed that adding specific details to a scenario makes it <strong>feel</strong> more probable, even though mathematically it can only make it less probable.</p><div class="quote-block"><p>"P(A and B) can never exceed P(A) alone. This is one of the most basic laws of probability — and one of the most intuitively violated."</p><cite>— Tversky & Kahneman, Psychological Review (1983)</cite></div><p>The experiment is so robust it was replicated across dozens of contexts, with experts and non-experts, and the result holds: most people choose the conjoint option because it is more representative of the story.</p><div class="tag-list"><span class="tag">Conjunction fallacy</span><span class="tag">Tversky</span><span class="tag">Probability</span></div>`},
+    {icon:"⚓",name:"The anchoring and adjustment heuristic",body:`<p>In their 1974 Science paper, Tversky and Kahneman showed that people use an initial reference point (the "anchor") to make estimates, even when that anchor is completely arbitrary — like a number from a spinning wheel.</p><p>In the original experiment, one group was shown the number 10 on the wheel, another the number 65. Those who saw 65 gave much higher estimates of African UN membership than those who saw 10.</p><div class="quote-block"><p>"Different starting points yield different estimates, which are biased toward the initial values."</p><cite>— Tversky & Kahneman, Science (1974)</cite></div><div class="tag-list"><span class="tag">Anchoring</span><span class="tag">Heuristics</span><span class="tag">Cognitive bias</span></div>`},
+    {icon:"🎭",name:"The representativeness heuristic",body:`<p>The Tom W. case, also by Kahneman and Tversky, illustrates how we judge probability by <strong>similarity to a stereotype</strong> rather than by the actual base rate.</p><p>If 90% of students are in Humanities and only 5% in Computer Science, the base rate already strongly favors Humanities — but a description that "fits" the programmer stereotype makes people ignore that base rate entirely.</p><div class="quote-block"><p>"People predict by selecting the outcome that best represents the data, with little or no regard for the prior probability of that outcome."</p><cite>— Kahneman & Tversky, Cognitive Psychology (1972)</cite></div><div class="tag-list"><span class="tag">Representativeness</span><span class="tag">Base rate</span><span class="tag">Stereotype</span></div>`},
+  ],
+  mcqs:[
+    {q:"A meteorologist says: '70% chance of rain tomorrow, with intense thunderstorms and hail'. Compared to simply '70% chance of rain', what's true?",opts:["The detailed forecast is more useful and thus more probable","The detailed forecast is mathematically less or equally probable, though it sounds more credible","Both forecasts always have exactly the same probability","The detailed forecast is more probable because it includes more verifiable information"],correct:1,feedOk:"Exactly. Adding 'thunderstorms and hail' adds conditions — turning the forecast into a conjunction of events, which can never be more probable than the simple event.",feedKo:"Any additional detail (thunderstorms, hail) turns the statement into a conjunction of events. By the laws of probability, this can only match or reduce the total probability, never increase it."},
+    {q:"In the anchor experiment, what did it reveal about human decision-making?",opts:["That people completely ignore irrelevant numbers","That an arbitrary, irrelevant number can bias subsequent numerical estimates","That only experts are immune to anchoring","That anchoring only works with very large numbers"],correct:1,feedOk:"Correct. Even a number generated by a spinning wheel — obviously irrelevant — biases subsequent estimates. The brain automatically uses the first number as a reference point.",feedKo:"The key finding is that the anchor doesn't need to be relevant or credible. A random wheel number biases estimates just as much as one that looks like real information."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🪤",title:"You fell for the classic traps",desc:"Like 85% of people — including experts. Don't feel bad, that's how the brain works.",taleb:"'What is representative is not always probable.' — Kahneman",color:"#e74c3c"},
+    {min:40,emoji:"🔎",title:"You're spotting some traps",desc:"You're starting to notice when a story is seducing you more than it should.",taleb:"'System 2 can correct System 1 — but only if activated in time.' — Kahneman",color:"#f39c12"},
+    {min:70,emoji:"🧮",title:"You think in probabilities",desc:"You distinguish between what sounds probable and what mathematically is.",taleb:"'The conjunction is never more probable than its parts.' — Tversky & Kahneman",color:"#2ecc71"},
+    {min:90,emoji:"🏆",title:"System 2 Level",desc:"You resisted the conjunction fallacy, anchoring, and representativeness. Real statistical thinking.",taleb:"'Thinking fast is easy. Thinking slow is power.' — Kahneman",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', wheelSpun=false, anchorAnswered=false, anchorAnchorValue=0, tomChosen=false;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','hint-label':'hintLabel','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2','linda-profile':'lindaProfile','linda-q':'lindaQ',
+    'linda-opt-a':'lindaOptA','linda-opt-b':'lindaOptB','lr-title':'lrTitle',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','spin-btn':'spinBtn','anchor-q-text':'anchorQText','anchor-submit-btn':'anchorSubmitBtn',
+    's4-tag':'s4tag','s4-h2':'s4h2','tomw-profile':'tomwProfile','tomw-q':'tomwQ','twr-title':'twrTitle',
+    's5-tag':'s5tag','s5-h2':'s5h2','s5-p':'s5p','s5-btn':'s5btn',
+    's6-tag':'s6tag','s6-h2':'s6h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cm-t':'cmT','cm-p':'cmP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('hint-text').innerHTML=tx.hintText;
+  document.getElementById('lr-p').innerHTML=tx.lrP;
+  document.getElementById('twr-p').innerHTML=tx.twrP;
+  document.getElementById('venn-a-lbl') && (document.getElementById('venn-a-lbl').textContent=tx.vennA);
+  document.querySelector('.venn-a').textContent=tx.vennA;
+  document.querySelector('.venn-b').textContent=tx.vennB;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderTomCategories();renderTheoryCards();renderChips();
+}
+
+function startLinda(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-linda').scrollIntoView({behavior:'smooth'});}
+
+function chooseLinda(choice,btn){
+  document.querySelectorAll('.linda-opt').forEach(b=>b.disabled=true);
+  btn.classList.add('selected');
+  document.getElementById('linda-reveal').classList.add('show');
+  setTimeout(()=>document.getElementById('linda-reveal').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+/* WHEEL */
+function spinWheel(){
+  if(wheelSpun)return;wheelSpun=true;
+  const wheel=document.getElementById('wheel');
+  const finalNum=Math.floor(Math.random()*91)+10; // 10-100, but we bias toward extreme anchors
+  const useNum = Math.random()>0.5?Math.floor(Math.random()*15)+5:Math.floor(Math.random()*15)+80;
+  anchorAnchorValue=useNum;
+  const spins=5;
+  const deg=spins*360+(useNum/100*360);
+  wheel.style.transform=`rotate(${deg}deg)`;
+  document.getElementById('spin-btn').disabled=true;
+  setTimeout(()=>{
+    document.getElementById('wheel-result').textContent=useNum;
+    document.getElementById('anchor-question').style.display='block';
+    setTimeout(()=>document.getElementById('anchor-question').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+  },3100);
+}
+
+function submitAnchor(){
+  if(anchorAnswered)return;
+  const input=document.getElementById('anchor-input');
+  const val=parseFloat(input.value);
+  if(isNaN(val))return;
+  anchorAnswered=true;
+  input.disabled=true;
+  document.getElementById('anchor-submit-btn').disabled=true;
+  const result=document.getElementById('anchor-result');
+  result.classList.add('show');
+  const realPct=27; // ~27% of UN members are African (54/193)
+  const biasDirection = anchorAnchorValue>50 ? (lang==='es'?'alto':'high') : (lang==='es'?'bajo':'low');
+  if(lang==='es'){
+    result.innerHTML=`Tu ancla fue <strong>${anchorAnchorValue}</strong> (${biasDirection}) y respondiste <strong>${val}%</strong>. El valor real es aproximadamente <strong>27%</strong> (54 de 193 países de la ONU son africanos). Si tu ancla fue alta, probablemente tu respuesta fue más alta de lo que hubiera sido con un ancla baja — y viceversa. Esto ocurre incluso sabiendo que el número de la ruleta es aleatorio.`;
+  } else {
+    result.innerHTML=`Your anchor was <strong>${anchorAnchorValue}</strong> (${biasDirection}) and you answered <strong>${val}%</strong>. The real value is approximately <strong>27%</strong> (54 of 193 UN countries are African). If your anchor was high, your answer was likely higher than it would've been with a low anchor — and vice versa. This happens even knowing the wheel number is random.`;
+  }
+}
+
+/* TOM W */
+function renderTomCategories(){
+  const wrap=document.getElementById('tom-categories');if(!wrap)return;
+  wrap.innerHTML='';tomChosen=false;
+  T[lang].tomCategories.forEach((cat,i)=>{
+    const el=document.createElement('div');el.className='tom-cat';el.textContent=cat;
+    el.onclick=()=>chooseTom(i,el);
+    wrap.appendChild(el);
+  });
+}
+function chooseTom(i,el){
+  if(tomChosen)return;tomChosen=true;
+  document.querySelectorAll('.tom-cat').forEach(c=>c.classList.add('locked'));
+  el.classList.add('selected');
+  document.getElementById('tomw-reveal').classList.add('show');
+  setTimeout(()=>document.getElementById('tomw-reveal').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+/* THEORY */
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-story').classList.toggle('show',type==='story');
+  document.getElementById('cons-metrics').classList.toggle('show',type==='metrics');
+  dilemmaScore=type==='metrics'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

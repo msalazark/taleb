@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Pavo de Thanksgiving — Taleb & El Cisne Negro</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:       #0a0d12;
+  --bg2:      #13181f;
+  --bg3:      #1c2330;
+  --border:   #2a3340;
+  --text:     #e8eaf0;
+  --text2:    #8892a0;
+  --text3:    #4a5568;
+  --accent:   #e8593c;
+  --accent2:  #f2a623;
+  --green:    #2ecc71;
+  --red:      #e74c3c;
+  --blue:     #4a9eff;
+  --purple:   #9b59b6;
+  --card-bg:  #13181f;
+  --radius:   12px;
+  --radius-sm:6px;
+}
+[data-theme="light"] {
+  --bg:       #f7f5f0;
+  --bg2:      #ffffff;
+  --bg3:      #edeae4;
+  --border:   #d4cec5;
+  --text:     #1a1a1a;
+  --text2:    #5a5a5a;
+  --text3:    #aaaaaa;
+  --card-bg:  #ffffff;
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* ═══════════════════════════════════════════
+   HEADER / NAV
+═══════════════════════════════════════════ */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  backdrop-filter: blur(8px);
+}
+.header-left { display: flex; align-items: center; gap: 0.75rem; }
+.series-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.12em;
+  color: var(--accent); text-transform: uppercase;
+  background: rgba(232,89,60,0.12); 
+  padding: 3px 8px; border-radius: 3px;
+  border: 1px solid rgba(232,89,60,0.25);
+}
+.header-title { font-size: 0.85rem; color: var(--text2); font-weight: 400; }
+.header-controls { display: flex; align-items: center; gap: 0.75rem; }
+
+/* Toggle lang */
+.lang-toggle {
+  display: flex; background: var(--bg3); border-radius: 20px;
+  padding: 2px; border: 1px solid var(--border);
+}
+.lang-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem; font-weight: 500;
+  padding: 3px 10px; border-radius: 16px;
+  border: none; cursor: pointer; transition: all 0.2s;
+  background: transparent; color: var(--text2);
+}
+.lang-btn.active { background: var(--accent); color: white; }
+
+/* Toggle theme */
+.theme-toggle {
+  width: 36px; height: 20px; position: relative;
+  cursor: pointer;
+}
+.theme-toggle input { opacity: 0; width: 0; height: 0; }
+.theme-slider {
+  position: absolute; inset: 0;
+  background: var(--bg3); border-radius: 20px;
+  border: 1px solid var(--border); transition: 0.3s;
+}
+.theme-slider::before {
+  content: ''; position: absolute;
+  width: 14px; height: 14px;
+  left: 2px; top: 2px;
+  background: var(--text2); border-radius: 50%;
+  transition: 0.3s;
+}
+input:checked + .theme-slider { background: var(--blue); }
+input:checked + .theme-slider::before { transform: translateX(16px); background: white; }
+
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+section { max-width: 780px; margin: 0 auto; padding: 4rem 1.5rem; }
+section + section { border-top: 1px solid var(--border); }
+
+.section-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.15em;
+  color: var(--text3); text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; line-height: 1.2; margin-bottom: 1rem; }
+h2 { font-family: 'IBM Plex Serif', serif; font-size: 1.6rem; font-weight: 600; margin-bottom: 1rem; }
+h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; }
+p { color: var(--text2); margin-bottom: 1rem; }
+p strong { color: var(--text); font-weight: 500; }
+
+/* ═══════════════════════════════════════════
+   SECTION 1 — HERO
+═══════════════════════════════════════════ */
+.hero { text-align: center; padding-top: 5rem; padding-bottom: 3rem; }
+.turkey-stage {
+  font-size: 5rem; margin: 2rem 0 1rem;
+  display: inline-block;
+  animation: wobble 2s ease-in-out infinite;
+  cursor: default;
+}
+@keyframes wobble {
+  0%,100% { transform: rotate(-3deg) scale(1); }
+  50%      { transform: rotate(3deg) scale(1.05); }
+}
+.day-counter {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.1rem; color: var(--green);
+  margin-bottom: 2rem;
+  min-height: 1.6em;
+}
+.hero p { font-size: 1.05rem; max-width: 540px; margin: 0 auto 2rem; }
+.btn-primary {
+  display: inline-block;
+  background: var(--accent);
+  color: white; font-weight: 500;
+  padding: 0.75rem 2rem; border-radius: 30px;
+  border: none; cursor: pointer; font-size: 1rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(232,89,60,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,89,60,0.4); }
+
+/* ═══════════════════════════════════════════
+   SECTION 2 — JUEGO PAVO
+═══════════════════════════════════════════ */
+.game-container { display: none; }
+.game-container.active { display: block; }
+
+.day-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem;
+  margin-bottom: 1.5rem; position: relative;
+  overflow: hidden;
+}
+.day-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  height: 3px; width: 100%;
+  background: linear-gradient(90deg, var(--green), var(--accent2));
+}
+.day-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem; color: var(--accent2);
+  margin-bottom: 0.5rem; letter-spacing: 0.1em;
+}
+.day-situation { font-size: 1.05rem; color: var(--text); margin-bottom: 1.25rem; font-weight: 400; }
+
+.choices { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.choice-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 0.5rem 1.1rem;
+  border-radius: 20px; cursor: pointer; font-size: 0.88rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.2s;
+}
+.choice-btn:hover { border-color: var(--green); color: var(--green); background: rgba(46,204,113,0.08); }
+
+.confidence-bar-wrap { margin: 1.5rem 0 0.5rem; }
+.confidence-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--text2); margin-bottom: 6px;
+}
+.confidence-bar {
+  height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden;
+}
+.confidence-fill {
+  height: 100%; background: var(--green);
+  border-radius: 3px; transition: width 0.6s ease;
+}
+
+/* Evento negro */
+.black-event {
+  display: none; text-align: center;
+  background: #1a0505; border: 1px solid var(--red);
+  border-radius: var(--radius); padding: 2.5rem;
+  margin: 1.5rem 0;
+}
+.black-event.show { display: block; animation: shake 0.5s ease; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+.event-emoji { font-size: 4rem; display: block; margin-bottom: 1rem; }
+.event-title { font-family: 'IBM Plex Serif', serif; font-size: 1.8rem; color: var(--red); margin-bottom: 0.75rem; }
+.event-quote {
+  font-family: 'IBM Plex Serif', serif; font-style: italic;
+  font-size: 1rem; color: var(--text2); max-width: 480px;
+  margin: 0 auto 1.5rem; line-height: 1.7;
+}
+
+/* Chart */
+.chart-wrap {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem;
+  margin-top: 1.5rem; display: none;
+}
+.chart-wrap.show { display: block; }
+.chart-title { font-size: 0.8rem; color: var(--text3); margin-bottom: 1rem;
+  font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.05em; }
+
+/* Progress dots */
+.progress-dots {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 2rem;
+}
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.dot.done { background: var(--green); border-color: var(--green); }
+.dot.current { background: var(--accent2); border-color: var(--accent2); transform: scale(1.3); }
+.dot.danger { background: var(--red); border-color: var(--red); }
+
+/* ═══════════════════════════════════════════
+   SECTION 3 — GRANJERO
+═══════════════════════════════════════════ */
+.farmer-section { display: none; }
+.farmer-section.active { display: block; }
+
+.timeline-wrap {
+  position: relative; padding-left: 2rem; margin: 2rem 0;
+}
+.timeline-wrap::before {
+  content: ''; position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.tl-item {
+  position: relative; margin-bottom: 1.5rem;
+  opacity: 0; transform: translateX(-10px);
+  transition: all 0.4s ease;
+}
+.tl-item.show { opacity: 1; transform: translateX(0); }
+.tl-dot {
+  position: absolute; left: -28px; top: 4px;
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--border); background: var(--bg);
+}
+.tl-dot.turkey { border-color: var(--green); background: var(--green); }
+.tl-dot.farmer { border-color: var(--purple); background: var(--purple); }
+.tl-dot.event  { border-color: var(--red); background: var(--red); }
+.tl-day {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+  color: var(--text3); margin-bottom: 2px;
+}
+.tl-turkey { color: var(--green); font-size: 0.9rem; margin-bottom: 4px; }
+.tl-farmer { color: var(--purple); font-size: 0.85rem; font-style: italic; }
+
+.insight-box {
+  background: rgba(155,89,182,0.1); border: 1px solid rgba(155,89,182,0.3);
+  border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem;
+}
+.insight-box h3 { color: var(--purple); margin-bottom: 0.5rem; }
+
+/* ═══════════════════════════════════════════
+   SECTION 4 — TEORÍA
+═══════════════════════════════════════════ */
+.theory-grid { display: grid; gap: 1rem; margin-top: 1.5rem; }
+
+.theory-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.theory-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; cursor: pointer; transition: background 0.2s;
+}
+.theory-header:hover { background: var(--bg3); }
+.theory-header-left { display: flex; align-items: center; gap: 0.75rem; }
+.theory-icon { font-size: 1.2rem; }
+.theory-name { font-weight: 500; font-size: 0.95rem; }
+.theory-chevron {
+  color: var(--text3); font-size: 0.8rem; transition: transform 0.3s;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.theory-card.open .theory-chevron { transform: rotate(180deg); }
+.theory-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s;
+  padding: 0 1.25rem;
+}
+.theory-card.open .theory-body {
+  max-height: 600px;
+  padding: 0 1.25rem 1.25rem;
+}
+.theory-body p { font-size: 0.92rem; }
+.theory-body p:last-child { margin-bottom: 0; }
+.quote-block {
+  border-left: 3px solid var(--accent);
+  padding: 0.75rem 1rem; margin: 1rem 0;
+  background: rgba(232,89,60,0.06);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.quote-block p {
+  font-family: 'IBM Plex Serif', serif; font-style: italic;
+  color: var(--text); font-size: 0.9rem; margin: 0;
+}
+.quote-block cite {
+  font-size: 0.75rem; color: var(--text3); margin-top: 6px;
+  display: block; font-style: normal;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.tag-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+.tag {
+  font-size: 0.72rem; padding: 2px 8px; border-radius: 10px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 5 — MINI-TEST
+═══════════════════════════════════════════ */
+.test-container { display: none; }
+.test-container.active { display: block; }
+
+.test-step { display: none; }
+.test-step.active { display: block; }
+
+.test-number {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+  color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.5rem;
+}
+.test-q { font-size: 1.05rem; color: var(--text); margin-bottom: 1.25rem; font-weight: 400; }
+
+/* Dilema */
+.dilemma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media(max-width:540px) { .dilemma-grid { grid-template-columns: 1fr; } }
+.dilemma-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.dilemma-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.dilemma-card.selected { border-color: var(--accent); background: rgba(232,89,60,0.08); }
+.dilemma-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.dilemma-title { font-weight: 500; margin-bottom: 0.5rem; font-size: 0.95rem; }
+.dilemma-desc { font-size: 0.83rem; color: var(--text2); line-height: 1.5; }
+
+.consequence {
+  display: none; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem; margin-top: 1rem;
+}
+.consequence.show { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.consequence-good { border-color: rgba(46,204,113,0.4); background: rgba(46,204,113,0.06); }
+.consequence-bad  { border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
+
+/* MCQ */
+.mcq-options { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.mcq-btn {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.85rem 1rem;
+  text-align: left; cursor: pointer; font-size: 0.92rem;
+  color: var(--text); font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem;
+}
+.mcq-btn:hover:not(:disabled) { border-color: var(--blue); }
+.mcq-btn.correct { border-color: var(--green); background: rgba(46,204,113,0.1); color: var(--green); }
+.mcq-btn.wrong   { border-color: var(--red); background: rgba(231,76,60,0.1); color: var(--red); }
+.mcq-btn:disabled { cursor: default; }
+.mcq-letter {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.72rem; font-family: 'IBM Plex Mono', monospace;
+  flex-shrink: 0; color: var(--text2);
+}
+.feedback-box {
+  display: none; padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm); margin-top: 0.5rem;
+  font-size: 0.88rem; line-height: 1.6;
+}
+.feedback-box.show { display: block; animation: fadeIn 0.3s ease; }
+.feedback-box.ok  { background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.3); color: var(--text); }
+.feedback-box.ko  { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3); color: var(--text); }
+
+/* Reflexión */
+.reflection-grid { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.reflection-chip {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 0.45rem 1rem; font-size: 0.85rem;
+  cursor: pointer; color: var(--text2); transition: all 0.2s;
+  display: inline-block;
+}
+.reflection-chip:hover, .reflection-chip.active {
+  border-color: var(--accent2); color: var(--accent2);
+  background: rgba(242,166,35,0.08);
+}
+textarea {
+  width: 100%; background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.85rem;
+  color: var(--text); font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.92rem; line-height: 1.6; resize: vertical;
+  min-height: 100px; outline: none; margin-top: 0.75rem;
+  transition: border-color 0.2s;
+}
+textarea:focus { border-color: var(--accent2); }
+
+/* Score final */
+.score-box {
+  text-align: center; padding: 2.5rem;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-top: 1.5rem;
+}
+.score-emoji { font-size: 3rem; margin-bottom: 1rem; display: block; }
+.score-title { font-family: 'IBM Plex Serif', serif; font-size: 1.6rem; margin-bottom: 0.5rem; }
+.score-bar-wrap { margin: 1.5rem 0; }
+.score-bar { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+/* Botones nav */
+.btn-next {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 0.6rem 1.4rem;
+  border-radius: 20px; cursor: pointer; font-size: 0.88rem;
+  font-family: 'IBM Plex Sans', sans-serif; transition: all 0.2s;
+  margin-top: 0.75rem;
+}
+.btn-next:hover { border-color: var(--text2); }
+.btn-next:disabled { opacity: 0.3; cursor: default; }
+.btn-accent-next {
+  background: var(--accent); color: white;
+  border: none; padding: 0.7rem 1.6rem; border-radius: 20px;
+  cursor: pointer; font-size: 0.9rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500; transition: all 0.2s; margin-top: 1rem;
+  box-shadow: 0 4px 16px rgba(232,89,60,0.25);
+}
+.btn-accent-next:hover { transform: translateY(-1px); }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 1.5rem; text-align: center;
+  max-width: 780px; margin: 0 auto;
+}
+.taleb-quote {
+  font-family: 'IBM Plex Serif', serif; font-style: italic;
+  font-size: 1.15rem; color: var(--text2);
+  max-width: 520px; margin: 0 auto 1rem; line-height: 1.7;
+}
+.taleb-cite {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem;
+  color: var(--text3); letter-spacing: 0.08em;
+}
+.next-concept {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  margin-top: 2rem; padding: 0.65rem 1.5rem;
+  border: 1px solid var(--border); border-radius: 20px;
+  color: var(--text2); font-size: 0.88rem; transition: all 0.2s;
+  cursor: pointer; background: none; font-family: 'IBM Plex Sans', sans-serif;
+}
+.next-concept:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════ */
+.hidden { display: none !important; }
+.mt1 { margin-top: 1rem; }
+.mt2 { margin-top: 2rem; }
+.text-center { text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 01</span>
+    <span class="header-title" id="hdr-title">El Pavo de Thanksgiving</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle" title="Toggle theme">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- ═══ SECCIÓN 1: HERO ═══ -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">¿Cuántos días necesitas para estar seguro?</h1>
+  <div class="turkey-stage" id="turkey-emoji">🦃</div>
+  <div class="day-counter" id="day-counter">Día 1 — Todo va bien...</div>
+  <p id="s1-p">Un pavo es alimentado cada día durante 1,000 días. Cada día que pasa confirma su creencia: <strong>el mundo es un lugar seguro</strong>. Hasta el día 1,001.</p>
+  <button class="btn-primary" onclick="startGame()" id="s1-btn">🦃 Soy el pavo — Empezar</button>
+</section>
+
+<!-- ═══ SECCIÓN 2: JUEGO PAVO ═══ -->
+<section id="sec-game">
+  <div class="section-tag" id="s2-tag">Parte 2 · Eres el Pavo</div>
+  <h2 id="s2-h2">Vives tu vida. Tomas decisiones.</h2>
+  <p id="s2-p">Cada día refuerza tu modelo del mundo. ¿Cómo te sientes?</p>
+
+  <div class="progress-dots" id="progress-dots"></div>
+
+  <div class="confidence-bar-wrap">
+    <div class="confidence-label">
+      <span id="conf-label">Confianza en el futuro</span>
+      <span id="conf-val">0%</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" id="conf-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="game-container active" id="game-area">
+    <div class="day-card" id="day-card">
+      <div class="day-label" id="day-label">Día 1</div>
+      <div class="day-situation" id="day-situation">—</div>
+      <div class="choices" id="choices-area"></div>
+    </div>
+  </div>
+
+  <div class="black-event" id="black-event">
+    <span class="event-emoji">🔪</span>
+    <div class="event-title" id="be-title">Es el Día de Acción de Gracias</div>
+    <p class="event-quote" id="be-quote">"El pavo fue alimentado durante 1,000 días. Cada día que pasaba confirmaba su teoría de que los humanos son amables. El día 1,001 revisaron su modelo."</p>
+    <p style="color:var(--text2); font-size:0.88rem;" id="be-sub">— Nassim Taleb, El Cisne Negro</p>
+    <button class="btn-accent-next" onclick="showFarmer()" id="be-btn">Ver la perspectiva del granjero →</button>
+  </div>
+
+  <div class="chart-wrap" id="chart-wrap">
+    <div class="chart-title" id="chart-title">ÍNDICE DE CONFIANZA DEL PAVO — 1,001 DÍAS</div>
+    <canvas id="turkeyChart" height="120"></canvas>
+  </div>
+</section>
+
+<!-- ═══ SECCIÓN 3: GRANJERO ═══ -->
+<section id="sec-farmer">
+  <div class="farmer-section" id="farmer-content">
+    <div class="section-tag" id="s3-tag">Parte 3 · Ahora eres el Granjero</div>
+    <h2 id="s3-h2">El mismo timeline. Información diferente.</h2>
+    <p id="s3-p">Mientras el pavo construía su modelo de seguridad, el granjero tenía un plan diferente desde el día 1. Ambos eran <strong>racionales</strong> dentro de su información disponible.</p>
+
+    <div class="timeline-wrap" id="farmer-timeline"></div>
+
+    <div class="insight-box" id="insight-box">
+      <h3 id="ib-h3">🧠 La lección filosófica</h3>
+      <p id="ib-p">El problema no es ser estúpido. El pavo hizo exactamente lo correcto con la información disponible. El problema es <strong>no saber lo que no sabes</strong> — lo que Taleb llama conocimiento de cuarto cuadrante: alta incertidumbre, alta consecuencia.</p>
+    </div>
+
+    <button class="btn-accent-next" onclick="showTheory()" id="farmer-btn" style="margin-top:1.5rem">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- ═══ SECCIÓN 4: TEORÍA ═══ -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría (expandible)</div>
+  <h2 id="s4-h2">¿Por qué nos pasa esto?</h2>
+  <p id="s4-p">Cuatro marcos para entender el problema del pavo.</p>
+
+  <div class="theory-grid" id="theory-grid">
+    <!-- Cards se generan por JS -->
+  </div>
+
+  <button class="btn-accent-next" onclick="showTest()" id="theory-btn" style="margin-top:2rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- ═══ SECCIÓN 5: MINI-TEST ═══ -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Cuánto absorbiste?</h2>
+
+  <div class="test-container active" id="test-area">
+
+    <!-- PASO A: Dilema -->
+    <div class="test-step active" id="step-dilema">
+      <div class="test-number" id="tn1">DILEMA · 01</div>
+      <div class="test-q" id="tq1">Llevas 5 años trabajando en una empresa estable. Tu jefe siempre te ha felicitado. Los números van bien. ¿Qué haces?</div>
+      <div class="dilemma-grid">
+        <div class="dilemma-card" onclick="chooseDilemma('safe', this)">
+          <div class="dilemma-emoji">😌</div>
+          <div class="dilemma-title" id="d1a-t">Seguir igual</div>
+          <div class="dilemma-desc" id="d1a-d">El historial es positivo. No hay señales de alarma. Confío en el patrón.</div>
+        </div>
+        <div class="dilemma-card" onclick="chooseDilemma('hedge', this)">
+          <div class="dilemma-emoji">🛡️</div>
+          <div class="dilemma-title" id="d1b-t">Construir opciones</div>
+          <div class="dilemma-desc" id="d1b-d">El pasado no garantiza el futuro. Mantengo el trabajo Y construyo alternativas.</div>
+        </div>
+      </div>
+      <div class="consequence" id="consequence-safe">
+        <strong id="cs-t">Eres el pavo.</strong>
+        <p id="cs-p" style="margin-top:0.5rem;font-size:0.88rem;">5 años de datos positivos no elimina el riesgo de un evento negro. Taleb llamaría esto "historia silenciosa" — no ves los casos donde el patrón falló porque ya no están aquí para contarlo.</p>
+      </div>
+      <div class="consequence consequence-good" id="consequence-hedge">
+        <strong id="ch-t">Piensas como Taleb.</strong>
+        <p id="ch-p" style="margin-top:0.5rem;font-size:0.88rem;">Mantener opciones abiertas es la estrategia antifrágil. No niegas el pasado positivo, pero tampoco asumes que el futuro lo replicará. La convexidad asimétrica está de tu lado.</p>
+      </div>
+      <button class="btn-next" id="btn-next-dilema" onclick="goToMCQ()" disabled id="btn-d1">Siguiente →</button>
+    </div>
+
+    <!-- PASO B: MCQ -->
+    <div class="test-step" id="step-mcq">
+      <div id="mcq-area"></div>
+    </div>
+
+    <!-- PASO C: Reflexión -->
+    <div class="test-step" id="step-reflection">
+      <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+      <div class="test-q" id="tq3">¿En qué área de tu vida eres tú el pavo?</div>
+      <p style="color:var(--text2);font-size:0.88rem;margin-bottom:1rem" id="ref-hint">Algunos ejemplos para disparar la reflexión:</p>
+      <div class="reflection-grid" id="chips-area"></div>
+      <textarea id="reflection-text" placeholder="Escribe tu reflexión aquí..."></textarea>
+      <button class="btn-accent-next" onclick="showScore()">Ver mi resultado →</button>
+    </div>
+
+    <!-- SCORE FINAL -->
+    <div class="test-step" id="step-score">
+      <div class="score-box" id="score-box">
+        <span class="score-emoji" id="score-emoji">🎓</span>
+        <div class="score-title" id="score-title">Resultado</div>
+        <p id="score-desc" style="color:var(--text2);font-size:0.9rem;margin:0.5rem 0 1.5rem;"></p>
+        <div class="score-bar-wrap">
+          <div class="confidence-label">
+            <span id="score-lbl">Nivel Taleb</span>
+            <span id="score-pct">—</span>
+          </div>
+          <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+        </div>
+        <p id="score-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:0.9rem;margin-top:1.5rem;"></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p class="taleb-quote" id="footer-quote">"El problema con los expertos es que no saben lo que no saben."</p>
+  <p class="taleb-cite">— Nassim Nicholas Taleb · El Cisne Negro (2007)</p>
+  <br>
+  <button class="next-concept" onclick="alert('Próximamente: Extremistán vs Mediocristán')">
+    <span id="nc-txt">Siguiente concepto: Extremistán →</span>
+  </button>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     DATOS & LÓGICA
+═══════════════════════════════════════════ -->
+<script>
+/* ── TEXTOS BILINGÜE ── */
+const T = {
+  es: {
+    hdrTitle: "El Pavo de Thanksgiving",
+    s1tag: "Parte 1 · El Gancho",
+    s1h1: "¿Cuántos días necesitas para estar seguro?",
+    s1p: "Un pavo es alimentado cada día durante 1,000 días. Cada día que pasa confirma su creencia: <strong>el mundo es un lugar seguro</strong>. Hasta el día 1,001.",
+    s1btn: "🦃 Soy el pavo — Empezar",
+    s2tag: "Parte 2 · Eres el Pavo",
+    s2h2: "Vives tu vida. Tomas decisiones.",
+    s2p: "Cada día refuerza tu modelo del mundo. ¿Cómo te sientes?",
+    confLabel: "Confianza en el futuro",
+    s3tag: "Parte 3 · Ahora eres el Granjero",
+    s3h2: "El mismo timeline. Información diferente.",
+    s3p: "Mientras el pavo construía su modelo de seguridad, el granjero tenía un plan diferente desde el día 1. Ambos eran <strong>racionales</strong> dentro de su información disponible.",
+    ibH3: "🧠 La lección filosófica",
+    ibP: "El problema no es ser estúpido. El pavo hizo exactamente lo correcto con la información disponible. El problema es <strong>no saber lo que no sabes</strong> — lo que Taleb llama conocimiento de cuarto cuadrante: alta incertidumbre, alta consecuencia.",
+    farmerBtn: "Explorar la teoría →",
+    s4tag: "Parte 4 · La Teoría (expandible)",
+    s4h2: "¿Por qué nos pasa esto?",
+    s4p: "Cuatro marcos para entender el problema del pavo.",
+    s4btn: "Hacer el mini-test →",
+    s5tag: "Parte 5 · Mini-test",
+    s5h2: "¿Cuánto absorbiste?",
+    tn1: "DILEMA · 01",
+    tq1: "Llevas 5 años trabajando en una empresa estable. Tu jefe siempre te ha felicitado. Los números van bien. ¿Qué haces?",
+    d1aT: "Seguir igual", d1aD: "El historial es positivo. No hay señales de alarma. Confío en el patrón.",
+    d1bT: "Construir opciones", d1bD: "El pasado no garantiza el futuro. Mantengo el trabajo Y construyo alternativas.",
+    csT: "Eres el pavo.", csP: "5 años de datos positivos no elimina el riesgo de un evento negro. Taleb llamaría esto \"historia silenciosa\" — no ves los casos donde el patrón falló porque ya no están aquí para contarlo.",
+    chT: "Piensas como Taleb.", chP: "Mantener opciones abiertas es la estrategia antifrágil. No niegas el pasado positivo, pero tampoco asumes que el futuro lo replicará. La convexidad asimétrica está de tu lado.",
+    tn3: "REFLEXIÓN · 03",
+    tq3: "¿En qué área de tu vida eres tú el pavo?",
+    refHint: "Algunos ejemplos para disparar la reflexión:",
+    refChips: ["Mi trabajo actual","Mi relación de pareja","Mi ciudad / país","Mis inversiones","Mi salud","Mi red de contactos"],
+    refPlaceholder: "Escribe tu reflexión aquí...",
+    scoreLbl: "Nivel Taleb",
+    ncTxt: "Siguiente concepto: Extremistán →",
+    footerQ: '"El problema con los expertos es que no saben lo que no saben."',
+    beTitle: "Es el Día de Acción de Gracias",
+    beQuote: '"El pavo fue alimentado durante 1,000 días. Cada día que pasaba confirmaba su teoría de que los humanos son amables. El día 1,001 revisaron su modelo."',
+    beSub: "— Nassim Taleb, El Cisne Negro",
+    beBtn: "Ver la perspectiva del granjero →",
+    chartTitle: "ÍNDICE DE CONFIANZA DEL PAVO — 1,001 DÍAS",
+    days: [
+      { label:"Día 1", sit:"Te alimentan por primera vez. La mano humana es cálida.", choices:["😊 Me siento seguro","🙂 Está bien, esperaré"] },
+      { label:"Día 50", sit:"50 días seguidos de comida puntual. El patrón es consistente.", choices:["😌 Esto es la norma","🤔 Sigo observando"] },
+      { label:"Día 200", sit:"Han pasado 200 días. Invierno, primavera, verano — siempre la misma mano.", choices:["😄 Confío plenamente","😎 El mundo es predecible"] },
+      { label:"Día 500", sit:"500 días. Tu modelo es sólido. Los datos no mienten.", choices:["🏆 Soy un experto en humanos","📊 Mi modelo es correcto"] },
+      { label:"Día 900", sit:"Casi 3 años. Ni una sola excepción al patrón. Tu confianza es máxima.", choices:["💯 La certeza es total","🎓 La evidencia es concluyente"] },
+      { label:"Día 1,001", sit:"Noviembre. Los humanos se comportan... diferente hoy.", choices:["🦃 Todo sigue igual, ¿verdad?","😰 Algo no está bien..."] }
+    ],
+    tlItems: [
+      { day:"Día 1", turkey:"Siento que el mundo es bueno. Me dan comida.", farmer:"Compré este pavo para Thanksgiving. Empiezo a engordarlo.", dotT:"turkey", dotF:"farmer" },
+      { day:"Día 200", turkey:"200 confirmaciones de seguridad. Mi modelo es robusto.", farmer:"Va bien. Necesita más peso antes de noviembre.", dotT:"turkey", dotF:"farmer" },
+      { day:"Día 900", turkey:"Máxima confianza. Nunca me han fallado.", farmer:"Casi listo. Unas semanas más.", dotT:"turkey", dotF:"farmer" },
+      { day:"Día 1,001", turkey:"...?", farmer:"Perfecto. Es Thanksgiving.", dotT:"event", dotF:"event" }
+    ],
+    theories: [
+      { icon:"📕", name:"Taleb & El Cisne Negro", body:`<p>Nassim Taleb introdujo el término en <em>El Cisne Negro</em> (2007) para describir eventos de alta improbabilidad, alto impacto e imposibles de predecir con los modelos basados en el pasado.</p><div class="quote-block"><p>"Un cisne negro es un evento que está fuera del reino de las expectativas regulares porque nada en el pasado puede apuntar convincentemente a su posibilidad."</p><cite>— Nassim Taleb, El Cisne Negro (2007)</cite></div><p>El pavo es la metáfora perfecta: cuanto más datos tienes, más confiado estás. Y más expuesto quedas al evento que tus datos nunca pudieron capturar.</p><div class="tag-list"><span class="tag">Cisne Negro</span><span class="tag">Historia silenciosa</span><span class="tag">Cuarto cuadrante</span></div>` },
+      { icon:"🧠", name:"El Problema de la Inducción — Hume", body:`<p>David Hume (1711–1776) formuló el problema filosófico que subyace a toda esta discusión: <strong>nunca podemos derivar conclusiones universales de observaciones particulares</strong>.</p><p>Ver 1,000 cisnes blancos no te permite afirmar que "todos los cisnes son blancos". Ver 1,000 días de seguridad no te permite afirmar que el día 1,001 será seguro.</p><div class="quote-block"><p>"Aunque la experiencia pueda enseñarnos que dos eventos están asociados, no puede enseñarnos a inferir que uno causará al otro."</p><cite>— David Hume, Investigación sobre el entendimiento humano</cite></div><div class="tag-list"><span class="tag">Inducción</span><span class="tag">Epistemología</span><span class="tag">Hume</span></div>` },
+      { icon:"🐔", name:"Russell y el pollo inductivista", body:`<p>Bertrand Russell (1872–1970) usó una metáfora similar al pavo de Taleb en sus <em>Problemas de Filosofía</em> (1912): el pollo que espera ser alimentado cada mañana.</p><p>El pollo observa que cada vez que el granjero aparece, llega comida. Construye una "ley inductiva". El día que el granjero aparece con un hacha, la ley falla.</p><div class="quote-block"><p>"El hombre que ha visto al sol salir todos los días de su vida hasta hoy tiene expectativas razonables de que saldrá mañana. Pero no certeza."</p><cite>— Bertrand Russell, Los problemas de la filosofía (1912)</cite></div><div class="tag-list"><span class="tag">Russell</span><span class="tag">Pollo inductivista</span><span class="tag">Falsabilidad</span></div>` },
+      { icon:"🔗", name:"Conceptos relacionados", body:`<p><strong>Sesgo de confirmación</strong> — Tendemos a buscar y recordar información que confirma nuestras creencias existentes. Cada día de alimentación es una "confirmación" que el pavo acepta y los días anómalos (¿los hubo?) son ignorados.</p><p><strong>Normalcy bias</strong> — La tendencia a subestimar tanto la probabilidad como el impacto de un desastre. "Nunca me ha pasado nada malo, así que no pasará."</p><p><strong>Historia silenciosa (Silent evidence)</strong> — Solo escuchamos las historias de los pavos que sobrevivieron para contarla. Los que murieron antes no dejan registro.</p><div class="tag-list"><span class="tag">Kahneman</span><span class="tag">Sesgo cognitivo</span><span class="tag">Historia silenciosa</span><span class="tag">Normalcy bias</span></div>` }
+    ],
+    mcqs: [
+      { q:"El pavo observó 1,000 días de seguridad. Según Taleb, ¿qué error fundamental cometió?", opts:["Confiar demasiado en los humanos","Usar el pasado como garantía del futuro","No tener suficientes datos","No consultar a otros pavos"], correct:1, feedOk:"Exacto. El error es usar la evidencia histórica como certeza sobre el futuro. Más datos no eliminan el riesgo de evento negro — pueden incluso aumentar la confianza falsa.", feedKo:"Cerca, pero el error más profundo es epistemológico: ninguna cantidad de datos pasados puede garantizar el futuro, especialmente en sistemas con colas gruesas." },
+      { q:"¿Cuál de estos NO es un cisne negro según la definición de Taleb?", opts:["La caída de Lehman Brothers en 2008","El ataque del 11 de septiembre","Un terremoto predicho por geólogos una semana antes","El ascenso de internet"], correct:2, feedOk:"Correcto. Un evento predicho con antelación no es un cisne negro — es justamente lo contrario. La predicibilidad lo excluye de la categoría.", feedKo:"Según Taleb, un Cisne Negro debe ser imprevisible ANTES de ocurrir. Un terremoto predicho pierde esa característica." }
+    ],
+    scoreTexts: [
+      { min:0, emoji:"🦃", title:"Sigues siendo el pavo", desc:"Pero ahora lo sabes. Eso ya es mucho.", taleb:"'El primer paso es admitir que eres el pavo.' — Taleb (parafraseado)", color:"#e74c3c" },
+      { min:40, emoji:"🌱", title:"Estás despertando", desc:"Reconoces el patrón. El siguiente paso: actuar en consecuencia.", taleb:"'La sabiduría empieza cuando reconoces lo que no sabes.' — Taleb", color:"#f39c12" },
+      { min:70, emoji:"🧠", title:"Piensas con robustez", desc:"Entiendes el problema de la inducción y sus implicaciones prácticas.", taleb:"'Sé robusto ante los errores de predicción.' — El Cisne Negro", color:"#2ecc71" },
+      { min:90, emoji:"🏹", title:"Nivel Antifragile", desc:"No solo evitas ser el pavo — te beneficias de la incertidumbre.", taleb:"'El antifragil ama los errores ajenos.' — Antifragile (2012)", color:"#4a9eff" }
+    ]
+  },
+  en: {
+    hdrTitle: "The Thanksgiving Turkey",
+    s1tag: "Part 1 · The Hook",
+    s1h1: "How many days do you need to feel safe?",
+    s1p: "A turkey is fed every day for 1,000 days. Each passing day confirms its belief: <strong>the world is a safe place</strong>. Until day 1,001.",
+    s1btn: "🦃 I'm the turkey — Let's start",
+    s2tag: "Part 2 · You Are the Turkey",
+    s2h2: "You live your life. You make decisions.",
+    s2p: "Each day reinforces your model of the world. How do you feel?",
+    confLabel: "Confidence in the future",
+    s3tag: "Part 3 · Now You're the Farmer",
+    s3h2: "Same timeline. Different information.",
+    s3p: "While the turkey built its safety model, the farmer had a different plan from day 1. Both were <strong>rational</strong> within their available information.",
+    ibH3: "🧠 The philosophical lesson",
+    ibP: "The problem isn't being stupid. The turkey did exactly the right thing with the information available. The problem is <strong>not knowing what you don't know</strong> — what Taleb calls fourth quadrant knowledge: high uncertainty, high consequence.",
+    farmerBtn: "Explore the theory →",
+    s4tag: "Part 4 · The Theory (expandable)",
+    s4h2: "Why does this happen to us?",
+    s4p: "Four frameworks for understanding the turkey problem.",
+    s4btn: "Take the mini-test →",
+    s5tag: "Part 5 · Mini-test",
+    s5h2: "How much did you absorb?",
+    tn1: "DILEMMA · 01",
+    tq1: "You've been at a stable company for 5 years. Your boss always praises you. Numbers look great. What do you do?",
+    d1aT: "Stay the course", d1aD: "The track record is positive. No red flags. I trust the pattern.",
+    d1bT: "Build options", d1bD: "The past doesn't guarantee the future. I keep the job AND build alternatives.",
+    csT: "You're the turkey.", csP: "5 years of positive data doesn't eliminate black swan risk. Taleb would call this 'silent history' — you don't see the cases where the pattern failed because they're no longer here to tell you.",
+    chT: "You think like Taleb.", chP: "Keeping options open is the antifragile strategy. You don't deny the positive past, but you don't assume the future will replicate it. Asymmetric convexity is on your side.",
+    tn3: "REFLECTION · 03",
+    tq3: "In what area of your life are YOU the turkey?",
+    refHint: "Some examples to trigger reflection:",
+    refChips: ["My current job","My relationship","My city / country","My investments","My health","My network"],
+    refPlaceholder: "Write your reflection here...",
+    scoreLbl: "Taleb Level",
+    ncTxt: "Next concept: Extremistan →",
+    footerQ: '"The problem with experts is that they do not know what they do not know."',
+    beTitle: "It's Thanksgiving Day",
+    beQuote: '"The turkey was fed for 1,000 days. Each passing day confirmed its theory that humans are kind. On day 1,001, they revised its model."',
+    beSub: "— Nassim Taleb, The Black Swan",
+    beBtn: "See the farmer's perspective →",
+    chartTitle: "TURKEY CONFIDENCE INDEX — 1,001 DAYS",
+    days: [
+      { label:"Day 1", sit:"You're fed for the first time. The human hand is warm.", choices:["😊 I feel safe","🙂 Okay, I'll wait and see"] },
+      { label:"Day 50", sit:"50 straight days of food on time. The pattern is consistent.", choices:["😌 This is the norm","🤔 Still observing"] },
+      { label:"Day 200", sit:"200 days. Winter, spring, summer — always the same hand.", choices:["😄 I fully trust this","😎 The world is predictable"] },
+      { label:"Day 500", sit:"500 days. My model is solid. Data doesn't lie.", choices:["🏆 I'm an expert on humans","📊 My model is correct"] },
+      { label:"Day 900", sit:"Almost 3 years. Not a single exception. My confidence is at maximum.", choices:["💯 Total certainty","🎓 The evidence is conclusive"] },
+      { label:"Day 1,001", sit:"November. The humans are behaving... differently today.", choices:["🦃 Everything's fine, right?","😰 Something's not right..."] }
+    ],
+    tlItems: [
+      { day:"Day 1", turkey:"I feel the world is good. They give me food.", farmer:"I bought this turkey for Thanksgiving. Time to fatten it up.", dotT:"turkey", dotF:"farmer" },
+      { day:"Day 200", turkey:"200 confirmations of safety. My model is robust.", farmer:"Looking good. Needs more weight before November.", dotT:"turkey", dotF:"farmer" },
+      { day:"Day 900", turkey:"Maximum confidence. They've never let me down.", farmer:"Almost ready. A few more weeks.", dotT:"turkey", dotF:"farmer" },
+      { day:"Day 1,001", turkey:"...?", farmer:"Perfect. It's Thanksgiving.", dotT:"event", dotF:"event" }
+    ],
+    theories: [
+      { icon:"📕", name:"Taleb & The Black Swan", body:`<p>Nassim Taleb introduced the term in <em>The Black Swan</em> (2007) to describe high-improbability, high-impact events impossible to predict with past-based models.</p><div class="quote-block"><p>"A Black Swan is an event that lies outside the realm of regular expectations, because nothing in the past can convincingly point to its possibility."</p><cite>— Nassim Taleb, The Black Swan (2007)</cite></div><p>The turkey is the perfect metaphor: the more data you have, the more confident you become. And the more exposed you are to the event your data could never capture.</p><div class="tag-list"><span class="tag">Black Swan</span><span class="tag">Silent evidence</span><span class="tag">Fourth quadrant</span></div>` },
+      { icon:"🧠", name:"The Problem of Induction — Hume", body:`<p>David Hume (1711–1776) formulated the philosophical problem underlying all of this: <strong>we can never derive universal conclusions from particular observations</strong>.</p><p>Seeing 1,000 white swans doesn't allow you to claim "all swans are white." Seeing 1,000 days of safety doesn't allow you to claim day 1,001 will be safe.</p><div class="quote-block"><p>"Though experience may teach us that two events are associated, it cannot teach us to infer that one will cause the other."</p><cite>— David Hume, An Enquiry Concerning Human Understanding</cite></div><div class="tag-list"><span class="tag">Induction</span><span class="tag">Epistemology</span><span class="tag">Hume</span></div>` },
+      { icon:"🐔", name:"Russell's inductivist chicken", body:`<p>Bertrand Russell (1872–1970) used a similar metaphor in <em>Problems of Philosophy</em> (1912): the chicken that expects to be fed every morning.</p><p>The chicken observes that every time the farmer appears, food arrives. It builds an "inductive law." The day the farmer appears with an axe, the law fails.</p><div class="quote-block"><p>"The man who has seen the sun rise every day of his life until today has reasonable expectations it will rise tomorrow. But not certainty."</p><cite>— Bertrand Russell, The Problems of Philosophy (1912)</cite></div><div class="tag-list"><span class="tag">Russell</span><span class="tag">Inductivist chicken</span><span class="tag">Falsifiability</span></div>` },
+      { icon:"🔗", name:"Related concepts", body:`<p><strong>Confirmation bias</strong> — We tend to seek and remember information that confirms our existing beliefs. Each feeding day is a "confirmation" the turkey accepts; anomalies are ignored.</p><p><strong>Normalcy bias</strong> — The tendency to underestimate both the probability and impact of a disaster. "Nothing bad has ever happened to me, so it won't."</p><p><strong>Silent evidence</strong> — We only hear the stories of turkeys that survived to tell the tale. Those that died earlier leave no record.</p><div class="tag-list"><span class="tag">Kahneman</span><span class="tag">Cognitive bias</span><span class="tag">Silent evidence</span><span class="tag">Normalcy bias</span></div>` }
+    ],
+    mcqs: [
+      { q:"The turkey observed 1,000 days of safety. According to Taleb, what fundamental error did it make?", opts:["Trusting humans too much","Using the past as a guarantee of the future","Not having enough data","Not consulting other turkeys"], correct:1, feedOk:"Exactly. The error is using historical evidence as certainty about the future. More data doesn't eliminate black swan risk — it can even increase false confidence.", feedKo:"Close, but the deeper error is epistemological: no amount of past data can guarantee the future, especially in fat-tailed systems." },
+      { q:"Which of these is NOT a Black Swan by Taleb's definition?", opts:["The Lehman Brothers collapse in 2008","The September 11 attacks","An earthquake predicted by geologists a week in advance","The rise of the internet"], correct:2, feedOk:"Correct. An event predicted in advance is not a Black Swan — it's the opposite. Predictability excludes it from the category.", feedKo:"According to Taleb, a Black Swan must be unpredictable BEFORE it occurs. A predicted earthquake loses that characteristic." }
+    ],
+    scoreTexts: [
+      { min:0, emoji:"🦃", title:"Still the turkey", desc:"But now you know it. That's already a lot.", taleb:"'The first step is admitting you're the turkey.' — Taleb (paraphrased)", color:"#e74c3c" },
+      { min:40, emoji:"🌱", title:"You're waking up", desc:"You recognize the pattern. The next step: act accordingly.", taleb:"'Wisdom begins when you recognize what you don't know.' — Taleb", color:"#f39c12" },
+      { min:70, emoji:"🧠", title:"You think robustly", desc:"You understand the problem of induction and its practical implications.", taleb:"'Be robust to prediction errors.' — The Black Swan", color:"#2ecc71" },
+      { min:90, emoji:"🏹", title:"Antifragile Level", desc:"You don't just avoid being the turkey — you benefit from uncertainty.", taleb:"'The antifragile loves the errors of others.' — Antifragile (2012)", color:"#4a9eff" }
+    ]
+  }
+};
+
+/* ── ESTADO GLOBAL ── */
+let lang = 'es';
+let dayIdx = 0;
+let confidence = 0;
+let chartInstance = null;
+let chartLabels = [];
+let chartData = [];
+let mcqScore = 0;
+let mcqIdx = 0;
+let dilemmaScore = 0;
+let dilemmaChosen = false;
+
+/* ── LANG ── */
+function t(key) { return T[lang][key]; }
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.setAttribute('data-lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  renderAll();
+}
+
+function renderAll() {
+  const tx = T[lang];
+  document.getElementById('hdr-title').textContent = tx.hdrTitle;
+  document.getElementById('s1-tag').textContent = tx.s1tag;
+  document.getElementById('s1-h1').textContent = tx.s1h1;
+  document.getElementById('s1-p').innerHTML = tx.s1p;
+  document.getElementById('s1-btn').textContent = tx.s1btn;
+  document.getElementById('s2-tag').textContent = tx.s2tag;
+  document.getElementById('s2-h2').textContent = tx.s2h2;
+  document.getElementById('s2-p').textContent = tx.s2p;
+  document.getElementById('conf-label').textContent = tx.confLabel;
+  document.getElementById('be-title').textContent = tx.beTitle;
+  document.getElementById('be-quote').textContent = tx.beQuote;
+  document.getElementById('be-sub').textContent = tx.beSub;
+  document.getElementById('be-btn').textContent = tx.beBtn;
+  document.getElementById('chart-title').textContent = tx.chartTitle;
+  document.getElementById('s3-tag').textContent = tx.s3tag;
+  document.getElementById('s3-h2').textContent = tx.s3h2;
+  document.getElementById('s3-p').innerHTML = tx.s3p;
+  document.getElementById('ib-h3').textContent = tx.ibH3;
+  document.getElementById('ib-p').innerHTML = tx.ibP;
+  document.getElementById('farmer-btn').textContent = tx.farmerBtn;
+  document.getElementById('s4-tag').textContent = tx.s4tag;
+  document.getElementById('s4-h2').textContent = tx.s4h2;
+  document.getElementById('s4-p').textContent = tx.s4p;
+  document.getElementById('theory-btn').textContent = tx.s4btn;
+  document.getElementById('s5-tag').textContent = tx.s5tag;
+  document.getElementById('s5-h2').textContent = tx.s5h2;
+  document.getElementById('tn1').textContent = tx.tn1;
+  document.getElementById('tq1').textContent = tx.tq1;
+  document.getElementById('d1a-t').textContent = tx.d1aT;
+  document.getElementById('d1a-d').textContent = tx.d1aD;
+  document.getElementById('d1b-t').textContent = tx.d1bT;
+  document.getElementById('d1b-d').textContent = tx.d1bD;
+  document.getElementById('cs-t').textContent = tx.csT;
+  document.getElementById('cs-p').textContent = tx.csP;
+  document.getElementById('ch-t').textContent = tx.chT;
+  document.getElementById('ch-p').textContent = tx.chP;
+  document.getElementById('tn3').textContent = tx.tn3;
+  document.getElementById('tq3').textContent = tx.tq3;
+  document.getElementById('ref-hint').textContent = tx.refHint;
+  document.getElementById('reflection-text').placeholder = tx.refPlaceholder;
+  document.getElementById('score-lbl').textContent = tx.scoreLbl;
+  document.getElementById('nc-txt').textContent = tx.ncTxt;
+  document.getElementById('footer-quote').textContent = tx.footerQ;
+  renderChips();
+  renderTheoryCards();
+  if (dayIdx > 0) renderDay();
+}
+
+/* ── THEME ── */
+function toggleTheme() {
+  const light = document.getElementById('theme-check').checked;
+  document.documentElement.setAttribute('data-theme', light ? 'light' : 'dark');
+  if (chartInstance) updateChartTheme();
+}
+
+/* ── HERO ANIMATION ── */
+let heroInterval;
+function animateCounter() {
+  let d = 1;
+  const el = document.getElementById('day-counter');
+  heroInterval = setInterval(() => {
+    const msgs = lang === 'es'
+      ? [`Día ${d} — Todo va bien...`, `Día ${d} — Comida puntual.`, `Día ${d} — El patrón continúa...`]
+      : [`Day ${d} — All is well...`, `Day ${d} — Food on time.`, `Day ${d} — The pattern continues...`];
+    el.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+    d += Math.floor(Math.random() * 80) + 20;
+    if (d > 950) { d = 950; }
+  }, 600);
+}
+animateCounter();
+
+/* ── JUEGO ── */
+function startGame() {
+  clearInterval(heroInterval);
+  document.getElementById('sec-hero').style.display = 'none';
+  document.getElementById('sec-game').scrollIntoView({ behavior: 'smooth' });
+  buildDots();
+  dayIdx = 0;
+  confidence = 5;
+  renderDay();
+}
+
+function buildDots() {
+  const days = T[lang].days;
+  const wrap = document.getElementById('progress-dots');
+  wrap.innerHTML = '';
+  days.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' current' : '');
+    d.id = `dot-${i}`;
+    wrap.appendChild(d);
+  });
+}
+
+function renderDay() {
+  const days = T[lang].days;
+  if (dayIdx >= days.length - 1) {
+    showBlackEvent();
+    return;
+  }
+  const day = days[dayIdx];
+  document.getElementById('day-label').textContent = day.label;
+  document.getElementById('day-situation').textContent = day.sit;
+  const area = document.getElementById('choices-area');
+  area.innerHTML = '';
+  day.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c;
+    btn.onclick = () => chooseDay(btn);
+    area.appendChild(btn);
+  });
+  updateConfBar();
+}
+
+function chooseDay(btn) {
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  btn.style.borderColor = 'var(--green)';
+  btn.style.color = 'var(--green)';
+  confidence = Math.min(98, confidence + (12 + Math.random() * 8));
+  updateConfBar();
+  chartLabels.push(T[lang].days[dayIdx].label);
+  chartData.push(Math.round(confidence));
+  const dot = document.getElementById(`dot-${dayIdx}`);
+  if (dot) { dot.classList.remove('current'); dot.classList.add('done'); }
+  dayIdx++;
+  const nextDot = document.getElementById(`dot-${dayIdx}`);
+  if (nextDot) {
+    nextDot.classList.add(dayIdx === T[lang].days.length - 1 ? 'danger' : 'current');
+  }
+  setTimeout(renderDay, 700);
+}
+
+function updateConfBar() {
+  document.getElementById('conf-fill').style.width = confidence + '%';
+  document.getElementById('conf-val').textContent = Math.round(confidence) + '%';
+}
+
+function showBlackEvent() {
+  const day = T[lang].days[T[lang].days.length - 1];
+  document.getElementById('day-label').textContent = day.label;
+  document.getElementById('day-situation').textContent = day.sit;
+  document.getElementById('choices-area').innerHTML = '';
+
+  setTimeout(() => {
+    chartLabels.push(T[lang].days[dayIdx].label);
+    chartData.push(0);
+    document.getElementById('black-event').classList.add('show');
+    document.getElementById('chart-wrap').classList.add('show');
+    buildChart();
+    confidence = 0;
+    updateConfBar();
+  }, 800);
+}
+
+/* ── CHART ── */
+function buildChart() {
+  const ctx = document.getElementById('turkeyChart').getContext('2d');
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#4a5568' : '#aaaaaa';
+
+  const colors = chartData.map((v, i) => i === chartData.length - 1 ? '#e74c3c' : '#2ecc71');
+  const bgColors = chartData.map((v, i) => i === chartData.length - 1 ? 'rgba(231,76,60,0.15)' : 'rgba(46,204,113,0.15)');
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        data: chartData,
+        borderColor: context => {
+          const i = context.dataIndex;
+          return i === chartData.length - 1 ? '#e74c3c' : '#2ecc71';
+        },
+        backgroundColor: 'transparent',
+        segment: {
+          borderColor: ctx => ctx.p1DataIndex === chartData.length - 1 ? '#e74c3c' : '#2ecc71'
+        },
+        tension: 0.4, pointRadius: 5,
+        pointBackgroundColor: colors,
+        pointBorderColor: colors,
+        fill: false, borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true, animation: { duration: 1000 },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: "'IBM Plex Mono'" } } },
+        y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: textColor, callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+function updateChartTheme() { /* simplified — color updates */ }
+
+/* ── GRANJERO ── */
+function showFarmer() {
+  document.getElementById('sec-farmer').scrollIntoView({ behavior: 'smooth' });
+  const fc = document.getElementById('farmer-content');
+  fc.classList.add('active');
+  const tl = document.getElementById('farmer-timeline');
+  tl.innerHTML = '';
+  T[lang].tlItems.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'tl-item';
+    el.innerHTML = `
+      <div class="tl-dot ${item.dotT}"></div>
+      <div class="tl-day">${item.day}</div>
+      <div class="tl-turkey">🦃 ${item.turkey}</div>
+      <div class="tl-farmer">👨‍🌾 ${item.farmer}</div>
+    `;
+    tl.appendChild(el);
+    setTimeout(() => el.classList.add('show'), i * 350);
+  });
+}
+
+/* ── TEORÍA ── */
+function showTheory() {
+  document.getElementById('sec-theory').scrollIntoView({ behavior: 'smooth' });
+  renderTheoryCards();
+}
+
+function renderTheoryCards() {
+  const grid = document.getElementById('theory-grid');
+  grid.innerHTML = '';
+  T[lang].theories.forEach((th, i) => {
+    const card = document.createElement('div');
+    card.className = 'theory-card';
+    card.innerHTML = `
+      <div class="theory-header" onclick="toggleTheory(this.parentElement)">
+        <div class="theory-header-left">
+          <span class="theory-icon">${th.icon}</span>
+          <span class="theory-name">${th.name}</span>
+        </div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function toggleTheory(card) {
+  card.classList.toggle('open');
+}
+
+/* ── TEST ── */
+function showTest() {
+  document.getElementById('sec-test').scrollIntoView({ behavior: 'smooth' });
+  renderMCQ();
+  renderChips();
+}
+
+function chooseDilemma(type, el) {
+  if (dilemmaChosen) return;
+  dilemmaChosen = true;
+  document.querySelectorAll('.dilemma-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('consequence-safe').classList.toggle('show', type === 'safe');
+  document.getElementById('consequence-hedge').classList.toggle('show', type === 'hedge');
+  if (type === 'safe') { document.getElementById('consequence-safe').classList.add('consequence-bad'); }
+  dilemmaScore = type === 'hedge' ? 30 : 0;
+  document.getElementById('btn-next-dilema').disabled = false;
+}
+
+function goToMCQ() {
+  document.getElementById('step-dilema').classList.remove('active');
+  document.getElementById('step-mcq').classList.add('active');
+}
+
+function renderMCQ() {
+  const area = document.getElementById('mcq-area');
+  area.innerHTML = '';
+  mcqIdx = 0;
+  renderMCQQuestion();
+}
+
+function renderMCQQuestion() {
+  const mcqs = T[lang].mcqs;
+  if (mcqIdx >= mcqs.length) {
+    goToReflection();
+    return;
+  }
+  const q = mcqs[mcqIdx];
+  const area = document.getElementById('mcq-area');
+  const letters = ['A','B','C','D'];
+  area.innerHTML = `
+    <div class="test-number">MCQ · 0${mcqIdx + 2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options" id="mcq-opts">
+      ${q.opts.map((o, i) => `
+        <button class="mcq-btn" onclick="answerMCQ(${i}, ${q.correct}, ${mcqIdx})">
+          <span class="mcq-letter">${letters[i]}</span>
+          ${o}
+        </button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-feedback"></div>
+    <button class="btn-next" id="mcq-next" onclick="nextMCQ()" disabled style="margin-top:1rem">
+      ${mcqIdx < mcqs.length - 1 ? (lang === 'es' ? 'Siguiente →' : 'Next →') : (lang === 'es' ? 'Continuar →' : 'Continue →')}
+    </button>
+  `;
+}
+
+function answerMCQ(chosen, correct, idx) {
+  document.querySelectorAll('.mcq-btn').forEach(b => b.disabled = true);
+  const btns = document.querySelectorAll('.mcq-btn');
+  btns[chosen].classList.add(chosen === correct ? 'correct' : 'wrong');
+  if (chosen !== correct) btns[correct].classList.add('correct');
+  const fb = document.getElementById('mcq-feedback');
+  fb.className = 'feedback-box show ' + (chosen === correct ? 'ok' : 'ko');
+  fb.textContent = chosen === correct ? T[lang].mcqs[idx].feedOk : T[lang].mcqs[idx].feedKo;
+  if (chosen === correct) mcqScore += 35;
+  document.getElementById('mcq-next').disabled = false;
+}
+
+function nextMCQ() {
+  mcqIdx++;
+  renderMCQQuestion();
+}
+
+function goToReflection() {
+  document.getElementById('step-mcq').classList.remove('active');
+  document.getElementById('step-reflection').classList.add('active');
+}
+
+function renderChips() {
+  const area = document.getElementById('chips-area');
+  if (!area) return;
+  area.innerHTML = '';
+  T[lang].refChips.forEach(chip => {
+    const el = document.createElement('span');
+    el.className = 'reflection-chip';
+    el.textContent = chip;
+    el.onclick = () => {
+      el.classList.toggle('active');
+      const ta = document.getElementById('reflection-text');
+      if (el.classList.contains('active')) {
+        ta.value = ta.value ? ta.value + '\n' + chip : chip;
+      }
+    };
+    area.appendChild(el);
+  });
+}
+
+function showScore() {
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total = dilemmaScore + mcqScore;
+  const texts = T[lang].scoreTexts;
+  let chosen = texts[0];
+  for (const s of texts) { if (total >= s.min) chosen = s; }
+  document.getElementById('score-emoji').textContent = chosen.emoji;
+  document.getElementById('score-title').textContent = chosen.title;
+  document.getElementById('score-desc').textContent = chosen.desc;
+  document.getElementById('score-taleb').textContent = chosen.taleb;
+  document.getElementById('score-pct').textContent = total + '%';
+  const fill = document.getElementById('score-fill');
+  fill.style.background = chosen.color;
+  setTimeout(() => { fill.style.width = total + '%'; }, 100);
+  document.getElementById('sec-test').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ── INIT ── */
+renderAll();
+</script>
+</body>
+</html>

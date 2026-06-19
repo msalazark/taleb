@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Sesgo de Supervivencia — Taleb & Wald</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.cemetery-icon{font-size:4rem;margin:1.5rem 0;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* CASE NAV PILLS */
+.case-pills{display:flex;gap:.5rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap;}
+.case-pill{font-family:'IBM Plex Mono',monospace;font-size:.7rem;padding:.35rem .9rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text3);transition:all .2s;}
+.case-pill.done{border-color:var(--green);color:var(--green);}
+.case-pill.current{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+
+/* WINNERS SHOWCASE */
+.winners-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.85rem;margin:1.5rem 0;}
+.winner-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem .9rem;text-align:center;transition:all .3s;}
+.winner-emoji{font-size:1.8rem;margin-bottom:.5rem;}
+.winner-name{font-weight:500;font-size:.85rem;margin-bottom:.2rem;}
+.winner-stat{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--green);}
+
+/* GUESS BOX */
+.guess-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;text-align:center;}
+.guess-q{font-size:1rem;color:var(--text);margin-bottom:1rem;}
+.guess-slider-row{display:flex;align-items:center;gap:1rem;max-width:400px;margin:0 auto 1rem;}
+.guess-slider{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg3);outline:none;}
+.guess-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg);}
+.guess-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent2);cursor:pointer;border:3px solid var(--bg);}
+.guess-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;color:var(--accent2);min-width:55px;}
+.guess-submit{background:var(--accent);color:#fff;border:none;padding:.6rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;}
+
+/* CEMETERY REVEAL */
+.cemetery-box{display:none;background:var(--bg2);border:1px solid var(--red);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.cemetery-box.show{display:block;}
+.cemetery-stat-row{display:flex;align-items:center;justify-content:center;gap:2rem;margin:1.25rem 0;flex-wrap:wrap;}
+.cstat{text-align:center;}
+.cstat-num{font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:600;}
+.cstat-num.alive{color:var(--green);}
+.cstat-num.dead{color:var(--red);}
+.cstat-lbl{font-size:.75rem;color:var(--text3);margin-top:.25rem;}
+.grave-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(20px,1fr));gap:3px;margin:1.25rem 0;max-width:100%;}
+.grave-cell{aspect-ratio:1;border-radius:3px;}
+.grave-cell.alive{background:var(--green);opacity:.8;}
+.grave-cell.dead{background:var(--bg3);border:1px solid var(--border);}
+.cemetery-insight{font-size:.88rem;color:var(--text);line-height:1.65;padding-top:.5rem;border-top:1px solid var(--border);margin-top:1rem;}
+
+/* WALD PLANE */
+.plane-visual{position:relative;margin:1.5rem auto;max-width:480px;}
+.plane-svg-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 05</span>
+    <span class="header-title" id="hdr-title">El Sesgo de Supervivencia</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">Solo escuchas<br>a los que sobrevivieron</h1>
+  <div class="cemetery-icon">🪦</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">El cementerio de los fracasados es invisible. No deja entrevistas, no escribe libros, no aparece en rankings. Por eso el mundo parece más fácil de lo que realmente es.</p>
+  <button class="btn-primary" onclick="startCases()" id="s1-btn">Ver el recorrido → Empezar</button>
+</section>
+
+<!-- S2 RECORRIDO -->
+<section id="sec-cases">
+  <div class="section-tag" id="s2-tag">Parte 2 · Tres Casos, Un Patrón</div>
+  <h2 id="s2-h2">Recorrido por el sesgo de supervivencia</h2>
+  <div class="case-pills" id="case-pills"></div>
+
+  <!-- CASO 1: STARTUPS -->
+  <div class="case-block" id="case-startups">
+    <h3 style="font-family:'IBM Plex Serif',serif;font-size:1.2rem;margin-bottom:.5rem" id="cs-title">Caso 1 · Las Startups Unicornio</h3>
+    <p id="cs-intro">Estas son las startups que todos conocemos. Las que llegan a las portadas, las que enseñamos en clase, las que inspiran.</p>
+    <div class="winners-grid" id="startup-winners"></div>
+    <div class="guess-box">
+      <div class="guess-q" id="cs-guess-q">¿Qué porcentaje de startups financiadas por capital de riesgo fracasa por completo (pierde toda la inversión)?</div>
+      <div class="guess-slider-row">
+        <input type="range" class="guess-slider" id="cs-slider" min="0" max="100" value="50">
+        <span class="guess-val" id="cs-slider-val">50%</span>
+      </div>
+      <button class="guess-submit" onclick="revealCemetery('startups')" id="cs-submit">Revelar el cementerio →</button>
+    </div>
+    <div class="cemetery-box" id="cemetery-startups">
+      <div class="cemetery-stat-row">
+        <div class="cstat"><div class="cstat-num alive">~25%</div><div class="cstat-lbl" id="cs-alive-lbl">Sobreviven / tienen éxito moderado</div></div>
+        <div class="cstat"><div class="cstat-num dead">~75%</div><div class="cstat-lbl" id="cs-dead-lbl">Fracasan totalmente</div></div>
+      </div>
+      <div class="grave-grid" id="grave-grid-startups"></div>
+      <p class="cemetery-insight" id="cs-insight">Solo vemos los pitch decks de Airbnb y Stripe en las clases de emprendimiento. Nunca vemos los miles de decks idénticamente prometedores de startups que fracasaron con la misma estrategia, el mismo equipo "perfecto" y el mismo mercado "enorme".</p>
+    </div>
+  </div>
+
+  <!-- CASO 2: FONDOS -->
+  <div class="case-block" id="case-funds" style="display:none">
+    <h3 style="font-family:'IBM Plex Serif',serif;font-size:1.2rem;margin-bottom:.5rem" id="cf-title">Caso 2 · Los Fondos de Inversión "Estrella"</h3>
+    <p id="cf-intro">Las revistas financieras celebran a los gestores de fondos con rendimientos espectaculares durante 10 años seguidos.</p>
+    <div class="winners-grid" id="fund-winners"></div>
+    <div class="guess-box">
+      <div class="guess-q" id="cf-guess-q">¿Qué porcentaje de fondos de cobertura (hedge funds) cierra o desaparece en sus primeros 10 años?</div>
+      <div class="guess-slider-row">
+        <input type="range" class="guess-slider" id="cf-slider" min="0" max="100" value="50">
+        <span class="guess-val" id="cf-slider-val">50%</span>
+      </div>
+      <button class="guess-submit" onclick="revealCemetery('funds')" id="cf-submit">Revelar el cementerio →</button>
+    </div>
+    <div class="cemetery-box" id="cemetery-funds">
+      <div class="cemetery-stat-row">
+        <div class="cstat"><div class="cstat-num alive">~30%</div><div class="cstat-lbl" id="cf-alive-lbl">Siguen operando a los 10 años</div></div>
+        <div class="cstat"><div class="cstat-num dead">~70%</div><div class="cstat-lbl" id="cf-dead-lbl">Cierran o desaparecen</div></div>
+      </div>
+      <div class="grave-grid" id="grave-grid-funds"></div>
+      <p class="cemetery-insight" id="cf-insight">Los índices de "mejores fondos" solo incluyen fondos que aún existen. Los que cerraron por malos resultados simplemente desaparecen de las bases de datos — inflando artificialmente el rendimiento promedio histórico de la industria.</p>
+    </div>
+  </div>
+
+  <!-- CASO 3: AVIONES WALD -->
+  <div class="case-block" id="case-planes" style="display:none">
+    <h3 style="font-family:'IBM Plex Serif',serif;font-size:1.2rem;margin-bottom:.5rem" id="cp-title">Caso 3 · Los Aviones de Abraham Wald (1943)</h3>
+    <p id="cp-intro">La Marina de EE.UU. analizó los aviones que <strong>regresaban</strong> de combate, marcando dónde tenían impactos de bala, para decidir dónde reforzar el blindaje.</p>
+    <div class="plane-visual">
+      <div class="plane-svg-wrap">
+        <svg viewBox="0 0 400 200" width="100%">
+          <ellipse cx="200" cy="100" rx="160" ry="22" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+          <rect x="185" y="40" width="30" height="120" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+          <circle cx="100" cy="95" r="6" fill="#e74c3c"/><circle cx="120" cy="105" r="6" fill="#e74c3c"/>
+          <circle cx="280" cy="90" r="6" fill="#e74c3c"/><circle cx="260" cy="110" r="6" fill="#e74c3c"/>
+          <circle cx="150" cy="60" r="6" fill="#e74c3c"/><circle cx="240" cy="65" r="6" fill="#e74c3c"/>
+          <circle cx="170" cy="140" r="6" fill="#e74c3c"/><circle cx="220" cy="135" r="6" fill="#e74c3c"/>
+          <circle cx="90" cy="100" r="6" fill="#e74c3c"/><circle cx="310" cy="100" r="6" fill="#e74c3c"/>
+          <circle cx="200" cy="50" r="6" fill="#2ecc71" opacity="0.5"/>
+          <text x="200" y="190" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.5" font-family="IBM Plex Mono">🔴 Impactos en aviones que SOBREVIVIERON</text>
+        </svg>
+      </div>
+    </div>
+    <div class="guess-box">
+      <div class="guess-q" id="cp-guess-q">¿Dónde recomendarías poner el blindaje extra: donde están los puntos rojos (impactos), o en otro lugar?</div>
+      <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+        <button class="guess-submit" style="background:var(--bg3);color:var(--text);border:1px solid var(--border)" onclick="revealWald('points')" id="cp-btn-points">Donde están los puntos rojos</button>
+        <button class="guess-submit" onclick="revealWald('elsewhere')" id="cp-btn-elsewhere">En otro lugar (motor, cabina)</button>
+      </div>
+    </div>
+    <div class="cemetery-box" id="cemetery-planes">
+      <p class="cemetery-insight" id="cp-insight" style="border-top:none;padding-top:0;margin-top:0;">Abraham Wald, estadístico de origen húngaro, dio la respuesta contraintuitiva: blindar donde <strong>NO</strong> hay impactos — el motor y la cabina. Su razonamiento: los aviones con impactos en esas zonas <strong>no regresaron</strong> para ser contados. Los datos disponibles solo mostraban dónde un avión puede ser alcanzado <strong>y sobrevivir</strong>. Su trabajo salvó miles de vidas y es uno de los ejemplos fundacionales del sesgo de supervivencia en estadística aplicada.</p>
+    </div>
+    <button class="btn-accent" onclick="showTheory()" id="cp-next-btn" style="display:none;margin-top:1.5rem">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S3 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s3-tag">Parte 3 · La Teoría</div>
+  <h2 id="s3-h2">¿Por qué el cementerio queda invisible?</h2>
+  <p id="s3-p">Tres marcos para entender por qué solo vemos a los que sobrevivieron.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s3-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S4 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s4-tag">Parte 4 · Mini-test</div>
+  <h2 id="s4-h2">¿Ves el cementerio o solo a los sobrevivientes?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Un libro de management dice: "Estudiamos a 50 empresas que tuvieron un crecimiento explosivo y encontramos 7 prácticas comunes que garantizan el éxito." ¿Qué haces con esa afirmación?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('trust',this)">
+        <div class="d-emoji">📚</div>
+        <div class="d-title" id="d1a-t">Confío en el estudio</div>
+        <div class="d-desc" id="d1a-d">50 empresas es una muestra considerable. Si todas comparten esas 7 prácticas, deben funcionar.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('question',this)">
+        <div class="d-emoji">🪦</div>
+        <div class="d-title" id="d1b-t">Pregunto por el cementerio</div>
+        <div class="d-desc" id="d1b-d">¿Cuántas empresas fracasadas tenían exactamente las mismas 7 prácticas? Sin ese dato, el estudio no prueba nada.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-trust">
+      <strong id="ct-t">Caíste en el sesgo de supervivencia.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="ct-p">Sin un grupo de control de empresas fracasadas con las mismas prácticas, es imposible saber si esas 7 prácticas causan el éxito o simplemente son comunes en cualquier empresa, exitosa o no.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-question">
+      <strong id="cq-t">Piensas como Abraham Wald.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cq-p">Exigir el grupo de control invisible es la pregunta correcta. La mayoría de libros de "éxito empresarial" sufren exactamente este error metodológico — y por eso sus fórmulas rara vez se replican.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde has admirado un "éxito" sin preguntarte cuántos fracasos invisibles hicieron exactamente lo mismo?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"La historia silenciosa: solo vemos los resultados, no los intentos invisibles que fallaron silenciosamente."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Engañado por el Azar (2001)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_04_linda.html">← 04 El Problema de Linda</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">06 Convexidad y Opcionalidad →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"El Sesgo de Supervivencia",
+  s1tag:"Parte 1 · El Gancho",s1h1:"Solo escuchas\na los que sobrevivieron",
+  s1p:"El cementerio de los fracasados es invisible. No deja entrevistas, no escribe libros, no aparece en rankings. Por eso el mundo parece más fácil de lo que realmente es.",
+  s1btn:"Ver el recorrido → Empezar",
+  s2tag:"Parte 2 · Tres Casos, Un Patrón",s2h2:"Recorrido por el sesgo de supervivencia",
+  pills:["1. Startups","2. Fondos","3. Aviones de Wald"],
+  csTitle:"Caso 1 · Las Startups Unicornio",
+  csIntro:"Estas son las startups que todos conocemos. Las que llegan a las portadas, las que enseñamos en clase, las que inspiran.",
+  csGuessQ:"¿Qué porcentaje de startups financiadas por capital de riesgo fracasa por completo (pierde toda la inversión)?",
+  csSubmit:"Revelar el cementerio →",
+  csAliveLbl:"Sobreviven / tienen éxito moderado",csDeadLbl:"Fracasan totalmente",
+  csInsight:"Solo vemos los pitch decks de Airbnb y Stripe en las clases de emprendimiento. Nunca vemos los miles de decks idénticamente prometedores de startups que fracasaron con la misma estrategia, el mismo equipo 'perfecto' y el mismo mercado 'enorme'.",
+  startupWinners:[{e:"🏠",n:"Airbnb",s:"$75B valuación"},{e:"💳",n:"Stripe",s:"$50B valuación"},{e:"🚗",n:"Uber",s:"IPO $82B"},{e:"📦",n:"Amazon",s:"$1.9T market cap"}],
+  cfTitle:"Caso 2 · Los Fondos de Inversión 'Estrella'",
+  cfIntro:"Las revistas financieras celebran a los gestores de fondos con rendimientos espectaculares durante 10 años seguidos.",
+  cfGuessQ:"¿Qué porcentaje de fondos de cobertura (hedge funds) cierra o desaparece en sus primeros 10 años?",
+  cfSubmit:"Revelar el cementerio →",
+  cfAliveLbl:"Siguen operando a los 10 años",cfDeadLbl:"Cierran o desaparecen",
+  cfInsight:"Los índices de 'mejores fondos' solo incluyen fondos que aún existen. Los que cerraron por malos resultados simplemente desaparecen de las bases de datos — inflando artificialmente el rendimiento promedio histórico de la industria.",
+  fundWinners:[{e:"📈",n:"Renaissance",s:"66% anual (Medallion)"},{e:"💰",n:"Bridgewater",s:"$124B AUM"},{e:"🎯",n:"Citadel",s:"$59B AUM"},{e:"⭐",n:"Top 1%",s:"Los que vemos en revistas"}],
+  cpTitle:"Caso 3 · Los Aviones de Abraham Wald (1943)",
+  cpIntro:"La Marina de EE.UU. analizó los aviones que <strong>regresaban</strong> de combate, marcando dónde tenían impactos de bala, para decidir dónde reforzar el blindaje.",
+  cpGuessQ:"¿Dónde recomendarías poner el blindaje extra: donde están los puntos rojos (impactos), o en otro lugar?",
+  cpBtnPoints:"Donde están los puntos rojos",
+  cpBtnElsewhere:"En otro lugar (motor, cabina)",
+  cpInsight:"Abraham Wald, estadístico de origen húngaro, dio la respuesta contraintuitiva: blindar donde <strong>NO</strong> hay impactos — el motor y la cabina. Su razonamiento: los aviones con impactos en esas zonas <strong>no regresaron</strong> para ser contados. Los datos disponibles solo mostraban dónde un avión puede ser alcanzado <strong>y sobrevivir</strong>. Su trabajo salvó miles de vidas y es uno de los ejemplos fundacionales del sesgo de supervivencia en estadística aplicada.",
+  s3tag:"Parte 3 · La Teoría",s3h2:"¿Por qué el cementerio queda invisible?",s3p:"Tres marcos para entender por qué solo vemos a los que sobrevivieron.",
+  s3btn:"Hacer el mini-test →",
+  s4tag:"Parte 4 · Mini-test",s4h2:"¿Ves el cementerio o solo a los sobrevivientes?",
+  tn1:"DILEMA · 01",
+  tq1:'Un libro de management dice: "Estudiamos a 50 empresas que tuvieron un crecimiento explosivo y encontramos 7 prácticas comunes que garantizan el éxito." ¿Qué haces con esa afirmación?',
+  d1aT:"Confío en el estudio",d1aD:"50 empresas es una muestra considerable. Si todas comparten esas 7 prácticas, deben funcionar.",
+  d1bT:"Pregunto por el cementerio",d1bD:"¿Cuántas empresas fracasadas tenían exactamente las mismas 7 prácticas? Sin ese dato, el estudio no prueba nada.",
+  ctT:"Caíste en el sesgo de supervivencia.",ctP:"Sin un grupo de control de empresas fracasadas con las mismas prácticas, es imposible saber si esas 7 prácticas causan el éxito o simplemente son comunes en cualquier empresa, exitosa o no.",
+  cqT:"Piensas como Abraham Wald.",cqP:"Exigir el grupo de control invisible es la pregunta correcta. La mayoría de libros de 'éxito empresarial' sufren exactamente este error metodológico — y por eso sus fórmulas rara vez se replican.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Dónde has admirado un 'éxito' sin preguntarte cuántos fracasos invisibles hicieron exactamente lo mismo?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Un libro de autoayuda","La rutina de una persona exitosa","Un caso de estudio de negocios","Una estrategia de inversión viral","Un consejo de carrera de un mentor","Una dieta o rutina de ejercicio"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"La historia silenciosa: solo vemos los resultados, no los intentos invisibles que fallaron silenciosamente."',
+  theories:[
+    {icon:"🪦",name:"Taleb y la Historia Silenciosa",body:`<p>Taleb introdujo el concepto de "evidencia silenciosa" (silent evidence) en <em>Engañado por el Azar</em> (2001) para describir cómo el mundo que vemos está sistemáticamente sesgado hacia los que sobrevivieron a un proceso aleatorio.</p><div class="quote-block"><p>"No vemos los cementerios porque están, por definición, fuera de nuestro campo de visión. La gente que conocemos que tuvo éxito invirtiendo en bolsa probablemente tuvo suerte, no habilidad — pero no podemos conocer a los que perdieron todo y se retiraron del mercado."</p><cite>— Nassim Taleb, Engañado por el Azar (2001)</cite></div><div class="tag-list"><span class="tag">Historia silenciosa</span><span class="tag">Cementerio</span><span class="tag">Azar</span></div>`},
+    {icon:"✈️",name:"Abraham Wald y la estadística aplicada",body:`<p>Abraham Wald (1902–1950) trabajó en el Statistical Research Group durante la Segunda Guerra Mundial. Su análisis del blindaje de aviones es uno de los ejemplos más citados de razonamiento estadístico correcto contra la intuición.</p><p>El error que casi cometió la Marina: optimizar basándose únicamente en los datos disponibles, ignorando que esos datos ya estaban filtrados por el propio fenómeno que se quería estudiar (la supervivencia).</p><div class="quote-block"><p>"Los agujeros de bala en los aviones que regresaron marcan los lugares donde un avión puede ser alcanzado y aun así sobrevivir."</p><cite>— Análisis atribuido a Abraham Wald (1943)</cite></div><div class="tag-list"><span class="tag">Wald</span><span class="tag">Sesgo de selección</span><span class="tag">WWII</span></div>`},
+    {icon:"📊",name:"El sesgo de selección en investigación",body:`<p>El sesgo de supervivencia es un caso particular de un problema más amplio: el sesgo de selección de muestra. Ocurre cuando la muestra que estudiamos no es representativa de la población total porque fue filtrada por el mismo proceso que estudiamos.</p><p>En finanzas se le llama "survivorship bias" en los índices bursátiles: cuando una empresa quiebra, sale del índice — lo que hace que el rendimiento histórico del índice parezca mejor de lo que realmente fue para un inversor promedio.</p><div class="quote-block"><p>"Cualquier conclusión basada solo en sobrevivientes sobreestima sistemáticamente el éxito de la estrategia subyacente."</p><cite>— Principio metodológico estándar en estadística</cite></div><div class="tag-list"><span class="tag">Sesgo de selección</span><span class="tag">Survivorship bias</span><span class="tag">Metodología</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un anuncio dice: 'El 90% de nuestros graduados consiguió trabajo en 6 meses' pero no menciona qué porcentaje de inscritos se graduó. ¿Qué problema metodológico tiene?",opts:["Ninguno, el dato del 90% es suficiente","Sesgo de supervivencia — solo cuenta a quienes completaron el programa, no a todos los que empezaron","El dato es falso porque ningún programa tiene 90% de empleo","Falta información sobre el salario de los graduados"],correct:1,feedOk:"Exacto. Si solo el 30% de los inscritos se gradúa, y de esos el 90% consigue trabajo, la tasa real de éxito desde la inscripción es 27% — no 90%. El cementerio son los que abandonaron.",feedKo:"El problema central es que el dato solo cuenta a los 'sobrevivientes' del programa (los que se graduaron), ignorando a quienes lo abandonaron — que pueden ser la mayoría."},
+    {q:"¿Por qué Abraham Wald recomendó blindar donde NO había impactos de bala?",opts:["Porque esas zonas eran más baratas de blindar","Porque los aviones alcanzados en esas zonas no sobrevivieron para ser analizados","Porque el motor siempre necesita más blindaje por diseño","Porque los pilotos lo solicitaron específicamente"],correct:1,feedOk:"Correcto. La ausencia de impactos en esas zonas en los aviones que regresaron no significa que esas zonas fueran seguras — significa que los aviones alcanzados ahí no volvieron.",feedKo:"La clave del insight de Wald es que la muestra (aviones que regresaron) ya estaba filtrada. La ausencia de daño en una zona en los sobrevivientes sugiere que el daño ahí fue letal, no irrelevante."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🏆",title:"Solo ves a los ganadores",desc:"Como la mayoría. El cementerio sigue siendo invisible para ti — por ahora.",taleb:"'No vemos los cementerios porque están fuera de nuestro campo de visión.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a preguntar por el grupo de control",desc:"Notas cuándo falta el dato de los que fracasaron. Buen instinto.",taleb:"'Pregunta siempre: ¿y los que no llegaron a contar la historia?' — Taleb",color:"#f39c12"},
+    {min:70,emoji:"🪦",title:"Ves el cementerio",desc:"Cuestionas estudios de éxito sin grupo de control. Pensamiento estadístico maduro.",taleb:"'La evidencia silenciosa es la más importante que nunca verás.' — Engañado por el Azar",color:"#2ecc71"},
+    {min:90,emoji:"✈️",title:"Nivel Abraham Wald",desc:"Piensas en lo que falta en los datos, no solo en lo que está presente.",taleb:"'Los datos disponibles solo muestran lo que sobrevivió para ser medido.' — Wald (parafraseado)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Survivorship Bias",
+  s1tag:"Part 1 · The Hook",s1h1:"You only hear from\nthe ones who survived",
+  s1p:"The cemetery of the failed is invisible. It gives no interviews, writes no books, appears in no rankings. That's why the world looks easier than it really is.",
+  s1btn:"See the tour → Start",
+  s2tag:"Part 2 · Three Cases, One Pattern",s2h2:"A tour through survivorship bias",
+  pills:["1. Startups","2. Funds","3. Wald's Planes"],
+  csTitle:"Case 1 · The Unicorn Startups",
+  csIntro:"These are the startups everyone knows. The ones on magazine covers, the ones we teach in class, the ones that inspire.",
+  csGuessQ:"What percentage of venture-funded startups fail completely (lose the entire investment)?",
+  csSubmit:"Reveal the cemetery →",
+  csAliveLbl:"Survive / achieve moderate success",csDeadLbl:"Fail completely",
+  csInsight:"We only see Airbnb's and Stripe's pitch decks in entrepreneurship classes. We never see the thousands of identically promising decks from startups that failed with the same strategy, the same 'perfect' team, and the same 'huge' market.",
+  startupWinners:[{e:"🏠",n:"Airbnb",s:"$75B valuation"},{e:"💳",n:"Stripe",s:"$50B valuation"},{e:"🚗",n:"Uber",s:"$82B IPO"},{e:"📦",n:"Amazon",s:"$1.9T market cap"}],
+  cfTitle:"Case 2 · The 'Star' Investment Funds",
+  cfIntro:"Financial magazines celebrate fund managers with spectacular returns 10 years running.",
+  cfGuessQ:"What percentage of hedge funds close or disappear within their first 10 years?",
+  cfSubmit:"Reveal the cemetery →",
+  cfAliveLbl:"Still operating at 10 years",cfDeadLbl:"Close or disappear",
+  cfInsight:"'Best funds' indices only include funds that still exist. Those that closed due to poor performance simply vanish from the databases — artificially inflating the industry's historical average return.",
+  fundWinners:[{e:"📈",n:"Renaissance",s:"66% annual (Medallion)"},{e:"💰",n:"Bridgewater",s:"$124B AUM"},{e:"🎯",n:"Citadel",s:"$59B AUM"},{e:"⭐",n:"Top 1%",s:"The ones we see in magazines"}],
+  cpTitle:"Case 3 · Abraham Wald's Planes (1943)",
+  cpIntro:"The US Navy analyzed planes that <strong>returned</strong> from combat, marking where they had bullet impacts, to decide where to reinforce armor.",
+  cpGuessQ:"Where would you recommend adding extra armor: where the red dots (impacts) are, or somewhere else?",
+  cpBtnPoints:"Where the red dots are",
+  cpBtnElsewhere:"Somewhere else (engine, cockpit)",
+  cpInsight:"Abraham Wald, a Hungarian-born statistician, gave the counterintuitive answer: armor where there are <strong>NO</strong> impacts — the engine and cockpit. His reasoning: planes hit in those zones <strong>didn't return</strong> to be counted. The available data only showed where a plane could be hit <strong>and survive</strong>. His work saved thousands of lives and is one of the foundational examples of survivorship bias in applied statistics.",
+  s3tag:"Part 3 · The Theory",s3h2:"Why does the cemetery stay invisible?",s3p:"Three frameworks for understanding why we only see those who survived.",
+  s3btn:"Take the mini-test →",
+  s4tag:"Part 4 · Mini-test",s4h2:"Do you see the cemetery or only the survivors?",
+  tn1:"DILEMMA · 01",
+  tq1:'A management book says: "We studied 50 companies with explosive growth and found 7 common practices that guarantee success." What do you do with that claim?',
+  d1aT:"I trust the study",d1aD:"50 companies is a sizable sample. If they all share those 7 practices, they must work.",
+  d1bT:"I ask about the cemetery",d1bD:"How many failed companies had exactly the same 7 practices? Without that data, the study proves nothing.",
+  ctT:"You fell for survivorship bias.",ctP:"Without a control group of failed companies with the same practices, it's impossible to know if those 7 practices cause success or are simply common in any company, successful or not.",
+  cqT:"You think like Abraham Wald.",cqP:"Demanding the invisible control group is the right question. Most 'business success' books suffer exactly this methodological error — which is why their formulas rarely replicate.",
+  tn3:"REFLECTION · 03",
+  tq3:"Where have you admired a 'success' without asking how many invisible failures did exactly the same thing?",
+  refHint:"Examples to trigger reflection:",
+  chips:["A self-help book","A successful person's routine","A business case study","A viral investment strategy","Career advice from a mentor","A diet or workout routine"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"The silent evidence: we only see the outcomes, not the invisible attempts that failed silently."',
+  theories:[
+    {icon:"🪦",name:"Taleb and Silent Evidence",body:`<p>Taleb introduced the concept of "silent evidence" in <em>Fooled by Randomness</em> (2001) to describe how the world we see is systematically biased toward those who survived a random process.</p><div class="quote-block"><p>"We don't see cemeteries because they are, by definition, out of our field of vision. People we know who succeeded investing in stocks probably had luck, not skill — but we can't know those who lost everything and exited the market."</p><cite>— Nassim Taleb, Fooled by Randomness (2001)</cite></div><div class="tag-list"><span class="tag">Silent evidence</span><span class="tag">Cemetery</span><span class="tag">Randomness</span></div>`},
+    {icon:"✈️",name:"Abraham Wald and applied statistics",body:`<p>Abraham Wald (1902–1950) worked at the Statistical Research Group during World War II. His analysis of plane armor is one of the most cited examples of correct statistical reasoning against intuition.</p><p>The error the Navy almost made: optimizing based solely on available data, ignoring that this data was already filtered by the very phenomenon being studied (survival).</p><div class="quote-block"><p>"The bullet holes on planes that returned mark the places where a plane can be hit and still survive."</p><cite>— Analysis attributed to Abraham Wald (1943)</cite></div><div class="tag-list"><span class="tag">Wald</span><span class="tag">Selection bias</span><span class="tag">WWII</span></div>`},
+    {icon:"📊",name:"Selection bias in research",body:`<p>Survivorship bias is a specific case of a broader problem: sample selection bias. It occurs when the sample we study isn't representative of the total population because it was filtered by the very process under study.</p><p>In finance it's called "survivorship bias" in stock indices: when a company goes bankrupt, it leaves the index — making the index's historical performance look better than it actually was for an average investor.</p><div class="quote-block"><p>"Any conclusion based only on survivors systematically overestimates the success of the underlying strategy."</p><cite>— Standard methodological principle in statistics</cite></div><div class="tag-list"><span class="tag">Selection bias</span><span class="tag">Survivorship bias</span><span class="tag">Methodology</span></div>`},
+  ],
+  mcqs:[
+    {q:"An ad says: '90% of our graduates found jobs within 6 months' but doesn't mention what percentage of enrollees graduated. What's the methodological problem?",opts:["None, the 90% figure is sufficient","Survivorship bias — it only counts those who completed the program, not all who started","The figure is false because no program has 90% employment","It's missing information about graduate salaries"],correct:1,feedOk:"Exactly. If only 30% of enrollees graduate, and 90% of those get jobs, the real success rate from enrollment is 27% — not 90%. The cemetery is those who dropped out.",feedKo:"The core problem is that the figure only counts the program's 'survivors' (those who graduated), ignoring those who dropped out — who may be the majority."},
+    {q:"Why did Abraham Wald recommend armoring where there were NO bullet impacts?",opts:["Because those zones were cheaper to armor","Because planes hit in those zones didn't survive to be analyzed","Because the engine always needs more armor by design","Because the pilots specifically requested it"],correct:1,feedOk:"Correct. The absence of impacts in those zones among returning planes doesn't mean those zones were safe — it means planes hit there didn't make it back.",feedKo:"The key to Wald's insight is that the sample (returning planes) was already filtered. The absence of damage in a zone among survivors suggests damage there was lethal, not irrelevant."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🏆",title:"You only see the winners",desc:"Like most people. The cemetery is still invisible to you — for now.",taleb:"'We don't see cemeteries because they are out of our field of vision.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to ask about the control group",desc:"You notice when the data on failures is missing. Good instinct.",taleb:"'Always ask: what about those who never lived to tell the story?' — Taleb",color:"#f39c12"},
+    {min:70,emoji:"🪦",title:"You see the cemetery",desc:"You question success studies without control groups. Mature statistical thinking.",taleb:"'Silent evidence is the most important evidence you'll never see.' — Fooled by Randomness",color:"#2ecc71"},
+    {min:90,emoji:"✈️",title:"Abraham Wald Level",desc:"You think about what's missing from the data, not just what's present.",taleb:"'Available data only shows what survived to be measured.' — Wald (paraphrased)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', currentCase=0, dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+const caseOrder=['startups','funds','planes'];
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-p':'s1p','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2',
+    'cs-title':'csTitle','cs-intro':'csIntro','cs-guess-q':'csGuessQ','cs-submit':'csSubmit','cs-alive-lbl':'csAliveLbl','cs-dead-lbl':'csDeadLbl','cs-insight':'csInsight',
+    'cf-title':'cfTitle','cf-intro':'cfIntro','cf-guess-q':'cfGuessQ','cf-submit':'cfSubmit','cf-alive-lbl':'cfAliveLbl','cf-dead-lbl':'cfDeadLbl','cf-insight':'cfInsight',
+    'cp-title':'cpTitle','cp-guess-q':'cpGuessQ','cp-btn-points':'cpBtnPoints','cp-btn-elsewhere':'cpBtnElsewhere','cp-insight':'cpInsight',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','s3-btn':'s3btn',
+    's4-tag':'s4tag','s4-h2':'s4h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'ct-t':'ctT','ct-p':'ctP','cq-t':'cqT','cq-p':'cqP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('cp-intro').innerHTML=tx.cpIntro;
+  document.getElementById('cp-insight').innerHTML=tx.cpInsight;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderPills();renderWinners();renderTheoryCards();renderChips();
+}
+
+function renderPills(){
+  const wrap=document.getElementById('case-pills');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].pills.forEach((p,i)=>{
+    const el=document.createElement('span');
+    el.className='case-pill'+(i<currentCase?' done':i===currentCase?' current':'');
+    el.textContent=p;
+    wrap.appendChild(el);
+  });
+}
+
+function renderWinners(){
+  const sw=document.getElementById('startup-winners');
+  if(sw){sw.innerHTML='';T[lang].startupWinners.forEach(w=>{
+    const c=document.createElement('div');c.className='winner-card';
+    c.innerHTML=`<div class="winner-emoji">${w.e}</div><div class="winner-name">${w.n}</div><div class="winner-stat">${w.s}</div>`;
+    sw.appendChild(c);
+  });}
+  const fw=document.getElementById('fund-winners');
+  if(fw){fw.innerHTML='';T[lang].fundWinners.forEach(w=>{
+    const c=document.createElement('div');c.className='winner-card';
+    c.innerHTML=`<div class="winner-emoji">${w.e}</div><div class="winner-name">${w.n}</div><div class="winner-stat">${w.s}</div>`;
+    fw.appendChild(c);
+  });}
+}
+
+function startCases(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-cases').scrollIntoView({behavior:'smooth'});}
+
+document.getElementById('cs-slider').addEventListener('input',e=>{document.getElementById('cs-slider-val').textContent=e.target.value+'%';});
+document.getElementById('cf-slider').addEventListener('input',e=>{document.getElementById('cf-slider-val').textContent=e.target.value+'%';});
+
+function buildGraveGrid(id,alivePct){
+  const grid=document.getElementById(id);if(!grid)return;
+  grid.innerHTML='';
+  const total=100;
+  const aliveCount=Math.round(total*alivePct/100);
+  for(let i=0;i<total;i++){
+    const cell=document.createElement('div');
+    cell.className='grave-cell '+(i<aliveCount?'alive':'dead');
+    grid.appendChild(cell);
+  }
+}
+
+function revealCemetery(caseType){
+  if(caseType==='startups'){
+    document.getElementById('cemetery-startups').classList.add('show');
+    buildGraveGrid('grave-grid-startups',25);
+    document.getElementById('cs-submit').disabled=true;
+    setTimeout(()=>{
+      document.getElementById('case-startups').style.display='none';
+      document.getElementById('case-funds').style.display='block';
+      currentCase=1;renderPills();
+      document.getElementById('case-funds').scrollIntoView({behavior:'smooth'});
+    },2800);
+  } else if(caseType==='funds'){
+    document.getElementById('cemetery-funds').classList.add('show');
+    buildGraveGrid('grave-grid-funds',30);
+    document.getElementById('cf-submit').disabled=true;
+    setTimeout(()=>{
+      document.getElementById('case-funds').style.display='none';
+      document.getElementById('case-planes').style.display='block';
+      currentCase=2;renderPills();
+      document.getElementById('case-planes').scrollIntoView({behavior:'smooth'});
+    },2800);
+  }
+}
+
+function revealWald(choice){
+  document.getElementById('cp-btn-points').disabled=true;
+  document.getElementById('cp-btn-elsewhere').disabled=true;
+  document.getElementById('cemetery-planes').classList.add('show');
+  document.getElementById('cp-next-btn').style.display='inline-block';
+  currentCase=3;
+  setTimeout(()=>document.getElementById('cemetery-planes').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-trust').classList.toggle('show',type==='trust');
+  document.getElementById('cons-question').classList.toggle('show',type==='question');
+  dilemmaScore=type==='question'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

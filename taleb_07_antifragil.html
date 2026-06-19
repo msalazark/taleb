@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frágil / Robusto / Antifrágil — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* 3 CATEGORIES VISUAL */
+.cat-grid{display:grid;grid-template-columns:1fr;gap:.75rem;margin:1.75rem 0;}
+@media(min-width:560px){.cat-grid{grid-template-columns:repeat(3,1fr);}}
+.cat-card{border-radius:var(--radius);padding:1.25rem 1.1rem;text-align:center;border:1px solid;}
+.cat-card.fragile{background:rgba(231,76,60,.07);border-color:rgba(231,76,60,.3);}
+.cat-card.robust{background:rgba(74,158,255,.07);border-color:rgba(74,158,255,.3);}
+.cat-card.anti{background:rgba(46,204,113,.07);border-color:rgba(46,204,113,.3);}
+.cat-icon{font-size:1.8rem;margin-bottom:.5rem;}
+.cat-name{font-weight:600;font-size:.95rem;margin-bottom:.3rem;}
+.cat-name.fragile{color:var(--red);}
+.cat-name.robust{color:var(--blue);}
+.cat-name.anti{color:var(--green);}
+.cat-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+
+/* SORTING GAME */
+.sort-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:.75rem;}
+.sort-item-text{font-size:.92rem;color:var(--text);margin-bottom:.85rem;display:flex;align-items:center;gap:.6rem;}
+.sort-item-emoji{font-size:1.3rem;}
+.sort-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;}
+.sort-btn{font-family:'IBM Plex Sans',sans-serif;font-size:.78rem;padding:.55rem .4rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;cursor:pointer;transition:all .2s;text-align:center;}
+.sort-btn.fragile-btn:hover:not(:disabled){border-color:var(--red);color:var(--red);}
+.sort-btn.robust-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue);}
+.sort-btn.anti-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
+.sort-btn:disabled{cursor:default;opacity:.5;}
+.sort-btn.chosen-fragile{background:rgba(231,76,60,.15);border-color:var(--red);color:var(--red);opacity:1;}
+.sort-btn.chosen-robust{background:rgba(74,158,255,.15);border-color:var(--blue);color:var(--blue);opacity:1;}
+.sort-btn.chosen-anti{background:rgba(46,204,113,.15);border-color:var(--green);color:var(--green);opacity:1;}
+.sort-reveal{display:none;margin-top:.7rem;padding:.65rem .8rem;border-radius:var(--radius-sm);font-size:.8rem;line-height:1.55;}
+.sort-reveal.show{display:block;}
+.sort-reveal.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);color:var(--green);}
+.sort-reveal.wrong{background:rgba(242,166,35,.08);border:1px solid rgba(242,166,35,.25);color:var(--accent2);}
+.sort-progress{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.08em;}
+.sort-score-strip{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.sort-score-strip.show{display:flex;}
+
+/* SURVIVAL GAME */
+.system-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;margin:1.25rem 0 1.5rem;}
+.system-pick{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem .85rem;text-align:center;cursor:pointer;transition:all .2s;}
+.system-pick:hover{border-color:var(--accent2);}
+.system-pick.selected{border-color:var(--accent2);background:rgba(242,166,35,.08);}
+.system-pick-emoji{font-size:1.6rem;margin-bottom:.4rem;}
+.system-pick-name{font-size:.82rem;font-weight:500;}
+
+.status-meter{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:none;}
+.status-meter.show{display:block;}
+.status-meter-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.08em;color:var(--text3);margin-bottom:.65rem;text-transform:uppercase;}
+.status-bar-track{position:relative;height:36px;background:linear-gradient(90deg,rgba(231,76,60,.15),rgba(74,158,255,.15),rgba(46,204,113,.15));border-radius:18px;border:1px solid var(--border);overflow:visible;}
+.status-zones{display:flex;position:absolute;inset:0;}
+.status-zone{flex:1;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text3);}
+.status-marker{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;background:var(--accent2);border:3px solid var(--bg);transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.34,1.4,.64,1);box-shadow:0 2px 8px rgba(0,0,0,.3);left:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;}
+
+.decision-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;}
+.decision-round{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--accent2);letter-spacing:.1em;margin-bottom:.5rem;}
+.decision-text{font-size:.95rem;color:var(--text);margin-bottom:1rem;}
+.decision-options{display:grid;gap:.55rem;}
+.decision-opt{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem .9rem;cursor:pointer;font-size:.85rem;text-align:left;transition:all .2s;color:var(--text);}
+.decision-opt:hover:not(:disabled){border-color:var(--accent2);}
+.decision-opt:disabled{cursor:default;}
+.decision-opt.chosen{border-color:var(--accent2);background:rgba(242,166,35,.1);}
+.decision-opt-tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;padding:1px 6px;border-radius:6px;margin-right:.5rem;display:inline-block;}
+.tag-fragile{background:rgba(231,76,60,.15);color:var(--red);}
+.tag-robust{background:rgba(74,158,255,.15);color:var(--blue);}
+.tag-anti{background:rgba(46,204,113,.15);color:var(--green);}
+.decision-feedback{display:none;margin-top:.75rem;padding:.7rem .9rem;border-radius:var(--radius-sm);font-size:.82rem;background:var(--bg3);color:var(--text2);line-height:1.55;}
+.decision-feedback.show{display:block;}
+.survival-final{display:none;background:var(--bg2);border:1px solid var(--accent2);border-radius:var(--radius);padding:1.75rem;text-align:center;margin-top:1rem;}
+.survival-final.show{display:block;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 07</span>
+    <span class="header-title" id="hdr-title">Frágil / Robusto / Antifrágil</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">Hay 3 formas de<br>relacionarte con el caos</h1>
+  <p id="s1-p" style="max-width:560px;margin:0 auto 1.5rem;">No es solo "fuerte" o "débil". Taleb identificó una tercera categoría que la mayoría nunca considera: cosas que <strong>mejoran</strong> con el desorden.</p>
+  <div class="cat-grid">
+    <div class="cat-card fragile">
+      <div class="cat-icon">🥚</div>
+      <div class="cat-name fragile" id="cat-fragile-name">Frágil</div>
+      <div class="cat-desc" id="cat-fragile-desc">Se rompe con la volatilidad. Prefiere la calma.</div>
+    </div>
+    <div class="cat-card robust">
+      <div class="cat-icon">🪨</div>
+      <div class="cat-name robust" id="cat-robust-name">Robusto</div>
+      <div class="cat-desc" id="cat-robust-desc">Resiste la volatilidad. No cambia, no mejora.</div>
+    </div>
+    <div class="cat-card anti">
+      <div class="cat-icon">🌿</div>
+      <div class="cat-name anti" id="cat-anti-name">Antifrágil</div>
+      <div class="cat-desc" id="cat-anti-desc">Se beneficia de la volatilidad. Mejora con el estrés.</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="startSort()" id="s1-btn">Jugar → Empezar</button>
+</section>
+
+<!-- S2 SORTING GAME -->
+<section id="sec-sort">
+  <div class="section-tag" id="s2-tag">Parte 2 · Calentamiento — Clasifica</div>
+  <h2 id="s2-h2">¿Frágil, Robusto o Antifrágil?</h2>
+  <p id="s2-p">8 sistemas cotidianos. Clasifica cada uno antes de ver la respuesta.</p>
+  <div class="sort-progress" id="sort-progress">0 / 8 clasificados</div>
+  <div id="sort-area"></div>
+  <div class="sort-score-strip" id="sort-score-strip">
+    <div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:500" id="sort-score-n">—</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-left:.5rem" id="sort-score-txt">correctas de 8</span>
+    </div>
+    <button class="btn-accent" onclick="startSurvival()">Jugar mi propia partida →</button>
+  </div>
+</section>
+
+<!-- S3 SURVIVAL GAME -->
+<section id="sec-survival">
+  <div class="section-tag" id="s3-tag">Parte 3 · Tu Partida de Supervivencia</div>
+  <h2 id="s3-h2">Elige un sistema. Sobrevive 8 rondas.</h2>
+  <p id="s3-p">Tus decisiones moverán tu sistema entre las 3 categorías. Cada ronda trae un evento aleatorio del mundo real.</p>
+
+  <div id="system-picker-wrap">
+    <div class="system-picker" id="system-picker"></div>
+  </div>
+
+  <div class="status-meter" id="status-meter">
+    <div class="status-meter-label" id="status-meter-label">Estado actual de tu sistema</div>
+    <div class="status-bar-track">
+      <div class="status-zones">
+        <div class="status-zone" id="zone-fragile">FRÁGIL</div>
+        <div class="status-zone" id="zone-robust">ROBUSTO</div>
+        <div class="status-zone" id="zone-anti">ANTIFRÁGIL</div>
+      </div>
+      <div class="status-marker" id="status-marker">●</div>
+    </div>
+  </div>
+
+  <div id="decisions-area"></div>
+
+  <div class="survival-final" id="survival-final">
+    <div style="font-size:2.5rem;margin-bottom:.5rem" id="sf-emoji">🏁</div>
+    <h3 id="sf-title" style="font-family:'IBM Plex Serif',serif;margin-bottom:.5rem">—</h3>
+    <p id="sf-text" style="font-size:.9rem;color:var(--text2);max-width:480px;margin:0 auto"></p>
+    <button class="btn-accent" onclick="showTheory()" id="sf-btn">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">El marco completo de Antifrágil</h2>
+  <p id="s4-p">Tres ideas centrales del libro que da nombre a toda esta serie.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Diseñas para resistir o para mejorar?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Estás diseñando el plan de crisis de tu equipo de trabajo. ¿Qué objetivo persigues?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('robust',this)">
+        <div class="d-emoji">🛡️</div>
+        <div class="d-title" id="d1a-t">Que resista intacto</div>
+        <div class="d-desc" id="d1a-d">El objetivo es que el equipo aguante la crisis sin romperse ni cambiar.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('anti',this)">
+        <div class="d-emoji">🌱</div>
+        <div class="d-title" id="d1b-t">Que salga más fuerte</div>
+        <div class="d-desc" id="d1b-d">Diseño el sistema para que cada crisis deje al equipo mejor preparado que antes.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-robust">
+      <strong id="cs-t">Diseñaste para robustez, no para mejora.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">La robustez es mejor que la fragilidad, pero tiene un techo. Un sistema robusto sobrevive 1000 crisis exactamente igual — nunca mejora. Eventualmente, una crisis lo suficientemente grande lo encontrará sin ventaja acumulada.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-anti">
+      <strong id="cc-t">Diseñaste para antifragilidad.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cc-p">Cada crisis se convierte en información, en aprendizaje, en ventaja acumulada. Con el tiempo, tu equipo no solo sobrevive — se vuelve mejor que equipos que nunca enfrentaron adversidad.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Qué área de tu vida está actualmente en la zona frágil — y qué cambio la movería hacia robusta o antifrágil?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Lo opuesto a frágil no es robusto, ni resiliente. Lo opuesto a frágil es antifrágil — algo que mejora con el desorden."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Antifrágil (2012)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_06_convexidad.html">← 06 Convexidad</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">08 La Estrategia Barbell →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Frágil / Robusto / Antifrágil",
+  s1tag:"Parte 1 · El Gancho",s1h1:"Hay 3 formas de\nrelacionarte con el caos",
+  s1p:"No es solo 'fuerte' o 'débil'. Taleb identificó una tercera categoría que la mayoría nunca considera: cosas que <strong>mejoran</strong> con el desorden.",
+  catFragileName:"Frágil",catFragileDesc:"Se rompe con la volatilidad. Prefiere la calma.",
+  catRobustName:"Robusto",catRobustDesc:"Resiste la volatilidad. No cambia, no mejora.",
+  catAntiName:"Antifrágil",catAntiDesc:"Se beneficia de la volatilidad. Mejora con el estrés.",
+  s1btn:"Jugar → Empezar",
+  s2tag:"Parte 2 · Calentamiento — Clasifica",s2h2:"¿Frágil, Robusto o Antifrágil?",
+  s2p:"8 sistemas cotidianos. Clasifica cada uno antes de ver la respuesta.",
+  sortScoreTxt:"correctas de 8",
+  s3tag:"Parte 3 · Tu Partida de Supervivencia",s3h2:"Elige un sistema. Sobrevive 8 rondas.",
+  s3p:"Tus decisiones moverán tu sistema entre las 3 categorías. Cada ronda trae un evento aleatorio del mundo real.",
+  statusMeterLabel:"Estado actual de tu sistema",
+  zoneFragile:"FRÁGIL",zoneRobust:"ROBUSTO",zoneAnti:"ANTIFRÁGIL",
+  s4tag:"Parte 4 · La Teoría",s4h2:"El marco completo de Antifrágil",s4p:"Tres ideas centrales del libro que da nombre a toda esta serie.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Diseñas para resistir o para mejorar?",
+  tn1:"DILEMA · 01",
+  tq1:"Estás diseñando el plan de crisis de tu equipo de trabajo. ¿Qué objetivo persigues?",
+  d1aT:"Que resista intacto",d1aD:"El objetivo es que el equipo aguante la crisis sin romperse ni cambiar.",
+  d1bT:"Que salga más fuerte",d1bD:"Diseño el sistema para que cada crisis deje al equipo mejor preparado que antes.",
+  csT:"Diseñaste para robustez, no para mejora.",csP:"La robustez es mejor que la fragilidad, pero tiene un techo. Un sistema robusto sobrevive 1000 crisis exactamente igual — nunca mejora. Eventualmente, una crisis lo suficientemente grande lo encontrará sin ventaja acumulada.",
+  ccT:"Diseñaste para antifragilidad.",ccP:"Cada crisis se convierte en información, en aprendizaje, en ventaja acumulada. Con el tiempo, tu equipo no solo sobrevive — se vuelve mejor que equipos que nunca enfrentaron adversidad.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Qué área de tu vida está actualmente en la zona frágil — y qué cambio la movería hacia robusta o antifrágil?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Mi situación laboral","Mis finanzas personales","Mi salud física","Mis relaciones cercanas","Mis habilidades profesionales","Mi negocio o proyecto"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Lo opuesto a frágil no es robusto, ni resiliente. Lo opuesto a frágil es antifrágil — algo que mejora con el desorden."',
+  sortItems:[
+    {emoji:"🏺",text:"Un jarrón de cerámica antiguo",cat:"fragile",explain:"Frágil. Una caída lo destruye permanentemente. Cero capacidad de recuperación o mejora."},
+    {emoji:"💪",text:"Un músculo humano",cat:"anti",explain:"Antifrágil. El estrés controlado (ejercicio) lo fortalece. Sin estrés, se atrofia — necesita el desorden para mejorar."},
+    {emoji:"🪨",text:"Una roca de granito",cat:"robust",explain:"Robusto. Resiste el viento, la lluvia, los golpes leves sin cambiar significativamente. No mejora, pero tampoco se rompe fácilmente."},
+    {emoji:"📉",text:"Una cartera de inversión 100% concentrada en una sola acción",cat:"fragile",explain:"Frágil. Cualquier shock negativo en esa empresa destruye todo el capital. Cero capacidad de absorber sorpresas."},
+    {emoji:"🦴",text:"El sistema óseo humano (huesos)",cat:"anti",explain:"Antifrágil. Los huesos se fortalecen exactamente en los puntos donde reciben estrés mecánico repetido (por eso los astronautas pierden densidad ósea sin gravedad)."},
+    {emoji:"🏢",text:"Un edificio diseñado para terremotos (estructura sismo-resistente)",cat:"robust",explain:"Robusto. Está diseñado para resistir el sismo sin colapsar — pero tampoco 'mejora' por el terremoto. Sobrevive intacto, sin ganancia adicional."},
+    {emoji:"🦠",text:"Bacterias expuestas a antibióticos en dosis sub-letales",cat:"anti",explain:"Antifrágil (para las bacterias). El estrés del antibiótico que no las mata las hace evolucionar resistencia — exactamente el mecanismo detrás de las superbacterias."},
+    {emoji:"📞",text:"Un sistema centralizado con un único punto de control",cat:"fragile",explain:"Frágil. Si ese punto único falla (apagón, hackeo, error), todo el sistema colapsa. Sin redundancia, sin capacidad de adaptación local."},
+  ],
+  systems:[
+    {emoji:"💼",name:"Mi carrera profesional",id:"career"},
+    {emoji:"🚀",name:"Mi negocio / startup",id:"business"},
+    {emoji:"❤️",name:"Mi salud física",id:"health"},
+    {emoji:"🤝",name:"Mi red de relaciones",id:"relations"},
+  ],
+  decisions:[
+    {text:"Un cambio inesperado sacude tu sistema. ¿Cómo respondes?",
+     opts:[
+       {label:"Me concentro aún más en mi único camino actual, sin diversificar",tag:"fragile",delta:-18},
+       {label:"Mantengo mi rumbo principal, sin cambios ni adiciones",tag:"robust",delta:2},
+       {label:"Aprovecho el cambio para abrir una nueva pequeña opción de bajo costo",tag:"anti",delta:14},
+     ]},
+    {text:"Tienes tiempo y energía extra disponible este mes. ¿Qué haces con ellos?",
+     opts:[
+       {label:"Los invierto todos en profundizar exactamente lo que ya hago",tag:"fragile",delta:-10},
+       {label:"Los uso para mantener mi sistema actual sin cambios",tag:"robust",delta:3},
+       {label:"Pruebo 3-4 experimentos pequeños y baratos en paralelo",tag:"anti",delta:16},
+     ]},
+    {text:"Llega una crítica o feedback negativo inesperado.",
+     opts:[
+       {label:"Lo ignoro o me defiendo — no quiero que afecte mi plan actual",tag:"fragile",delta:-12},
+       {label:"Lo escucho pero no cambio nada sustancial",tag:"robust",delta:1},
+       {label:"Lo uso activamente para ajustar y mejorar el sistema",tag:"anti",delta:15},
+     ]},
+    {text:"Un evento de alta volatilidad golpea tu entorno (crisis, cambio de mercado, etc).",
+     opts:[
+       {label:"Estaba 100% concentrado en una sola apuesta — el golpe es directo y total",tag:"fragile",delta:-25},
+       {label:"Tenía un colchón de seguridad — absorbo el golpe sin grandes cambios",tag:"robust",delta:5},
+       {label:"Tenía múltiples opciones pequeñas activas — una de ellas se beneficia del caos",tag:"anti",delta:22},
+     ]},
+    {text:"Te ofrecen una oportunidad pequeña, no garantizada, fuera de tu plan habitual.",
+     opts:[
+       {label:"La rechazo — no encaja en mi camino único y definido",tag:"fragile",delta:-8},
+       {label:"La evalúo pero finalmente paso — prefiero no arriesgar lo construido",tag:"robust",delta:0},
+       {label:"La acepto — pérdida acotada, posible ganancia desproporcionada",tag:"anti",delta:18},
+     ]},
+    {text:"Pasan 6 meses sin ningún evento extremo — todo ha sido estable y predecible.",
+     opts:[
+       {label:"Me relajo completamente, asumo que esto seguirá así para siempre",tag:"fragile",delta:-14},
+       {label:"Sigo igual, sin cambios, sin nuevas exposiciones",tag:"robust",delta:2},
+       {label:"Aprovecho la calma para sembrar varias semillas pequeñas para el futuro",tag:"anti",delta:12},
+     ]},
+    {text:"Un error grande ocurre en tu sistema — algo sale mal de forma significativa.",
+     opts:[
+       {label:"El error me destruye porque no tenía margen para fallar",tag:"fragile",delta:-22},
+       {label:"Absorbo el error, vuelvo al estado anterior sin grandes cambios",tag:"robust",delta:4},
+       {label:"Extraigo una lección crítica que rediseña y mejora todo el sistema",tag:"anti",delta:20},
+     ]},
+    {text:"Se presenta un evento extremo positivo — un Cisne Negro a tu favor.",
+     opts:[
+       {label:"No tengo forma de capitalizarlo — mi sistema es demasiado rígido y concentrado",tag:"fragile",delta:-5},
+       {label:"Lo aprovecho parcialmente, dentro de mis límites actuales",tag:"robust",delta:8},
+       {label:"Estoy en posición ideal para capturar el upside completo",tag:"anti",delta:28},
+     ]},
+  ],
+  systemNarrative:{
+    fragile:{title:"Tu sistema terminó FRÁGIL",text:"Tu sistema se rompió bajo presión. Cada shock te golpeó directamente porque la concentración y la rigidez no dejaron margen de error. Esto es exactamente lo que Taleb advierte: en un mundo de Cisnes Negros, la fragilidad es la posición más peligrosa.",emoji:"💔"},
+    robust:{title:"Tu sistema terminó ROBUSTO",text:"Tu sistema sobrevivió intacto. Ni se rompió ni mejoró significativamente — absorbió los golpes y mantuvo el rumbo. Es mejor que la fragilidad, pero tiene un techo: nunca capitalizaste el lado positivo de la incertidumbre.",emoji:"🪨"},
+    anti:{title:"Tu sistema terminó ANTIFRÁGIL",text:"Tu sistema no solo sobrevivió — salió más fuerte de cada evento. Cada error se convirtió en aprendizaje, cada oportunidad pequeña se aprovechó, y cuando llegó el evento extremo positivo, estabas exactamente en posición de capturarlo. Esto es lo que Taleb llama 'tener piel en el juego del lado correcto del azar'.",emoji:"🌿"},
+  },
+  theories:[
+    {icon:"🌿",name:"La tríada de Taleb",body:`<p>En <em>Antifrágil</em> (2012), Taleb propone una tríada que reemplaza la dicotomía simple "fuerte/débil": Frágil, Robusto y Antifrágil son tres respuestas distintas a la variabilidad.</p><div class="quote-block"><p>"Algunas cosas se benefician de los shocks; prosperan y crecen cuando están expuestas a la volatilidad, la aleatoriedad, el desorden y los factores de estrés... y aún así no tenemos una palabra para lo opuesto exacto de frágil."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><p>Taleb tuvo que inventar la palabra "antifrágil" porque ningún idioma tenía un término para describir algo que mejora con el desorden — solo teníamos palabras para "se rompe" o "no se rompe".</p><div class="tag-list"><span class="tag">Tríada</span><span class="tag">Antifragilidad</span><span class="tag">Neologismo</span></div>`},
+    {icon:"🧬",name:"Antifragilidad biológica: el ejemplo del cuerpo",body:`<p>El cuerpo humano es el ejemplo favorito de Taleb de un sistema antifrágil natural. Los huesos se densifican con el estrés mecánico (efecto Wolff), los músculos crecen con micro-desgarros controlados, e incluso el sistema inmune se fortalece con exposición a patógenos.</p><p>El experimento mental clave: un astronauta en gravedad cero (sin estrés mecánico) pierde densidad ósea — el sistema se atrofia sin el "caos" necesario. Esto demuestra que para sistemas antifrágiles, la ausencia total de estrés es tan dañina como el exceso.</p><div class="quote-block"><p>"El cuerpo humano detecta la ausencia de variabilidad e información, y se degrada en consecuencia."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Efecto Wolff</span><span class="tag">Hormesis</span><span class="tag">Biología</span></div>`},
+    {icon:"⚖️",name:"Robustez no es suficiente: el techo del 'resistir'",body:`<p>Taleb es crítico del enfoque común de "resiliencia" o "robustez" como objetivo final. Argumenta que la robustez es solo un punto intermedio — un sistema robusto sobrevive shocks pero no extrae ningún beneficio de ellos.</p><p>El problema práctico: en un mundo de Extremistán con eventos extremos, ningún diseño robusto es robusto para siempre. Eventualmente llega un shock más grande del que el sistema fue diseñado para resistir. Solo la antifragilidad genuina —que mejora activamente con cada shock— tiene una ventaja compuesta a largo plazo.</p><div class="quote-block"><p>"Querer ser robusto y a salvo del cambio es una ilusión. Lo que realmente quieres es estar en una posición donde el cambio trabaje a tu favor."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Robustez</span><span class="tag">Resiliencia</span><span class="tag">Ventaja compuesta</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un gimnasio diseñado para que tus músculos se fortalezcan con cada sesión de entrenamiento es un ejemplo de:",opts:["Robustez — el cuerpo resiste el entrenamiento sin cambiar","Fragilidad — el entrenamiento daña el músculo","Antifragilidad — el músculo mejora gracias al estrés del entrenamiento","Aleatoriedad — el resultado depende del azar"],correct:2,feedOk:"Exacto. El músculo se hace más fuerte exactamente como resultado del micro-daño controlado del entrenamiento. Sin ese estrés, no habría mejora — eso es la firma de la antifragilidad.",feedKo:"La clave es que el músculo no solo 'resiste' el entrenamiento (robustez) — se beneficia activamente de él, fortaleciéndose más allá de su estado inicial. Eso es antifragilidad, no robustez."},
+    {q:"Según Taleb, ¿por qué la robustez NO es el objetivo final, sino un punto intermedio?",opts:["Porque la robustez es más cara de lograr que la antifragilidad","Porque un sistema robusto sobrevive shocks pero nunca mejora ni capitaliza la incertidumbre positiva","Porque la robustez solo aplica a sistemas biológicos","Porque los sistemas robustos siempre terminan siendo frágiles con el tiempo"],correct:1,feedOk:"Correcto. La robustez evita el colapso, pero deja sobre la mesa todo el upside potencial de la volatilidad. Un sistema antifrágil no solo evita el daño — convierte la incertidumbre en ventaja.",feedKo:"El punto de Taleb no es sobre costos ni sobre que la robustez 'se vuelva' frágil. Es que la robustez es estática — sobrevive pero no aprovecha el lado positivo de los eventos aleatorios, a diferencia de la antifragilidad."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🥚",title:"Diseñas sistemas frágiles",desc:"Buscas la calma y la concentración. Funciona hasta que llega el shock grande.",taleb:"'La fragilidad es no que te puedan hacer daño, sino que el daño te destruya completamente.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🪨",title:"Construyes robustez",desc:"Resistes bien la presión. El siguiente paso: hacer que el estrés te mejore.",taleb:"'La robustez es buena. La antifragilidad es mejor.' — Antifrágil",color:"#f39c12"},
+    {min:70,emoji:"🌱",title:"Empiezas a pensar en antifragilidad",desc:"Buscas activamente convertir el caos en ventaja. Sigue así.",taleb:"'Algunas cosas se benefician de los shocks.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🌿",title:"Nivel Antifrágil",desc:"Diseñas sistemas que mejoran con el desorden. Pensamiento completo de Taleb.",taleb:"'Lo opuesto a frágil no es robusto. Es antifrágil.' — Antifrágil (2012)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Fragile / Robust / Antifragile",
+  s1tag:"Part 1 · The Hook",s1h1:"There are 3 ways to\nrelate to chaos",
+  s1p:"It's not just 'strong' or 'weak'. Taleb identified a third category most people never consider: things that <strong>improve</strong> with disorder.",
+  catFragileName:"Fragile",catFragileDesc:"Breaks under volatility. Prefers calm.",
+  catRobustName:"Robust",catRobustDesc:"Resists volatility. Doesn't change, doesn't improve.",
+  catAntiName:"Antifragile",catAntiDesc:"Benefits from volatility. Improves with stress.",
+  s1btn:"Play → Start",
+  s2tag:"Part 2 · Warm-up — Sort",s2h2:"Fragile, Robust, or Antifragile?",
+  s2p:"8 everyday systems. Sort each one before seeing the answer.",
+  sortScoreTxt:"correct out of 8",
+  s3tag:"Part 3 · Your Survival Run",s3h2:"Pick a system. Survive 8 rounds.",
+  s3p:"Your decisions will move your system between the 3 categories. Each round brings a real-world random event.",
+  statusMeterLabel:"Current state of your system",
+  zoneFragile:"FRAGILE",zoneRobust:"ROBUST",zoneAnti:"ANTIFRAGILE",
+  s4tag:"Part 4 · The Theory",s4h2:"The complete Antifragile framework",s4p:"Three core ideas from the book that names this whole series.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you design to resist or to improve?",
+  tn1:"DILEMMA · 01",
+  tq1:"You're designing your team's crisis plan. What goal are you pursuing?",
+  d1aT:"That it resists intact",d1aD:"The goal is for the team to withstand the crisis without breaking or changing.",
+  d1bT:"That it comes out stronger",d1bD:"I design the system so each crisis leaves the team better prepared than before.",
+  csT:"You designed for robustness, not improvement.",csP:"Robustness beats fragility, but it has a ceiling. A robust system survives 1000 crises exactly the same way — it never improves. Eventually, a crisis large enough will find it without accumulated advantage.",
+  ccT:"You designed for antifragility.",ccP:"Every crisis becomes information, learning, accumulated advantage. Over time, your team doesn't just survive — it becomes better than teams that never faced adversity.",
+  tn3:"REFLECTION · 03",
+  tq3:"What area of your life is currently in the fragile zone — and what change would move it toward robust or antifragile?",
+  refHint:"Examples to trigger reflection:",
+  chips:["My job situation","My personal finances","My physical health","My close relationships","My professional skills","My business or project"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"The opposite of fragile is not robust, nor resilient. The opposite of fragile is antifragile — something that improves with disorder."',
+  sortItems:[
+    {emoji:"🏺",text:"An antique ceramic vase",cat:"fragile",explain:"Fragile. A single fall destroys it permanently. Zero capacity for recovery or improvement."},
+    {emoji:"💪",text:"A human muscle",cat:"anti",explain:"Antifragile. Controlled stress (exercise) strengthens it. Without stress, it atrophies — it needs disorder to improve."},
+    {emoji:"🪨",text:"A granite rock",cat:"robust",explain:"Robust. It resists wind, rain, minor impacts without changing significantly. It doesn't improve, but it doesn't break easily either."},
+    {emoji:"📉",text:"An investment portfolio 100% concentrated in a single stock",cat:"fragile",explain:"Fragile. Any negative shock to that company destroys all the capital. Zero capacity to absorb surprises."},
+    {emoji:"🦴",text:"The human skeletal system (bones)",cat:"anti",explain:"Antifragile. Bones strengthen exactly at the points where they receive repeated mechanical stress (which is why astronauts lose bone density without gravity)."},
+    {emoji:"🏢",text:"An earthquake-resistant building",cat:"robust",explain:"Robust. It's designed to withstand the earthquake without collapsing — but it doesn't 'improve' from the earthquake either. It survives intact, with no additional gain."},
+    {emoji:"🦠",text:"Bacteria exposed to sub-lethal doses of antibiotics",cat:"anti",explain:"Antifragile (for the bacteria). The antibiotic stress that doesn't kill them makes them evolve resistance — exactly the mechanism behind superbugs."},
+    {emoji:"📞",text:"A centralized system with a single point of control",cat:"fragile",explain:"Fragile. If that single point fails (outage, hack, error), the entire system collapses. No redundancy, no local adaptation capacity."},
+  ],
+  systems:[
+    {emoji:"💼",name:"My career",id:"career"},
+    {emoji:"🚀",name:"My business / startup",id:"business"},
+    {emoji:"❤️",name:"My physical health",id:"health"},
+    {emoji:"🤝",name:"My network of relationships",id:"relations"},
+  ],
+  decisions:[
+    {text:"An unexpected change shakes your system. How do you respond?",
+     opts:[
+       {label:"I concentrate even more on my single current path, without diversifying",tag:"fragile",delta:-18},
+       {label:"I maintain my main course, without changes or additions",tag:"robust",delta:2},
+       {label:"I use the change to open a new small low-cost option",tag:"anti",delta:14},
+     ]},
+    {text:"You have extra time and energy available this month. What do you do with it?",
+     opts:[
+       {label:"I invest it all in deepening exactly what I already do",tag:"fragile",delta:-10},
+       {label:"I use it to maintain my current system without changes",tag:"robust",delta:3},
+       {label:"I try 3-4 small, cheap experiments in parallel",tag:"anti",delta:16},
+     ]},
+    {text:"Unexpected negative criticism or feedback arrives.",
+     opts:[
+       {label:"I ignore it or defend myself — I don't want it affecting my current plan",tag:"fragile",delta:-12},
+       {label:"I listen but don't change anything substantial",tag:"robust",delta:1},
+       {label:"I actively use it to adjust and improve the system",tag:"anti",delta:15},
+     ]},
+    {text:"A high-volatility event hits your environment (crisis, market shift, etc).",
+     opts:[
+       {label:"I was 100% concentrated in one bet — the hit is direct and total",tag:"fragile",delta:-25},
+       {label:"I had a safety cushion — I absorb the hit without major changes",tag:"robust",delta:5},
+       {label:"I had multiple small active options — one of them benefits from the chaos",tag:"anti",delta:22},
+     ]},
+    {text:"You're offered a small, non-guaranteed opportunity outside your usual plan.",
+     opts:[
+       {label:"I reject it — it doesn't fit my single, defined path",tag:"fragile",delta:-8},
+       {label:"I evaluate it but ultimately pass — I'd rather not risk what I've built",tag:"robust",delta:0},
+       {label:"I accept it — bounded loss, possible disproportionate gain",tag:"anti",delta:18},
+     ]},
+    {text:"6 months pass with no extreme events — everything has been stable and predictable.",
+     opts:[
+       {label:"I relax completely, assuming this will continue forever",tag:"fragile",delta:-14},
+       {label:"I stay the same, no changes, no new exposures",tag:"robust",delta:2},
+       {label:"I use the calm to plant several small seeds for the future",tag:"anti",delta:12},
+     ]},
+    {text:"A big mistake happens in your system — something goes significantly wrong.",
+     opts:[
+       {label:"The mistake destroys me because I had no margin to fail",tag:"fragile",delta:-22},
+       {label:"I absorb the mistake, return to the prior state with no major changes",tag:"robust",delta:4},
+       {label:"I extract a critical lesson that redesigns and improves the whole system",tag:"anti",delta:20},
+     ]},
+    {text:"An extreme positive event occurs — a Black Swan in your favor.",
+     opts:[
+       {label:"I have no way to capitalize on it — my system is too rigid and concentrated",tag:"fragile",delta:-5},
+       {label:"I take partial advantage of it, within my current limits",tag:"robust",delta:8},
+       {label:"I'm in ideal position to capture the full upside",tag:"anti",delta:28},
+     ]},
+  ],
+  systemNarrative:{
+    fragile:{title:"Your system ended FRAGILE",text:"Your system broke under pressure. Every shock hit you directly because concentration and rigidity left no margin for error. This is exactly what Taleb warns against: in a world of Black Swans, fragility is the most dangerous position.",emoji:"💔"},
+    robust:{title:"Your system ended ROBUST",text:"Your system survived intact. It neither broke nor improved significantly — it absorbed the hits and held course. Better than fragility, but it has a ceiling: you never capitalized on the upside of uncertainty.",emoji:"🪨"},
+    anti:{title:"Your system ended ANTIFRAGILE",text:"Your system didn't just survive — it came out stronger from every event. Every mistake became learning, every small opportunity was seized, and when the extreme positive event arrived, you were exactly positioned to capture it. This is what Taleb calls 'having skin in the right side of randomness'.",emoji:"🌿"},
+  },
+  theories:[
+    {icon:"🌿",name:"Taleb's triad",body:`<p>In <em>Antifragile</em> (2012), Taleb proposes a triad replacing the simple "strong/weak" dichotomy: Fragile, Robust, and Antifragile are three distinct responses to variability.</p><div class="quote-block"><p>"Some things benefit from shocks; they thrive and grow when exposed to volatility, randomness, disorder, and stressors... and yet, in spite of the ubiquity of the phenomenon, there is no word for the exact opposite of fragile."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><p>Taleb had to invent the word "antifragile" because no language had a term for something that improves with disorder — we only had words for "breaks" or "doesn't break".</p><div class="tag-list"><span class="tag">Triad</span><span class="tag">Antifragility</span><span class="tag">Neologism</span></div>`},
+    {icon:"🧬",name:"Biological antifragility: the body example",body:`<p>The human body is Taleb's favorite example of a natural antifragile system. Bones densify with mechanical stress (Wolff's law), muscles grow with controlled micro-tears, and even the immune system strengthens with exposure to pathogens.</p><p>The key thought experiment: an astronaut in zero gravity (no mechanical stress) loses bone density — the system atrophies without the necessary "chaos". This shows that for antifragile systems, total absence of stress is as harmful as excess.</p><div class="quote-block"><p>"The human body detects the absence of variability and information, and degrades as a result."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">Wolff's law</span><span class="tag">Hormesis</span><span class="tag">Biology</span></div>`},
+    {icon:"⚖️",name:"Robustness isn't enough: the ceiling of 'resisting'",body:`<p>Taleb is critical of the common "resilience" or "robustness" approach as a final goal. He argues robustness is only an intermediate point — a robust system survives shocks but extracts no benefit from them.</p><p>The practical problem: in an Extremistan world of extreme events, no robust design is robust forever. Eventually a shock bigger than what the system was built to withstand will arrive. Only genuine antifragility — which actively improves with each shock — has a compounding long-term advantage.</p><div class="quote-block"><p>"Wanting to be robust and safe from change is an illusion. What you really want is to be in a position where change works in your favor."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">Robustness</span><span class="tag">Resilience</span><span class="tag">Compounding advantage</span></div>`},
+  ],
+  mcqs:[
+    {q:"A gym designed so your muscles strengthen with each training session is an example of:",opts:["Robustness — the body resists training without changing","Fragility — training damages the muscle","Antifragility — the muscle improves thanks to training stress","Randomness — the outcome depends on chance"],correct:2,feedOk:"Exactly. The muscle gets stronger exactly as a result of the controlled micro-damage from training. Without that stress, there would be no improvement — that's the signature of antifragility.",feedKo:"The key is that the muscle doesn't just 'withstand' training (robustness) — it actively benefits from it, strengthening beyond its initial state. That's antifragility, not robustness."},
+    {q:"According to Taleb, why is robustness NOT the final goal, but an intermediate point?",opts:["Because robustness is more expensive to achieve than antifragility","Because a robust system survives shocks but never improves or capitalizes on positive uncertainty","Because robustness only applies to biological systems","Because robust systems always end up becoming fragile over time"],correct:1,feedOk:"Correct. Robustness prevents collapse, but leaves all the potential upside of volatility on the table. An antifragile system doesn't just avoid harm — it converts uncertainty into advantage.",feedKo:"Taleb's point isn't about costs or robustness 'becoming' fragile. It's that robustness is static — it survives but doesn't capture the positive side of random events, unlike antifragility."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🥚",title:"You design fragile systems",desc:"You seek calm and concentration. It works until the big shock arrives.",taleb:"'Fragility is not that you can be hurt, but that harm destroys you completely.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🪨",title:"You build robustness",desc:"You withstand pressure well. Next step: making stress improve you.",taleb:"'Robustness is good. Antifragility is better.' — Antifragile",color:"#f39c12"},
+    {min:70,emoji:"🌱",title:"You're starting to think antifragile",desc:"You actively seek to convert chaos into advantage. Keep going.",taleb:"'Some things benefit from shocks.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🌿",title:"Antifragile Level",desc:"You design systems that improve with disorder. Full Taleb thinking.",taleb:"'The opposite of fragile is not robust. It is antifragile.' — Antifragile (2012)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', sortAnswered=0, sortCorrect=0, selectedSystem=null, decisionIdx=0, statusValue=0;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    'cat-fragile-name':'catFragileName','cat-fragile-desc':'catFragileDesc',
+    'cat-robust-name':'catRobustName','cat-robust-desc':'catRobustDesc',
+    'cat-anti-name':'catAntiName','cat-anti-desc':'catAntiDesc',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p',
+    'status-meter-label':'statusMeterLabel','zone-fragile':'zoneFragile','zone-robust':'zoneRobust','zone-anti':'zoneAnti',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cc-t':'ccT','cc-p':'ccP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('s1-p').innerHTML=tx.s1p;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderSort();renderSystemPicker();renderTheoryCards();renderChips();
+}
+
+/* SORTING GAME */
+function startSort(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-sort').scrollIntoView({behavior:'smooth'});}
+function renderSort(){
+  const area=document.getElementById('sort-area');if(!area)return;
+  area.innerHTML='';sortAnswered=0;sortCorrect=0;
+  document.getElementById('sort-score-strip').classList.remove('show');
+  T[lang].sortItems.forEach((item,i)=>{
+    const card=document.createElement('div');card.className='sort-card';card.id=`sort-${i}`;
+    const fLbl=lang==='es'?'Frágil':'Fragile';const rLbl=lang==='es'?'Robusto':'Robust';const aLbl=lang==='es'?'Antifrágil':'Antifragile';
+    card.innerHTML=`
+      <div class="sort-item-text"><span class="sort-item-emoji">${item.emoji}</span>${item.text}</div>
+      <div class="sort-btns">
+        <button class="sort-btn fragile-btn" onclick="answerSort(${i},'fragile',this)">${fLbl}</button>
+        <button class="sort-btn robust-btn" onclick="answerSort(${i},'robust',this)">${rLbl}</button>
+        <button class="sort-btn anti-btn" onclick="answerSort(${i},'anti',this)">${aLbl}</button>
+      </div>
+      <div class="sort-reveal" id="sort-reveal-${i}"></div>`;
+    area.appendChild(card);
+  });
+  updateSortProgress();
+}
+function answerSort(i,choice,btn){
+  const card=document.getElementById(`sort-${i}`);
+  if(card.querySelector('.sort-btn:disabled'))return;
+  const item=T[lang].sortItems[i];
+  const correct=choice===item.cat;
+  if(correct)sortCorrect++;
+  sortAnswered++;
+  card.querySelectorAll('.sort-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(`chosen-${choice}`);
+  const rev=document.getElementById(`sort-reveal-${i}`);
+  rev.className='sort-reveal show '+(correct?'correct':'wrong');
+  rev.textContent=item.explain;
+  updateSortProgress();
+  if(sortAnswered===T[lang].sortItems.length){
+    const strip=document.getElementById('sort-score-strip');
+    strip.classList.add('show');
+    document.getElementById('sort-score-n').textContent=`${sortCorrect}/8`;
+    document.getElementById('sort-score-txt').textContent=T[lang].sortScoreTxt;
+    strip.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+function updateSortProgress(){
+  const el=document.getElementById('sort-progress');
+  if(el)el.textContent=`${sortAnswered} / ${T[lang].sortItems.length} ${lang==='es'?'clasificados':'sorted'}`;
+}
+
+/* SURVIVAL GAME */
+function startSurvival(){document.getElementById('sec-survival').scrollIntoView({behavior:'smooth'});}
+function renderSystemPicker(){
+  const wrap=document.getElementById('system-picker');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].systems.forEach(s=>{
+    const el=document.createElement('div');el.className='system-pick';el.id=`sys-${s.id}`;
+    el.innerHTML=`<div class="system-pick-emoji">${s.emoji}</div><div class="system-pick-name">${s.name}</div>`;
+    el.onclick=()=>chooseSystem(s.id);
+    wrap.appendChild(el);
+  });
+}
+function chooseSystem(id){
+  if(selectedSystem)return;
+  selectedSystem=id;
+  document.getElementById(`sys-${id}`).classList.add('selected');
+  document.querySelectorAll('.system-pick').forEach(p=>{if(p.id!==`sys-${id}`)p.style.opacity='0.35';});
+  document.getElementById('status-meter').classList.add('show');
+  decisionIdx=0;statusValue=0;
+  renderDecision();
+  setTimeout(()=>document.getElementById('status-meter').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+function updateMarker(){
+  // statusValue ranges roughly -100 to +130; map to 0-100% position
+  const pct=Math.min(96,Math.max(4, 50 + statusValue*0.45));
+  const marker=document.getElementById('status-marker');
+  marker.style.left=pct+'%';
+  if(statusValue<-15)marker.style.background='#e74c3c';
+  else if(statusValue<25)marker.style.background='#4a9eff';
+  else marker.style.background='#2ecc71';
+}
+function renderDecision(){
+  const area=document.getElementById('decisions-area');
+  const decisions=T[lang].decisions;
+  if(decisionIdx>=decisions.length){
+    area.innerHTML='';
+    showSurvivalFinal();
+    return;
+  }
+  const d=decisions[decisionIdx];
+  const tagLbl={fragile:lang==='es'?'FRÁGIL':'FRAGILE',robust:lang==='es'?'ROBUSTO':'ROBUST',anti:lang==='es'?'ANTIFRÁGIL':'ANTIFRAGILE'};
+  area.innerHTML=`
+    <div class="decision-card">
+      <div class="decision-round">${lang==='es'?'RONDA':'ROUND'} ${decisionIdx+1} / ${decisions.length}</div>
+      <div class="decision-text">${d.text}</div>
+      <div class="decision-options" id="decision-opts">
+        ${d.opts.map((o,i)=>`<button class="decision-opt" onclick="answerDecision(${i})"><span class="decision-opt-tag tag-${o.tag}">${tagLbl[o.tag]}</span>${o.label}</button>`).join('')}
+      </div>
+      <div class="decision-feedback" id="decision-feedback"></div>
+    </div>`;
+}
+function answerDecision(i){
+  const d=T[lang].decisions[decisionIdx];
+  const opt=d.opts[i];
+  statusValue+=opt.delta;
+  updateMarker();
+  document.querySelectorAll('.decision-opt').forEach((b,idx)=>{
+    b.disabled=true;
+    if(idx===i)b.classList.add('chosen');
+  });
+  const fb=document.getElementById('decision-feedback');
+  fb.classList.add('show');
+  const deltaStr=opt.delta>0?'+'+opt.delta:opt.delta;
+  fb.textContent=lang==='es'?`Tu sistema se movió ${deltaStr} puntos hacia ${opt.tag==='fragile'?'frágil':opt.tag==='robust'?'robusto':'antifrágil'}.`:`Your system moved ${deltaStr} points toward ${opt.tag}.`;
+  setTimeout(()=>{
+    decisionIdx++;
+    renderDecision();
+    document.getElementById('decisions-area').scrollIntoView({behavior:'smooth',block:'nearest'});
+  },1400);
+}
+function showSurvivalFinal(){
+  let finalCat='robust';
+  if(statusValue<-15)finalCat='fragile';
+  else if(statusValue>=25)finalCat='anti';
+  const narr=T[lang].systemNarrative[finalCat];
+  document.getElementById('sf-emoji').textContent=narr.emoji;
+  document.getElementById('sf-title').textContent=narr.title;
+  document.getElementById('sf-text').textContent=narr.text;
+  document.getElementById('survival-final').classList.add('show');
+  setTimeout(()=>document.getElementById('survival-final').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-robust').classList.toggle('show',type==='robust');
+  document.getElementById('cons-anti').classList.toggle('show',type==='anti');
+  dilemmaScore=type==='anti'?30:10;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

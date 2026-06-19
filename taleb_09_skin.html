@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skin in the Game — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.scale-icon{font-size:3.5rem;margin:1.5rem 0;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* CASE EVALUATOR */
+.case-progress{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.08em;}
+.case-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;}
+.case-role{display:flex;align-items:center;gap:.65rem;margin-bottom:.85rem;}
+.case-emoji{font-size:1.8rem;}
+.case-role-name{font-weight:600;font-size:1rem;}
+.case-context{font-size:.9rem;color:var(--text);line-height:1.65;margin-bottom:1.1rem;}
+.case-vote-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem;}
+.case-vote-btn{flex:1;min-width:140px;padding:.65rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-align:center;}
+.case-vote-btn:hover:not(:disabled){border-color:var(--accent2);}
+.case-vote-btn:disabled{cursor:default;}
+.case-vote-btn.chosen-has{background:rgba(46,204,113,.15);border-color:var(--green);color:var(--green);}
+.case-vote-btn.chosen-no{background:rgba(231,76,60,.15);border-color:var(--red);color:var(--red);}
+.case-vote-btn.correct-marker{box-shadow:0 0 0 2px var(--accent2) inset;}
+.case-reveal{display:none;margin-top:1rem;padding:1rem 1.1rem;border-radius:var(--radius-sm);font-size:.85rem;line-height:1.65;}
+.case-reveal.show{display:block;}
+.case-reveal.symmetric{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);}
+.case-reveal.asymmetric{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);}
+.case-verdict{font-weight:600;margin-bottom:.4rem;display:block;}
+.case-verdict.symmetric{color:var(--green);}
+.case-verdict.asymmetric{color:var(--red);}
+.case-score-strip{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.case-score-strip.show{display:flex;}
+
+/* SELF EVALUATION */
+.self-eval-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.self-q-card{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.self-q-card:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.self-q-text{font-size:.92rem;color:var(--text);margin-bottom:.85rem;}
+.self-scale{display:flex;gap:.4rem;flex-wrap:wrap;}
+.self-scale-btn{flex:1;min-width:60px;padding:.55rem .4rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:.72rem;text-align:center;transition:all .2s;font-family:'IBM Plex Sans',sans-serif;}
+.self-scale-btn:hover{border-color:var(--accent2);}
+.self-scale-btn.selected{background:rgba(242,166,35,.15);border-color:var(--accent2);color:var(--accent2);font-weight:500;}
+.self-result-box{display:none;margin-top:1rem;padding:1.25rem;border-radius:var(--radius);background:var(--bg3);text-align:center;}
+.self-result-box.show{display:block;}
+.self-result-emoji{font-size:2rem;margin-bottom:.5rem;display:block;}
+.self-result-title{font-weight:600;font-size:1.05rem;margin-bottom:.4rem;}
+.self-btn-row{text-align:center;margin-top:1rem;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 09</span>
+    <span class="header-title" id="hdr-title">Skin in the Game</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">¿Quién carga<br>con el riesgo?</h1>
+  <div class="scale-icon">⚖️</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Cuando alguien te recomienda algo, hazte una pregunta simple: <strong>si sale mal, ¿esa persona pierde algo?</strong> Si la respuesta es no, estás escuchando una opinión sin riesgo — y eso cambia todo.</p>
+  <button class="btn-primary" onclick="startCases()" id="s1-btn">Evaluar casos reales → Empezar</button>
+</section>
+
+<!-- S2 CASE EVALUATOR -->
+<section id="sec-cases">
+  <div class="section-tag" id="s2-tag">Parte 2 · ¿Tienen Skin in the Game?</div>
+  <h2 id="s2-h2">Evalúa la simetría de riesgo</h2>
+  <p id="s2-p">Para cada rol, decide ANTES de leer el contexto completo: ¿esta persona carga con las consecuencias de sus propias decisiones?</p>
+  <div class="case-progress" id="case-progress">0 / 6 evaluados</div>
+  <div id="cases-area"></div>
+  <div class="case-score-strip" id="case-score-strip">
+    <div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:500" id="case-score-n">—</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-left:.5rem" id="case-score-txt">correctas de 6</span>
+    </div>
+    <button class="btn-accent" onclick="startSelfEval()">Evaluarme a mí mismo →</button>
+  </div>
+</section>
+
+<!-- S3 SELF EVAL -->
+<section id="sec-self">
+  <div class="section-tag" id="s3-tag">Parte 3 · Auto-evaluación</div>
+  <h2 id="s3-h2">¿Tienes tú skin in the game?</h2>
+  <p id="s3-p">Cinco preguntas sobre tus propias decisiones y recomendaciones cotidianas. Responde con honestidad.</p>
+  <div class="self-eval-box" id="self-eval-box"></div>
+  <div class="self-btn-row">
+    <button class="btn-accent" onclick="showSelfResult()" id="self-submit-btn" disabled>Ver mi resultado →</button>
+  </div>
+  <div class="self-result-box" id="self-result-box">
+    <span class="self-result-emoji" id="self-result-emoji">⚖️</span>
+    <div class="self-result-title" id="self-result-title">—</div>
+    <p id="self-result-text" style="color:var(--text2);font-size:.88rem;margin-top:.5rem"></p>
+    <button class="btn-accent" onclick="showTheory()" id="self-next-btn">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">¿Por qué importa la simetría?</h2>
+  <p id="s4-p">Tres marcos del libro que da nombre a este concepto.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Detectas la asimetría?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Un influencer recomienda una criptomoneda a su audiencia. Después se descubre que la vendió toda justo antes de recomendarla públicamente. ¿Qué principio de Taleb se violó?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('a',this)">
+        <div class="d-emoji">📢</div>
+        <div class="d-title" id="d1a-t">Libertad de expresión</div>
+        <div class="d-desc" id="d1a-d">Tiene derecho a opinar sobre inversiones, sin importar lo que haga con su propio dinero.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('b',this)">
+        <div class="d-emoji">⚖️</div>
+        <div class="d-title" id="d1b-t">Asimetría de riesgo</div>
+        <div class="d-desc" id="d1b-d">Se benefició de vender mientras la audiencia compraba — el riesgo era completamente unidireccional.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-a">
+      <strong id="cs-t">Estás ignorando la asimetría central.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">No se trata de censura ni de libertad de expresión. Se trata de que el influencer transfirió su riesgo a la audiencia mientras él mismo salía limpio — exactamente la dinámica que Taleb llama "transferencia de riesgo sin skin in the game".</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-b">
+      <strong id="cb-t">Identificaste la asimetría correctamente.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cb-p">Esto es exactamente lo que Taleb llama "ruina sin riesgo personal" — el influencer disfrutó el upside (recibir comisiones, ganar al vender) sin compartir el downside (la pérdida de quienes compraron después).</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿En qué situación reciente diste un consejo o recomendación sin tener skin in the game?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Nunca le pidas consejo a alguien cuyo negocio dependa de que tomes ese consejo. No le preguntes a tu peluquero si necesitas un corte de pelo."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Skin in the Game (2018)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_08_barbell.html">← 08 Estrategia Barbell</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">10 El Problema de la Agencia →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Skin in the Game",
+  s1tag:"Parte 1 · El Gancho",s1h1:"¿Quién carga\ncon el riesgo?",
+  s1p:"Cuando alguien te recomienda algo, hazte una pregunta simple: <strong>si sale mal, ¿esa persona pierde algo?</strong> Si la respuesta es no, estás escuchando una opinión sin riesgo — y eso cambia todo.",
+  s1btn:"Evaluar casos reales → Empezar",
+  s2tag:"Parte 2 · ¿Tienen Skin in the Game?",s2h2:"Evalúa la simetría de riesgo",
+  s2p:"Para cada rol, decide ANTES de leer el contexto completo: ¿esta persona carga con las consecuencias de sus propias decisiones?",
+  caseScoreTxt:"correctas de 6",
+  s3tag:"Parte 3 · Auto-evaluación",s3h2:"¿Tienes tú skin in the game?",
+  s3p:"Cinco preguntas sobre tus propias decisiones y recomendaciones cotidianas. Responde con honestidad.",
+  s4tag:"Parte 4 · La Teoría",s4h2:"¿Por qué importa la simetría?",s4p:"Tres marcos del libro que da nombre a este concepto.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Detectas la asimetría?",
+  tn1:"DILEMA · 01",
+  tq1:"Un influencer recomienda una criptomoneda a su audiencia. Después se descubre que la vendió toda justo antes de recomendarla públicamente. ¿Qué principio de Taleb se violó?",
+  d1aT:"Libertad de expresión",d1aD:"Tiene derecho a opinar sobre inversiones, sin importar lo que haga con su propio dinero.",
+  d1bT:"Asimetría de riesgo",d1bD:"Se benefició de vender mientras la audiencia compraba — el riesgo era completamente unidireccional.",
+  csT:"Estás ignorando la asimetría central.",csP:"No se trata de censura ni de libertad de expresión. Se trata de que el influencer transfirió su riesgo a la audiencia mientras él mismo salía limpio — exactamente la dinámica que Taleb llama 'transferencia de riesgo sin skin in the game'.",
+  cbT:"Identificaste la asimetría correctamente.",cbP:"Esto es exactamente lo que Taleb llama 'ruina sin riesgo personal' — el influencer disfrutó el upside (recibir comisiones, ganar al vender) sin compartir el downside (la pérdida de quienes compraron después).",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿En qué situación reciente diste un consejo o recomendación sin tener skin in the game?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Recomendar un libro o curso","Dar consejo de carrera a un amigo","Recomendar una inversión","Opinar sobre la decisión de otra persona","Sugerir una estrategia de negocio","Compartir una opinión política fuerte"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Nunca le pidas consejo a alguien cuyo negocio dependa de que tomes ese consejo. No le preguntes a tu peluquero si necesitas un corte de pelo."',
+  cases:[
+    {emoji:"🏦",role:"Banquero de inversión (2008)",
+     context:"Estructura y vende productos financieros complejos (CDOs) a inversores institucionales. Recibe bonos anuales basados en el volumen de ventas. Si el producto falla años después, el bono ya fue pagado y no se puede recuperar.",
+     hasSkin:false,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"El bono se cobra en el momento de la venta, sin importar el desempeño futuro del producto. Si el CDO colapsa 3 años después, el bonus ya fue gastado. Esto es lo que Taleb llama 'opción call sin la responsabilidad correspondiente' — ganancia inmediata, pérdida diferida y socializada."},
+    {emoji:"🌾",role:"Agricultor que vende en su propio mercado local",
+     context:"Cultiva y vende directamente sus productos. Si la cosecha falla por su mala decisión de siembra, pierde su propio ingreso del año. Si los productos son de mala calidad, sus clientes no regresan y su negocio se resiente directamente.",
+     hasSkin:true,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"Cada decisión del agricultor —qué sembrar, cómo cuidar el cultivo, qué precio cobrar— tiene consecuencias directas e inmediatas sobre su propio sustento. Es el ejemplo clásico de Taleb de simetría perfecta: el que decide es el que sufre las consecuencias."},
+    {emoji:"🏛️",role:"Político que vota una ley de austeridad",
+     context:"Aprueba recortes de pensiones y servicios públicos que afectarán a la población general durante años. Su propio salario, pensión y beneficios como ex-funcionario están protegidos por reglas separadas, independientemente de los recortes que aprueba.",
+     hasSkin:false,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"El político decide políticas cuyas consecuencias él mismo no sufrirá de la misma forma que los ciudadanos comunes. Taleb llama a esto la asimetría fundamental de la política moderna: quienes deciden raramente comparten el destino de quienes son afectados por la decisión."},
+    {emoji:"👨‍⚕️",role:"Cirujano que opera con sus propias manos",
+     context:"Realiza la cirugía personalmente. Si el procedimiento sale mal por su error, enfrenta consecuencias profesionales directas: demandas, pérdida de reputación, posible pérdida de licencia. Su nombre está directamente vinculado al resultado.",
+     hasSkin:true,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"A diferencia de un consultor que solo da una opinión en un documento, el cirujano enfrenta consecuencias reputacionales y legales directas si su decisión técnica falla. Taleb usa frecuentemente la medicina invasiva como ejemplo de simetría real."},
+    {emoji:"📊",role:"Consultor de estrategia que recomienda una reestructuración",
+     context:"Entrega un informe recomendando despidos masivos y cambios organizacionales radicales. Cobra sus honorarios al entregar el informe. Si la reestructuración destruye la cultura de la empresa o no funciona, el consultor ya cobró y se fue a otro cliente.",
+     hasSkin:false,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"El honorario se cobra independientemente del resultado real de la recomendación a largo plazo. Si la estrategia fracasa, el consultor no devuelve el dinero ni sufre las consecuencias — solo la empresa y sus empleados las cargan completas."},
+    {emoji:"🧑‍🏫",role:"Crítico de cine que nunca ha hecho una película",
+     context:"Publica reseñas duras sobre películas semana tras semana. No tiene experiencia dirigiendo, produciendo o financiando un proyecto cinematográfico. Sus críticas pueden afectar la taquilla de una película, pero él no pierde nada personalmente si su crítica es injusta o equivocada.",
+     hasSkin:false,
+     verdict_symmetric:"Tenía skin in the game — correcto análisis.",
+     verdict_asymmetric:"No tenía skin in the game.",
+     explain:"Taleb específicamente menciona a los críticos como un caso de asimetría: pueden destruir reputaciones y carreras con una opinión pública, sin arriesgar nada propio. Su único costo es, en el peor caso, perder algo de credibilidad — mucho menor que lo que arriesgan los creadores."},
+  ],
+  selfQuestions:[
+    "Cuando recomiendo un libro, curso o producto, ¿lo he probado yo mismo a fondo?",
+    "Cuando doy consejo de carrera, ¿he vivido una situación similar con consecuencias reales para mí?",
+    "Cuando opino fuerte sobre una decisión ajena, ¿asumiría yo la misma decisión en su lugar?",
+    "Si mi consejo resulta mal para quien lo siguió, ¿hay alguna consecuencia para mí?",
+    "¿Suelo dar opiniones sobre temas donde no tengo experiencia personal directa?",
+  ],
+  selfScaleLabels:["Nunca","Rara vez","A veces","Frecuente","Siempre"],
+  selfResults:[
+    {min:0,emoji:"🚩",title:"Tu skin in the game es bajo",text:"Das muchas opiniones sin exposición personal real. No es necesariamente malo — pero vale la pena ser consciente de cuándo tu consejo viene sin riesgo propio."},
+    {min:40,emoji:"⚖️",title:"Tienes simetría parcial",text:"En algunas áreas tu consejo viene con experiencia real, en otras no tanto. Identificar cuáles son cuáles te hace más honesto contigo mismo y con los demás."},
+    {min:70,emoji:"🎯",title:"Tu skin in the game es alto",text:"La mayoría de tus consejos vienen acompañados de experiencia personal real, con consecuencias que tú también enfrentarías. Eso le da peso genuino a tu palabra."},
+  ],
+  theories:[
+    {icon:"⚖️",name:"El principio central de Taleb",body:`<p>En <em>Skin in the Game</em> (2018), Taleb argumenta que la simetría entre riesgo y recompensa es el principio organizador más subestimado de la ética, la economía y la sociedad.</p><div class="quote-block"><p>"Skin in the game mantiene a la humanidad honesta. Es el mecanismo más antiguo y robusto de filtrado de información en la historia humana."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><p>El argumento central: no podemos confiar genuinamente en consejos, recomendaciones o decisiones de quienes no comparten las consecuencias negativas de esas decisiones.</p><div class="tag-list"><span class="tag">Simetría</span><span class="tag">Skin in the Game</span><span class="tag">Ética</span></div>`},
+    {icon:"🏛️",name:"El problema de la agencia (preview)",body:`<p>Taleb conecta skin in the game con el clásico "problema de agencia" de la economía: cuando un agente (el que decide) tiene intereses distintos del principal (quien sufre las consecuencias).</p><p>Este problema explica desde la crisis financiera de 2008 hasta la burocracia corporativa: cualquier sistema donde el que decide está protegido de las consecuencias de su decisión generará, sistemáticamente, peores resultados para quienes no tienen esa protección.</p><div class="quote-block"><p>"El problema de la agencia surge porque un agente actúa en nombre de otro, pero sus intereses no están completamente alineados."</p><cite>— Concepto clásico de teoría económica, popularizado por Taleb</cite></div><div class="tag-list"><span class="tag">Problema de agencia</span><span class="tag">Incentivos</span><span class="tag">Principal-agente</span></div>`},
+    {icon:"🔥",name:"La regla de la abuela: Hammurabi y la simetría antigua",body:`<p>Taleb cita el Código de Hammurabi (1750 a.C.) como uno de los primeros sistemas legales en codificar explícitamente la simetría: si un constructor construye una casa y la casa colapsa matando al dueño, el constructor debe morir.</p><p>Aunque brutal para los estándares modernos, Taleb argumenta que esta regla generaba incentivos perfectamente alineados — el constructor literalmente tenía piel (su vida) en el juego de su propio trabajo.</p><div class="quote-block"><p>"Antes de que existieran los seguros de responsabilidad civil, la simetría se imponía de forma mucho más directa — y la calidad de la construcción era, en consecuencia, mucho más confiable."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><div class="tag-list"><span class="tag">Hammurabi</span><span class="tag">Historia</span><span class="tag">Incentivos antiguos</span></div>`},
+  ],
+  mcqs:[
+    {q:"Un CEO recibe un bono millonario por aumentar el precio de la acción en el corto plazo, pero la empresa quiebra 3 años después debido a las decisiones que tomó para inflar ese precio. ¿Qué principio de Taleb describe mejor esta situación?",opts:["Diversificación de riesgo","Skin in the game asimétrico — disfrutó el upside sin compartir el downside posterior","Estrategia barbell aplicada a compensación ejecutiva","Convexidad positiva en el sistema de incentivos"],correct:1,feedOk:"Exacto. El CEO capturó la ganancia (el bono) en el momento del pico de la acción, pero no devolvió nada cuando la empresa colapsó después. Es la firma clásica de la asimetría: ganancia privada, pérdida socializada o diferida.",feedKo:"El problema central no es de diversificación ni de convexidad positiva — es que el CEO capturó toda la ganancia de corto plazo sin compartir ninguna de las pérdidas de largo plazo causadas por sus propias decisiones."},
+    {q:"Según Taleb, ¿por qué los sistemas con buena simetría riesgo-recompensa tienden a ser más confiables a largo plazo?",opts:["Porque generan más ganancias para todos los participantes","Porque filtran naturalmente a quienes toman malas decisiones, ya que ellos mismos sufren las consecuencias","Porque son más fáciles de regular legalmente","Porque eliminan completamente el riesgo del sistema"],correct:1,feedOk:"Correcto. Cuando el que decide también sufre las consecuencias de una mala decisión, hay un filtro natural: las malas decisiones se autocorrigen porque quien las toma tiene un incentivo directo para evitarlas.",feedKo:"No se trata de generar más ganancia ni de eliminar el riesgo — el riesgo sigue existiendo. La clave es que la simetría crea un mecanismo de autocorrección: quien decide mal, sufre, y por tanto tiene incentivo genuino para decidir mejor."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🎭",title:"No detectas bien la asimetría",desc:"Te cuesta identificar cuándo alguien (o tú mismo) opina sin exposición real al riesgo.",taleb:"'Skin in the game es lo que mantiene a la humanidad honesta.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a ver la simetría",desc:"Reconoces algunos patrones de asimetría. Sigue practicando la pregunta: ¿quién carga el riesgo?",taleb:"'Nunca confíes en quien no tiene nada que perder.' — Taleb (parafraseado)",color:"#f39c12"},
+    {min:70,emoji:"⚖️",title:"Piensas en simetría de riesgo",desc:"Evalúas consejos y decisiones preguntando quién realmente carga las consecuencias.",taleb:"'El que decide debe ser el que sufre.' — Skin in the Game",color:"#2ecc71"},
+    {min:90,emoji:"🏛️",title:"Nivel Hammurabi",desc:"Aplicas la lógica de simetría riesgo-recompensa de forma rigurosa, en otros y en ti mismo.",taleb:"'Si das consejo, tómalo tú primero.' — Skin in the Game (2018)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Skin in the Game",
+  s1tag:"Part 1 · The Hook",s1h1:"Who carries\nthe risk?",
+  s1p:"When someone recommends something to you, ask yourself one simple question: <strong>if it goes wrong, does that person lose anything?</strong> If the answer is no, you're listening to a risk-free opinion — and that changes everything.",
+  s1btn:"Evaluate real cases → Start",
+  s2tag:"Part 2 · Do They Have Skin in the Game?",s2h2:"Evaluate the risk symmetry",
+  s2p:"For each role, decide BEFORE reading the full context: does this person bear the consequences of their own decisions?",
+  caseScoreTxt:"correct out of 6",
+  s3tag:"Part 3 · Self-Evaluation",s3h2:"Do you have skin in the game?",
+  s3p:"Five questions about your own everyday decisions and recommendations. Answer honestly.",
+  s4tag:"Part 4 · The Theory",s4h2:"Why does symmetry matter?",s4p:"Three frameworks from the book that names this concept.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Can you spot the asymmetry?",
+  tn1:"DILEMMA · 01",
+  tq1:"An influencer recommends a cryptocurrency to their audience. It's later discovered they sold all of it right before publicly recommending it. What Taleb principle was violated?",
+  d1aT:"Free speech",d1aD:"They have the right to give investment opinions, regardless of what they do with their own money.",
+  d1bT:"Risk asymmetry",d1bD:"They profited from selling while the audience was buying — the risk was entirely one-directional.",
+  csT:"You're ignoring the central asymmetry.",csP:"This isn't about censorship or free speech. It's that the influencer transferred their risk to the audience while walking away clean themselves — exactly the dynamic Taleb calls 'risk transfer without skin in the game'.",
+  cbT:"You correctly identified the asymmetry.",cbP:"This is exactly what Taleb calls 'ruin without personal risk' — the influencer enjoyed the upside (earning commissions, profiting from the sale) without sharing the downside (the losses of those who bought afterward).",
+  tn3:"REFLECTION · 03",
+  tq3:"In what recent situation did you give advice or a recommendation without having skin in the game?",
+  refHint:"Examples to trigger reflection:",
+  chips:["Recommending a book or course","Giving career advice to a friend","Recommending an investment","Commenting on someone else's decision","Suggesting a business strategy","Sharing a strong political opinion"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"Never ask anyone for their opinion, forecast, or recommendation. Just ask them what they have — or don\'t have — in their portfolio."',
+  cases:[
+    {emoji:"🏦",role:"Investment banker (2008)",
+     context:"Structures and sells complex financial products (CDOs) to institutional investors. Receives annual bonuses based on sales volume. If the product fails years later, the bonus has already been paid and cannot be clawed back.",
+     hasSkin:false,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"The bonus is paid at the time of sale, regardless of the product's future performance. If the CDO collapses 3 years later, the bonus has already been spent. This is what Taleb calls 'a call option without the corresponding responsibility' — immediate gain, deferred and socialized loss."},
+    {emoji:"🌾",role:"A farmer selling at their own local market",
+     context:"Grows and sells their products directly. If the harvest fails due to their own poor planting decision, they lose their own income for the year. If the products are low quality, customers don't return and their business suffers directly.",
+     hasSkin:true,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"Every decision the farmer makes — what to plant, how to tend the crop, what price to charge — has direct, immediate consequences on their own livelihood. This is Taleb's classic example of perfect symmetry: the decision-maker is the one who suffers the consequences."},
+    {emoji:"🏛️",role:"A politician voting for an austerity law",
+     context:"Approves pension and public service cuts that will affect the general population for years. Their own salary, pension, and benefits as a former official are protected by separate rules, regardless of the cuts they approve.",
+     hasSkin:false,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"The politician decides policies whose consequences they themselves won't suffer the same way ordinary citizens will. Taleb calls this the fundamental asymmetry of modern politics: decision-makers rarely share the fate of those affected by the decision."},
+    {emoji:"👨‍⚕️",role:"A surgeon operating with their own hands",
+     context:"Performs the surgery personally. If the procedure goes wrong due to their error, they face direct professional consequences: lawsuits, loss of reputation, possible loss of license. Their name is directly tied to the outcome.",
+     hasSkin:true,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"Unlike a consultant who merely gives an opinion in a document, the surgeon faces direct reputational and legal consequences if their technical decision fails. Taleb frequently uses invasive medicine as an example of real symmetry."},
+    {emoji:"📊",role:"A strategy consultant recommending a restructuring",
+     context:"Delivers a report recommending mass layoffs and radical organizational changes. Charges their fee upon delivering the report. If the restructuring destroys the company culture or doesn't work, the consultant has already been paid and moved on to another client.",
+     hasSkin:false,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"The fee is charged regardless of the recommendation's actual long-term outcome. If the strategy fails, the consultant doesn't return the money or suffer the consequences — only the company and its employees bear them fully."},
+    {emoji:"🧑‍🏫",role:"A film critic who has never made a film",
+     context:"Publishes harsh reviews of movies week after week. Has no experience directing, producing, or financing a film project. Their reviews can affect a movie's box office, but they personally lose nothing if their review is unfair or wrong.",
+     hasSkin:false,
+     verdict_symmetric:"They had skin in the game — correct analysis.",
+     verdict_asymmetric:"They did not have skin in the game.",
+     explain:"Taleb specifically cites critics as a case of asymmetry: they can destroy reputations and careers with a public opinion, without risking anything of their own. Their only cost is, at worst, losing some credibility — far less than what creators risk."},
+  ],
+  selfQuestions:[
+    "When I recommend a book, course, or product, have I thoroughly tried it myself?",
+    "When I give career advice, have I lived through a similar situation with real consequences for me?",
+    "When I strongly criticize someone else's decision, would I make the same call in their place?",
+    "If my advice turns out badly for whoever followed it, is there any consequence for me?",
+    "Do I often give opinions on topics where I have no direct personal experience?",
+  ],
+  selfScaleLabels:["Never","Rarely","Sometimes","Often","Always"],
+  selfResults:[
+    {min:0,emoji:"🚩",title:"Your skin in the game is low",text:"You give many opinions without real personal exposure. Not necessarily bad — but worth being aware of when your advice comes without your own risk."},
+    {min:40,emoji:"⚖️",title:"You have partial symmetry",text:"In some areas your advice comes with real experience, in others less so. Identifying which is which makes you more honest with yourself and others."},
+    {min:70,emoji:"🎯",title:"Your skin in the game is high",text:"Most of your advice comes accompanied by real personal experience, with consequences you'd also face. That gives genuine weight to your word."},
+  ],
+  theories:[
+    {icon:"⚖️",name:"Taleb's central principle",body:`<p>In <em>Skin in the Game</em> (2018), Taleb argues that symmetry between risk and reward is the most underrated organizing principle of ethics, economics, and society.</p><div class="quote-block"><p>"Skin in the game keeps human beings honest. It is the oldest and most robust information-filtering mechanism in human history."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><p>The central argument: we cannot genuinely trust advice, recommendations, or decisions from those who don't share the negative consequences of those decisions.</p><div class="tag-list"><span class="tag">Symmetry</span><span class="tag">Skin in the Game</span><span class="tag">Ethics</span></div>`},
+    {icon:"🏛️",name:"The agency problem (preview)",body:`<p>Taleb connects skin in the game to the classic economic "agency problem": when an agent (the decision-maker) has different interests than the principal (who bears the consequences).</p><p>This problem explains everything from the 2008 financial crisis to corporate bureaucracy: any system where the decision-maker is shielded from the consequences of their decision will systematically generate worse outcomes for those who lack that protection.</p><div class="quote-block"><p>"The agency problem arises because an agent acts on behalf of another, but their interests are not fully aligned."</p><cite>— Classic economic theory concept, popularized by Taleb</cite></div><div class="tag-list"><span class="tag">Agency problem</span><span class="tag">Incentives</span><span class="tag">Principal-agent</span></div>`},
+    {icon:"🔥",name:"Grandmother's rule: Hammurabi and ancient symmetry",body:`<p>Taleb cites the Code of Hammurabi (1750 BC) as one of the first legal systems to explicitly codify symmetry: if a builder builds a house and it collapses, killing the owner, the builder must die.</p><p>Though brutal by modern standards, Taleb argues this rule created perfectly aligned incentives — the builder literally had skin (their life) in the game of their own work.</p><div class="quote-block"><p>"Before liability insurance existed, symmetry was enforced far more directly — and the quality of construction was, as a result, far more reliable."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><div class="tag-list"><span class="tag">Hammurabi</span><span class="tag">History</span><span class="tag">Ancient incentives</span></div>`},
+  ],
+  mcqs:[
+    {q:"A CEO receives a multi-million-dollar bonus for boosting the stock price short-term, but the company goes bankrupt 3 years later due to the decisions made to inflate that price. Which Taleb principle best describes this situation?",opts:["Risk diversification","Asymmetric skin in the game — they enjoyed the upside without sharing the later downside","Barbell strategy applied to executive compensation","Positive convexity in the incentive system"],correct:1,feedOk:"Exactly. The CEO captured the gain (the bonus) at the stock's peak, but returned nothing when the company later collapsed. It's the classic signature of asymmetry: private gain, socialized or deferred loss.",feedKo:"The core problem isn't diversification or positive convexity — it's that the CEO captured all the short-term gain without sharing any of the long-term losses caused by their own decisions."},
+    {q:"According to Taleb, why do systems with good risk-reward symmetry tend to be more reliable long-term?",opts:["Because they generate more profit for all participants","Because they naturally filter out those who make bad decisions, since they themselves suffer the consequences","Because they're easier to regulate legally","Because they completely eliminate risk from the system"],correct:1,feedOk:"Correct. When the decision-maker also suffers the consequences of a bad decision, there's a natural filter: bad decisions self-correct because the decision-maker has a direct incentive to avoid them.",feedKo:"It's not about generating more profit or eliminating risk — risk still exists. The key is that symmetry creates a self-correcting mechanism: whoever decides badly suffers, and therefore has genuine incentive to decide better."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🎭",title:"You don't spot asymmetry well",desc:"You struggle to identify when someone (or you) opines without real risk exposure.",taleb:"'Skin in the game keeps human beings honest.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to see symmetry",desc:"You recognize some asymmetry patterns. Keep practicing the question: who carries the risk?",taleb:"'Never trust anyone who has nothing to lose.' — Taleb (paraphrased)",color:"#f39c12"},
+    {min:70,emoji:"⚖️",title:"You think in risk symmetry",desc:"You evaluate advice and decisions by asking who truly bears the consequences.",taleb:"'The one who decides must be the one who suffers.' — Skin in the Game",color:"#2ecc71"},
+    {min:90,emoji:"🏛️",title:"Hammurabi Level",desc:"You apply risk-reward symmetry logic rigorously, in others and in yourself.",taleb:"'If you give advice, take it yourself first.' — Skin in the Game (2018)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', caseAnswered=0, caseCorrect=0, selfAnswers=[null,null,null,null,null];
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cb-t':'cbT','cb-p':'cbP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('s1-p').innerHTML=tx.s1p;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderCases();renderSelfEval();renderTheoryCards();renderChips();
+}
+
+/* CASE EVALUATOR */
+function startCases(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-cases').scrollIntoView({behavior:'smooth'});}
+function renderCases(){
+  const area=document.getElementById('cases-area');if(!area)return;
+  area.innerHTML='';caseAnswered=0;caseCorrect=0;
+  document.getElementById('case-score-strip').classList.remove('show');
+  const hasSkinLbl=lang==='es'?'✓ Sí tiene skin in the game':'✓ Has skin in the game';
+  const noSkinLbl=lang==='es'?'✗ No tiene skin in the game':'✗ No skin in the game';
+  T[lang].cases.forEach((c,i)=>{
+    const card=document.createElement('div');card.className='case-card';card.id=`case-${i}`;
+    card.innerHTML=`
+      <div class="case-role"><span class="case-emoji">${c.emoji}</span><span class="case-role-name">${c.role}</span></div>
+      <div class="case-context">${c.context}</div>
+      <div class="case-vote-row">
+        <button class="case-vote-btn" onclick="answerCase(${i},true,this)">${hasSkinLbl}</button>
+        <button class="case-vote-btn" onclick="answerCase(${i},false,this)">${noSkinLbl}</button>
+      </div>
+      <div class="case-reveal" id="case-reveal-${i}"></div>`;
+    area.appendChild(card);
+  });
+  updateCaseProgress();
+}
+function answerCase(i,guessHas,btn){
+  const card=document.getElementById(`case-${i}`);
+  if(card.querySelector('.case-vote-btn:disabled'))return;
+  const c=T[lang].cases[i];
+  const correct=guessHas===c.hasSkin;
+  if(correct)caseCorrect++;
+  caseAnswered++;
+  card.querySelectorAll('.case-vote-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(guessHas?'chosen-has':'chosen-no');
+  const rev=document.getElementById(`case-reveal-${i}`);
+  rev.className='case-reveal show '+(c.hasSkin?'symmetric':'asymmetric');
+  const verdictText=c.hasSkin?c.verdict_symmetric:c.verdict_asymmetric;
+  rev.innerHTML=`<span class="case-verdict ${c.hasSkin?'symmetric':'asymmetric'}">${verdictText}</span>${c.explain}`;
+  updateCaseProgress();
+  if(caseAnswered===T[lang].cases.length){
+    const strip=document.getElementById('case-score-strip');
+    strip.classList.add('show');
+    document.getElementById('case-score-n').textContent=`${caseCorrect}/6`;
+    document.getElementById('case-score-txt').textContent=T[lang].caseScoreTxt;
+    strip.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+function updateCaseProgress(){
+  const el=document.getElementById('case-progress');
+  if(el)el.textContent=`${caseAnswered} / ${T[lang].cases.length} ${lang==='es'?'evaluados':'evaluated'}`;
+}
+
+/* SELF EVAL */
+function startSelfEval(){document.getElementById('sec-self').scrollIntoView({behavior:'smooth'});}
+function renderSelfEval(){
+  const box=document.getElementById('self-eval-box');if(!box)return;
+  box.innerHTML='';
+  T[lang].selfQuestions.forEach((q,i)=>{
+    const card=document.createElement('div');card.className='self-q-card';
+    card.innerHTML=`
+      <div class="self-q-text">${i+1}. ${q}</div>
+      <div class="self-scale" id="self-scale-${i}">
+        ${T[lang].selfScaleLabels.map((lbl,vi)=>`<button class="self-scale-btn" onclick="answerSelf(${i},${vi},this)">${lbl}</button>`).join('')}
+      </div>`;
+    box.appendChild(card);
+  });
+  checkSelfComplete();
+}
+function answerSelf(qIdx,val,btn){
+  selfAnswers[qIdx]=val;
+  document.querySelectorAll(`#self-scale-${qIdx} .self-scale-btn`).forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  checkSelfComplete();
+}
+function checkSelfComplete(){
+  const allAnswered=selfAnswers.every(a=>a!==null);
+  document.getElementById('self-submit-btn').disabled=!allAnswered;
+}
+function showSelfResult(){
+  // Questions 1,2,3,4 are positive (higher = more skin); question 5 (idx 4) is reverse-scored
+  let score=0;
+  selfAnswers.forEach((v,i)=>{
+    if(i===4){score+=(4-v);} else {score+=v;}
+  });
+  const pct=Math.round(score/20*100);
+  const results=T[lang].selfResults;
+  let chosen=results[0];for(const r of results)if(pct>=r.min)chosen=r;
+  document.getElementById('self-result-emoji').textContent=chosen.emoji;
+  document.getElementById('self-result-title').textContent=chosen.title;
+  document.getElementById('self-result-text').textContent=chosen.text;
+  document.getElementById('self-result-box').classList.add('show');
+  document.getElementById('self-result-box').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-a').classList.toggle('show',type==='a');
+  document.getElementById('cons-b').classList.toggle('show',type==='b');
+  dilemmaScore=type==='b'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>
