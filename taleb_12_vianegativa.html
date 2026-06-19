@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Via Negativa — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.scissor-icon{font-size:3.5rem;margin:1.5rem 0;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* SORTING GAME */
+.sort-progress{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.08em;}
+.sort-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:.75rem;}
+.sort-item-text{font-size:.9rem;color:var(--text);margin-bottom:.85rem;line-height:1.55;}
+.sort-btns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.sort-btn{font-family:'IBM Plex Sans',sans-serif;font-size:.82rem;padding:.6rem .5rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;cursor:pointer;transition:all .2s;text-align:center;}
+.sort-btn.neg-btn:hover:not(:disabled){border-color:var(--teal);color:var(--teal);}
+.sort-btn.pos-btn:hover:not(:disabled){border-color:var(--accent2);color:var(--accent2);}
+.sort-btn:disabled{cursor:default;opacity:.5;}
+.sort-btn.chosen-neg{background:rgba(26,188,156,.15);border-color:var(--teal);color:var(--teal);opacity:1;}
+.sort-btn.chosen-pos{background:rgba(242,166,35,.15);border-color:var(--accent2);color:var(--accent2);opacity:1;}
+.sort-reveal{display:none;margin-top:.7rem;padding:.65rem .8rem;border-radius:var(--radius-sm);font-size:.8rem;line-height:1.55;}
+.sort-reveal.show{display:block;}
+.sort-reveal.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);}
+.sort-reveal.wrong{background:rgba(242,166,35,.08);border:1px solid rgba(242,166,35,.25);}
+.sort-score-strip{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.sort-score-strip.show{display:flex;}
+
+/* SUBTRACT EXERCISE */
+.subtract-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.subtract-category{margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.subtract-category:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.subtract-cat-title{font-weight:600;font-size:.92rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+.subtract-cat-hint{font-size:.78rem;color:var(--text3);margin-bottom:.85rem;font-style:italic;}
+.subtract-item-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;background:var(--bg3);border-radius:var(--radius-sm);padding:.6rem .8rem;transition:all .3s;}
+.subtract-item-row.removed{opacity:.35;text-decoration:line-through;}
+.subtract-item-text{flex:1;font-size:.85rem;color:var(--text);}
+.subtract-remove-btn{font-family:'IBM Plex Mono',monospace;font-size:.65rem;padding:.3rem .7rem;border-radius:14px;border:1px solid var(--teal);background:transparent;color:var(--teal);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.subtract-remove-btn:hover{background:rgba(26,188,156,.12);}
+.subtract-remove-btn.is-removed{border-color:var(--text3);color:var(--text3);}
+.add-custom-row{display:flex;gap:.5rem;margin-top:.75rem;}
+.add-custom-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.55rem .75rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.82rem;outline:none;}
+.add-custom-input:focus{border-color:var(--accent2);}
+.add-custom-btn{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.55rem 1rem;color:var(--text2);cursor:pointer;font-size:.8rem;font-family:'IBM Plex Sans',sans-serif;}
+.subtract-counter{text-align:center;background:var(--bg3);border-radius:var(--radius);padding:1.25rem;margin-top:1rem;}
+.subtract-counter-num{font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:600;color:var(--teal);}
+.subtract-counter-lbl{font-size:.78rem;color:var(--text3);margin-top:.25rem;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 12</span>
+    <span class="header-title" id="hdr-title">Via Negativa</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">¿Qué pasaría si<br>en vez de agregar, quitas?</h1>
+  <div class="scissor-icon">✂️</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Casi todos preguntamos "¿qué debería agregar para mejorar?" Taleb propone la pregunta inversa: <strong>¿qué puedo quitar?</strong> Es más fácil saber qué te hace frágil que diseñar qué te haría mejor.</p>
+  <button class="btn-primary" onclick="startSort()" id="s1-btn">Empezar a restar → Comenzar</button>
+</section>
+
+<!-- S2 SORTING GAME -->
+<section id="sec-sort">
+  <div class="section-tag" id="s2-tag">Parte 2 · Calentamiento — Resta vs Suma</div>
+  <h2 id="s2-h2">¿Via negativa o via positiva?</h2>
+  <p id="s2-p">8 ejemplos reales. Decide si la acción descrita es "restar para mejorar" (via negativa) o "agregar para mejorar" (via positiva).</p>
+  <div class="sort-progress" id="sort-progress">0 / 8 clasificados</div>
+  <div id="sort-area"></div>
+  <div class="sort-score-strip" id="sort-score-strip">
+    <div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:500" id="sort-score-n">—</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-left:.5rem" id="sort-score-txt">correctas de 8</span>
+    </div>
+    <button class="btn-accent" onclick="startSubtract()">Aplicarlo a mi trabajo →</button>
+  </div>
+</section>
+
+<!-- S3 SUBTRACT EXERCISE -->
+<section id="sec-subtract">
+  <div class="section-tag" id="s3-tag">Parte 3 · Ejercicio Personal — Restar Capas</div>
+  <h2 id="s3-h2">¿Qué puedes quitar de tu trabajo?</h2>
+  <p id="s3-p">Revisa cada categoría. Marca lo que podrías eliminar sin pérdida real — y agrega tus propios elementos si quieres.</p>
+  <div class="subtract-box" id="subtract-box"></div>
+  <div class="subtract-counter">
+    <div class="subtract-counter-num" id="subtract-count">0</div>
+    <div class="subtract-counter-lbl" id="subtract-count-lbl">elementos marcados para eliminar</div>
+  </div>
+  <button class="btn-accent" onclick="showTheory()" id="s3-btn" style="margin-top:1rem">Explorar la teoría →</button>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">¿Por qué restar es más robusto que sumar?</h2>
+  <p id="s4-p">Tres marcos para entender la sabiduría de la resta.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Piensas en sumar o en restar?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Tu equipo de trabajo no está rindiendo bien. ¿Cuál es tu primer instinto?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('add',this)">
+        <div class="d-emoji">➕</div>
+        <div class="d-title" id="d1a-t">Agregar algo nuevo</div>
+        <div class="d-desc" id="d1a-d">Un nuevo proceso, una nueva herramienta, una nueva reunión de seguimiento.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('remove',this)">
+        <div class="d-emoji">➖</div>
+        <div class="d-title" id="d1b-t">Quitar algo que estorba</div>
+        <div class="d-desc" id="d1b-d">Identifico qué proceso, reunión o regla está frenando al equipo, y lo elimino.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-add">
+      <strong id="cs-t">Elegiste el camino más común — y más frágil.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Agregar es la respuesta intuitiva, pero cada capa nueva añade complejidad y puntos de fallo adicionales. Taleb advierte que la mayoría de "soluciones" corporativas son via positiva mal aplicada.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-remove">
+      <strong id="cr-t">Aplicaste via negativa.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cr-p">Identificar y quitar el obstáculo es generalmente más efectivo y más robusto que agregar otra capa de complejidad. Lo que queda después de quitar lo dañino suele ser más fuerte que lo que se construye agregando.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">Más allá del trabajo: ¿qué otra cosa en tu vida mejoraría si simplemente la quitaras?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Sabemos mucho más sobre lo que está mal que sobre lo que está bien... el conocimiento negativo (lo que es falso o lo que no funciona) es más robusto que el conocimiento positivo."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Antifrágil (2012)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_11_ludic.html">← 11 La Ludic Fallacy</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">13 El Lecho de Procusto →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Via Negativa",
+  s1tag:"Parte 1 · El Gancho",s1h1:"¿Qué pasaría si\nen vez de agregar, quitas?",
+  s1p:"Casi todos preguntamos '¿qué debería agregar para mejorar?' Taleb propone la pregunta inversa: <strong>¿qué puedo quitar?</strong> Es más fácil saber qué te hace frágil que diseñar qué te haría mejor.",
+  s1btn:"Empezar a restar → Comenzar",
+  s2tag:"Parte 2 · Calentamiento — Resta vs Suma",s2h2:"¿Via negativa o via positiva?",
+  s2p:"8 ejemplos reales. Decide si la acción descrita es 'restar para mejorar' (via negativa) o 'agregar para mejorar' (via positiva).",
+  sortScoreTxt:"correctas de 8",
+  s3tag:"Parte 3 · Ejercicio Personal — Restar Capas",s3h2:"¿Qué puedes quitar de tu trabajo?",
+  s3p:"Revisa cada categoría. Marca lo que podrías eliminar sin pérdida real — y agrega tus propios elementos si quieres.",
+  subtractCountLbl:"elementos marcados para eliminar",
+  addCustomPlaceholder:"Agrega tu propio elemento...",
+  addCustomBtn:"+ Agregar",
+  removeBtnLbl:"Quitar",keepBtnLbl:"Quitado ✓",
+  s4tag:"Parte 4 · La Teoría",s4h2:"¿Por qué restar es más robusto que sumar?",s4p:"Tres marcos para entender la sabiduría de la resta.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Piensas en sumar o en restar?",
+  tn1:"DILEMA · 01",
+  tq1:"Tu equipo de trabajo no está rindiendo bien. ¿Cuál es tu primer instinto?",
+  d1aT:"Agregar algo nuevo",d1aD:"Un nuevo proceso, una nueva herramienta, una nueva reunión de seguimiento.",
+  d1bT:"Quitar algo que estorba",d1bD:"Identifico qué proceso, reunión o regla está frenando al equipo, y lo elimino.",
+  csT:"Elegiste el camino más común — y más frágil.",csP:"Agregar es la respuesta intuitiva, pero cada capa nueva añade complejidad y puntos de fallo adicionales. Taleb advierte que la mayoría de 'soluciones' corporativas son via positiva mal aplicada.",
+  crT:"Aplicaste via negativa.",crP:"Identificar y quitar el obstáculo es generalmente más efectivo y más robusto que agregar otra capa de complejidad. Lo que queda después de quitar lo dañino suele ser más fuerte que lo que se construye agregando.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"Más allá del trabajo: ¿qué otra cosa en tu vida mejoraría si simplemente la quitaras?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Una relación tóxica","Un hábito de consumo de noticias","Una rutina que ya no te sirve","Posesiones materiales innecesarias","Una creencia limitante","Una obligación social que arrastras"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Sabemos mucho más sobre lo que está mal que sobre lo que está bien... el conocimiento negativo (lo que es falso o lo que no funciona) es más robusto que el conocimiento positivo."',
+  sortItems:[
+    {emoji:"💊",text:"Un médico que deja de recetar 5 medicamentos innecesarios a un paciente, en vez de agregar uno más para tratar los efectos secundarios de los anteriores.",cat:"neg",explain:"Via negativa. Taleb usa este ejemplo específicamente: la medicina moderna a menudo mejora más al quitar intervenciones innecesarias que al agregar nuevas."},
+    {emoji:"🏋️",text:"Un entrenador que agrega un suplemento nuevo cada mes a la rutina de un atleta para mejorar su rendimiento.",cat:"pos",explain:"Via positiva. Es el patrón intuitivo común: cada problema se resuelve agregando algo nuevo, en vez de revisar qué se podría quitar."},
+    {emoji:"⚖️",text:"Warren Buffett dice que su principal ventaja no es identificar grandes inversiones, sino evitar las malas decisiones que otros sí toman.",cat:"neg",explain:"Via negativa. Taleb cita explícitamente este principio: el éxito a largo plazo viene más de evitar errores fatales que de hacer movimientos brillantes."},
+    {emoji:"📱",text:"Una empresa de software agrega 10 funciones nuevas a su aplicación cada trimestre para 'mejorarla'.",cat:"pos",explain:"Via positiva. Cada función nueva agrega complejidad, superficie de errores y carga cognitiva — el patrón clásico de 'feature creep' que rara vez mejora el producto core."},
+    {emoji:"🧘",text:"Los estoicos practicaban identificar y eliminar deseos innecesarios, en vez de buscar más posesiones para ser felices.",cat:"neg",explain:"Via negativa. La filosofía estoica es una de las fuentes históricas explícitas de Taleb para el concepto — la felicidad por sustracción de deseos, no por adición de bienes."},
+    {emoji:"🏢",text:"Una corporación crea un nuevo departamento de 'gestión de riesgos' con 20 personas para abordar fallas detectadas en auditorías.",cat:"pos",explain:"Via positiva. Agregar una capa burocrática nueva rara vez resuelve el problema original — frecuentemente solo agrega un nuevo punto de fricción y costo."},
+    {emoji:"🍽️",text:"Un nutricionista recomienda dejar de consumir azúcar procesada y alimentos ultraprocesados, sin necesariamente agregar suplementos nuevos.",cat:"neg",explain:"Via negativa. Taleb menciona específicamente la nutrición: identificar y eliminar lo dañino (azúcar, procesados) suele ser más efectivo que agregar 'superalimentos'."},
+    {emoji:"📚",text:"Un escritor cree que su manuscrito mejorará agregando más capítulos, personajes y subtramas para enriquecerlo.",cat:"pos",explain:"Via positiva. Los editores experimentados saben que la mayoría de manuscritos mejoran más cortando contenido que agregando — pero la intuición del escritor primerizo suele ser sumar."},
+  ],
+  subtractCategories:[
+    {icon:"📅",title:"Reuniones recurrentes",hint:"¿Esta reunión sigue generando valor real, o se volvió un hábito vacío?",items:[
+      "Reunión semanal de status sin decisiones reales",
+      "Llamada de seguimiento que duplica información ya disponible por escrito",
+      "Reunión 'para alinear' sin agenda clara",
+      "Sincronización diaria que podría ser un mensaje async",
+    ]},
+    {icon:"📲",title:"Suscripciones y herramientas",hint:"¿Usas esto activamente, o lo pagas/mantienes por inercia?",items:[
+      "Herramienta SaaS que usas menos de una vez al mes",
+      "Suscripción de contenido que no abres hace semanas",
+      "Plantilla o proceso que copiaste de otro equipo pero no encaja con el tuyo",
+      "Canal de comunicación duplicado (Slack + email + WhatsApp para lo mismo)",
+    ]},
+    {icon:"📋",title:"Compromisos y obligaciones",hint:"¿Este compromiso sigue alineado con tu prioridad real, o lo arrastras por costumbre?",items:[
+      "Proyecto paralelo que nadie pidió pero sigues 'manteniendo vivo'",
+      "Comité o grupo de trabajo que ya cumplió su propósito original",
+      "Reporte periódico que nadie lee realmente",
+      "Favor recurrente que empezó como excepción y se volvió expectativa",
+    ]},
+  ],
+  theories:[
+    {icon:"✂️",name:"Via Negativa según Taleb",body:`<p>Taleb dedica un capítulo entero de <em>Antifrágil</em> (2012) al concepto de via negativa — tomado de la teología apofática, donde se describe a Dios por lo que NO es, en lugar de afirmaciones positivas directas.</p><div class="quote-block"><p>"La acción de quitar, en lugar de agregar, es robusta, mientras que añadir cosas nuevas para arreglar problemas tiende a agregar más capas de fragilidad."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><p>El argumento central de Taleb: el conocimiento sobre qué NO funciona es mucho más confiable y duradero que el conocimiento sobre qué SÍ funciona, porque lo segundo cambia con el contexto mientras lo primero tiende a ser más universal.</p><div class="tag-list"><span class="tag">Via Negativa</span><span class="tag">Teología apofática</span><span class="tag">Antifrágil</span></div>`},
+    {icon:"⚕️",name:"Iatrogenia: cuando 'ayudar' hace daño",body:`<p>Taleb usa extensamente el concepto médico de "iatrogenia" — el daño causado por el propio tratamiento médico — como metáfora central de via positiva mal aplicada.</p><p>Durante siglos, los médicos intervenían activamente (sangrías, purgas, tratamientos agresivos) creyendo ayudar, cuando en muchos casos el cuerpo se habría recuperado mejor sin intervención. La medicina moderna basada en evidencia ha aprendido, lentamente, que "primero no hacer daño" a menudo significa hacer menos, no más.</p><div class="quote-block"><p>"El historiador de la medicina sabe que durante siglos los médicos mataron a más pacientes de los que salvaron, con buenas intenciones y mala epistemología."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Iatrogenia</span><span class="tag">Medicina basada en evidencia</span><span class="tag">Primum non nocere</span></div>`},
+    {icon:"🏛️",name:"Sabiduría negativa en la tradición filosófica",body:`<p>Taleb conecta via negativa con tradiciones filosóficas y religiosas mucho más antiguas: los Diez Mandamientos están formulados mayormente como prohibiciones ("no harás"), no como instrucciones positivas. El budismo y el estoicismo enfatizan la eliminación del deseo y el apego, no su acumulación.</p><p>El patrón común: las reglas negativas ("no hagas esto") tienden a ser más universales, más robustas al paso del tiempo, y más fáciles de verificar que las reglas positivas ("haz esto para ser feliz/exitoso/sano").</p><div class="quote-block"><p>"Es más fácil saber que algo está mal que saber qué es exactamente lo correcto. La asimetría entre el conocimiento negativo y el positivo es la base de la robustez epistémica."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><div class="tag-list"><span class="tag">Estoicismo</span><span class="tag">Teología apofática</span><span class="tag">Robustez epistémica</span></div>`},
+  ],
+  mcqs:[
+    {q:"Según el principio de via negativa de Taleb, ¿por qué dice que sabemos más sobre lo que está mal que sobre lo que está bien?",opts:["Porque la gente es naturalmente más pesimista","Porque identificar un error o daño es generalmente más verificable y duradero que identificar la solución óptima, que depende del contexto","Porque las malas noticias se difunden más rápido que las buenas","Porque los estudios científicos se enfocan más en fallas que en éxitos"],correct:1,feedOk:"Exacto. Saber que fumar causa cáncer es un conocimiento negativo robusto y duradero. Saber 'la dieta perfecta' es mucho menos estable — cambia con cada nuevo estudio. La asimetría está en la verificabilidad y durabilidad del conocimiento, no en el pesimismo.",feedKo:"No se trata de pesimismo ni de cómo se difunden las noticias. El punto central es epistemológico: refutar algo (mostrar que está mal) es generalmente más sólido y permanente que afirmar qué es exactamente lo óptimo, que depende de contextos cambiantes."},
+    {q:"Un gerente nota que su equipo está sobrecargado de trabajo. En vez de contratar más personal (agregar), decide eliminar 3 reportes semanales que nadie usa. ¿Qué principio está aplicando?",opts:["Reducción de costos pura, sin relación con via negativa","Via negativa — identifica y elimina lo que genera carga sin valor real, en vez de agregar más recursos para compensar","Delegación de tareas a subordinados","Automatización de procesos repetitivos"],correct:1,feedOk:"Correcto. Esto es exactamente via negativa aplicada: en vez de agregar más capacidad (contratar) para sostener procesos que quizás ni siquiera son necesarios, primero elimina lo que no aporta valor real. A menudo resuelve el problema sin gastar más recursos.",feedKo:"Aunque hay un componente de reducción de costos, el principio central aquí es via negativa: cuestionar si el trabajo en sí es necesario, en vez de simplemente agregar más capacidad para sostenerlo tal como está."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"➕",title:"Tu instinto es sumar",desc:"Buscas agregar soluciones nuevas a los problemas. Es común — pero acumula complejidad.",taleb:"'Agregar capas no siempre es mejorar.' — Taleb (parafraseado)",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a cuestionar qué quitar",desc:"Reconoces el patrón de via negativa. El siguiente paso: aplicarlo activamente.",taleb:"'Pregúntate primero qué quitar, después qué agregar.' — Antifrágil",color:"#f39c12"},
+    {min:70,emoji:"✂️",title:"Piensas en restar primero",desc:"Tu primer instinto frente a un problema es identificar qué eliminar.",taleb:"'El conocimiento negativo es más robusto que el positivo.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🏛️",title:"Nivel Via Negativa",desc:"Aplicas activamente la sabiduría de la resta, en sistemas y en tu propia vida.",taleb:"'Lo que sobrevive a la eliminación es más fuerte que lo construido por adición.' — Antifrágil (2012)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Via Negativa",
+  s1tag:"Part 1 · The Hook",s1h1:"What if, instead of\nadding, you subtracted?",
+  s1p:"Almost everyone asks 'what should I add to improve?' Taleb proposes the inverse question: <strong>what can I remove?</strong> It's easier to know what makes you fragile than to design what would make you better.",
+  s1btn:"Start subtracting → Begin",
+  s2tag:"Part 2 · Warm-up — Subtract vs Add",s2h2:"Via negativa or via positiva?",
+  s2p:"8 real examples. Decide if the described action is 'subtracting to improve' (via negativa) or 'adding to improve' (via positiva).",
+  sortScoreTxt:"correct out of 8",
+  s3tag:"Part 3 · Personal Exercise — Subtracting Layers",s3h2:"What can you remove from your work?",
+  s3p:"Review each category. Mark what you could eliminate with no real loss — and add your own items if you want.",
+  subtractCountLbl:"items marked for removal",
+  addCustomPlaceholder:"Add your own item...",
+  addCustomBtn:"+ Add",
+  removeBtnLbl:"Remove",keepBtnLbl:"Removed ✓",
+  s4tag:"Part 4 · The Theory",s4h2:"Why is subtracting more robust than adding?",s4p:"Three frameworks for understanding the wisdom of subtraction.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you think in addition or subtraction?",
+  tn1:"DILEMMA · 01",
+  tq1:"Your team isn't performing well. What's your first instinct?",
+  d1aT:"Add something new",d1aD:"A new process, a new tool, a new follow-up meeting.",
+  d1bT:"Remove something in the way",d1bD:"I identify which process, meeting, or rule is slowing the team down, and eliminate it.",
+  csT:"You chose the most common path — and the more fragile one.",csP:"Adding is the intuitive response, but each new layer adds complexity and additional failure points. Taleb warns that most corporate 'solutions' are poorly applied via positiva.",
+  crT:"You applied via negativa.",crP:"Identifying and removing the obstacle is generally more effective and more robust than adding another layer of complexity. What remains after removing the harmful is usually stronger than what's built by adding.",
+  tn3:"REFLECTION · 03",
+  tq3:"Beyond work: what else in your life would improve if you simply removed it?",
+  refHint:"Examples to trigger reflection:",
+  chips:["A toxic relationship","A news-consumption habit","A routine that no longer serves you","Unnecessary material possessions","A limiting belief","A social obligation you carry"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"We know much more about what is wrong than what is right... negative knowledge (what is false or what does not work) is more robust than positive knowledge."',
+  sortItems:[
+    {emoji:"💊",text:"A doctor stops prescribing 5 unnecessary medications to a patient, instead of adding one more to treat the side effects of the others.",cat:"neg",explain:"Via negativa. Taleb uses this exact example: modern medicine often improves more by removing unnecessary interventions than by adding new ones."},
+    {emoji:"🏋️",text:"A trainer adds a new supplement every month to an athlete's routine to improve performance.",cat:"pos",explain:"Via positiva. This is the common intuitive pattern: every problem gets solved by adding something new, instead of reviewing what could be removed."},
+    {emoji:"⚖️",text:"Warren Buffett says his main edge isn't spotting great investments, but avoiding the bad decisions others make.",cat:"neg",explain:"Via negativa. Taleb explicitly cites this principle: long-term success comes more from avoiding fatal mistakes than from making brilliant moves."},
+    {emoji:"📱",text:"A software company adds 10 new features to its app every quarter to 'improve' it.",cat:"pos",explain:"Via positiva. Every new feature adds complexity, bug surface, and cognitive load — the classic 'feature creep' pattern that rarely improves the core product."},
+    {emoji:"🧘",text:"The Stoics practiced identifying and eliminating unnecessary desires, instead of seeking more possessions to be happy.",cat:"neg",explain:"Via negativa. Stoic philosophy is one of Taleb's explicit historical sources for the concept — happiness through subtraction of desires, not addition of goods."},
+    {emoji:"🏢",text:"A corporation creates a new 'risk management' department with 20 people to address failures found in audits.",cat:"pos",explain:"Via positiva. Adding a new bureaucratic layer rarely solves the original problem — it often just adds a new point of friction and cost."},
+    {emoji:"🍽️",text:"A nutritionist recommends cutting processed sugar and ultra-processed foods, without necessarily adding new supplements.",cat:"neg",explain:"Via negativa. Taleb specifically mentions nutrition: identifying and removing the harmful (sugar, processed foods) is usually more effective than adding 'superfoods'."},
+    {emoji:"📚",text:"A writer believes their manuscript will improve by adding more chapters, characters, and subplots to enrich it.",cat:"pos",explain:"Via positiva. Experienced editors know most manuscripts improve more by cutting content than by adding — but a first-time writer's instinct is usually to add."},
+  ],
+  subtractCategories:[
+    {icon:"📅",title:"Recurring meetings",hint:"Does this meeting still generate real value, or did it become an empty habit?",items:[
+      "Weekly status meeting with no real decisions",
+      "Follow-up call that duplicates information already available in writing",
+      "'Alignment' meeting with no clear agenda",
+      "Daily sync that could be an async message",
+    ]},
+    {icon:"📲",title:"Subscriptions and tools",hint:"Do you actively use this, or pay/maintain it out of inertia?",items:[
+      "SaaS tool you use less than once a month",
+      "Content subscription you haven't opened in weeks",
+      "Template or process copied from another team but doesn't fit yours",
+      "Duplicate communication channel (Slack + email + WhatsApp for the same thing)",
+    ]},
+    {icon:"📋",title:"Commitments and obligations",hint:"Is this commitment still aligned with your real priority, or do you carry it out of habit?",items:[
+      "Side project nobody asked for but you keep 'keeping alive'",
+      "Committee or working group that already fulfilled its original purpose",
+      "Periodic report nobody actually reads",
+      "Recurring favor that started as an exception and became an expectation",
+    ]},
+  ],
+  theories:[
+    {icon:"✂️",name:"Via Negativa according to Taleb",body:`<p>Taleb dedicates an entire chapter of <em>Antifragile</em> (2012) to the via negativa concept — borrowed from apophatic theology, where God is described by what He is NOT, rather than direct positive statements.</p><div class="quote-block"><p>"The act of removing, rather than adding, is robust, while adding new things to fix problems tends to add more layers of fragility."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><p>Taleb's central argument: knowledge about what does NOT work is far more reliable and durable than knowledge about what DOES work, because the latter changes with context while the former tends to be more universal.</p><div class="tag-list"><span class="tag">Via Negativa</span><span class="tag">Apophatic theology</span><span class="tag">Antifragile</span></div>`},
+    {icon:"⚕️",name:"Iatrogenics: when 'helping' causes harm",body:`<p>Taleb extensively uses the medical concept of "iatrogenics" — harm caused by the treatment itself — as a central metaphor for poorly applied via positiva.</p><p>For centuries, doctors intervened actively (bloodletting, purges, aggressive treatments) believing they were helping, when in many cases the body would have recovered better without intervention. Modern evidence-based medicine has slowly learned that "first, do no harm" often means doing less, not more.</p><div class="quote-block"><p>"The medical historian knows that for centuries doctors killed more patients than they saved, with good intentions and bad epistemology."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">Iatrogenics</span><span class="tag">Evidence-based medicine</span><span class="tag">Primum non nocere</span></div>`},
+    {icon:"🏛️",name:"Negative wisdom in philosophical tradition",body:`<p>Taleb connects via negativa with much older philosophical and religious traditions: the Ten Commandments are mostly formulated as prohibitions ("thou shalt not"), not positive instructions. Buddhism and Stoicism emphasize eliminating desire and attachment, not accumulating them.</p><p>The common pattern: negative rules ("don't do this") tend to be more universal, more robust over time, and easier to verify than positive rules ("do this to be happy/successful/healthy").</p><div class="quote-block"><p>"It's easier to know that something is wrong than to know exactly what is right. The asymmetry between negative and positive knowledge is the foundation of epistemic robustness."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><div class="tag-list"><span class="tag">Stoicism</span><span class="tag">Apophatic theology</span><span class="tag">Epistemic robustness</span></div>`},
+  ],
+  mcqs:[
+    {q:"According to Taleb's via negativa principle, why does he say we know more about what's wrong than what's right?",opts:["Because people are naturally more pessimistic","Because identifying an error or harm is generally more verifiable and durable than identifying the optimal solution, which depends on context","Because bad news spreads faster than good news","Because scientific studies focus more on failures than successes"],correct:1,feedOk:"Exactly. Knowing that smoking causes cancer is robust, durable negative knowledge. Knowing 'the perfect diet' is far less stable — it changes with every new study. The asymmetry lies in the verifiability and durability of knowledge, not in pessimism.",feedKo:"It's not about pessimism or how news spreads. The central point is epistemological: refuting something (showing it's wrong) is generally more solid and permanent than asserting exactly what's optimal, which depends on changing contexts."},
+    {q:"A manager notices their team is overloaded with work. Instead of hiring more staff (adding), they decide to eliminate 3 weekly reports nobody uses. What principle are they applying?",opts:["Pure cost reduction, unrelated to via negativa","Via negativa — identifying and eliminating what creates load without real value, instead of adding more resources to compensate","Delegating tasks to subordinates","Automating repetitive processes"],correct:1,feedOk:"Correct. This is exactly via negativa applied: instead of adding more capacity (hiring) to sustain processes that may not even be necessary, first eliminate what doesn't add real value. It often solves the problem without spending more resources.",feedKo:"While there's a cost-reduction component, the central principle here is via negativa: questioning whether the work itself is necessary, instead of simply adding more capacity to sustain it as-is."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"➕",title:"Your instinct is to add",desc:"You seek to add new solutions to problems. Common — but it accumulates complexity.",taleb:"'Adding layers isn't always improving.' — Taleb (paraphrased)",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to question what to remove",desc:"You recognize the via negativa pattern. Next step: apply it actively.",taleb:"'Ask first what to remove, then what to add.' — Antifragile",color:"#f39c12"},
+    {min:70,emoji:"✂️",title:"You think subtraction first",desc:"Your first instinct facing a problem is to identify what to eliminate.",taleb:"'Negative knowledge is more robust than positive.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🏛️",title:"Via Negativa Level",desc:"You actively apply the wisdom of subtraction, in systems and in your own life.",taleb:"'What survives elimination is stronger than what's built by addition.' — Antifragile (2012)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', sortAnswered=0, sortCorrect=0, removedCount=0, customCounter=0;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','subtract-count-lbl':'subtractCountLbl',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cr-t':'crT','cr-p':'crP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('s1-p').innerHTML=tx.s1p;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderSort();renderSubtract();renderTheoryCards();renderChips();
+}
+
+/* SORTING GAME */
+function startSort(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-sort').scrollIntoView({behavior:'smooth'});}
+function renderSort(){
+  const area=document.getElementById('sort-area');if(!area)return;
+  area.innerHTML='';sortAnswered=0;sortCorrect=0;
+  document.getElementById('sort-score-strip').classList.remove('show');
+  const negLbl=lang==='es'?'✂️ Via Negativa (restar)':'✂️ Via Negativa (subtract)';
+  const posLbl=lang==='es'?'➕ Via Positiva (sumar)':'➕ Via Positiva (add)';
+  T[lang].sortItems.forEach((item,i)=>{
+    const card=document.createElement('div');card.className='sort-card';card.id=`sort-${i}`;
+    card.innerHTML=`
+      <div class="sort-item-text">${item.emoji} ${item.text}</div>
+      <div class="sort-btns">
+        <button class="sort-btn neg-btn" onclick="answerSort(${i},'neg',this)">${negLbl}</button>
+        <button class="sort-btn pos-btn" onclick="answerSort(${i},'pos',this)">${posLbl}</button>
+      </div>
+      <div class="sort-reveal" id="sort-reveal-${i}"></div>`;
+    area.appendChild(card);
+  });
+  updateSortProgress();
+}
+function answerSort(i,choice,btn){
+  const card=document.getElementById(`sort-${i}`);
+  if(card.querySelector('.sort-btn:disabled'))return;
+  const item=T[lang].sortItems[i];
+  const correct=choice===item.cat;
+  if(correct)sortCorrect++;
+  sortAnswered++;
+  card.querySelectorAll('.sort-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(`chosen-${choice}`);
+  const rev=document.getElementById(`sort-reveal-${i}`);
+  rev.className='sort-reveal show '+(correct?'correct':'wrong');
+  rev.textContent=item.explain;
+  updateSortProgress();
+  if(sortAnswered===T[lang].sortItems.length){
+    const strip=document.getElementById('sort-score-strip');
+    strip.classList.add('show');
+    document.getElementById('sort-score-n').textContent=`${sortCorrect}/8`;
+    document.getElementById('sort-score-txt').textContent=T[lang].sortScoreTxt;
+    strip.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+function updateSortProgress(){
+  const el=document.getElementById('sort-progress');
+  if(el)el.textContent=`${sortAnswered} / ${T[lang].sortItems.length} ${lang==='es'?'clasificados':'sorted'}`;
+}
+
+/* SUBTRACT EXERCISE */
+function startSubtract(){document.getElementById('sec-subtract').scrollIntoView({behavior:'smooth'});}
+function renderSubtract(){
+  const box=document.getElementById('subtract-box');if(!box)return;
+  box.innerHTML='';removedCount=0;
+  T[lang].subtractCategories.forEach((cat,ci)=>{
+    const catEl=document.createElement('div');catEl.className='subtract-category';
+    let itemsHtml='';
+    cat.items.forEach((item,ii)=>{
+      itemsHtml+=`
+        <div class="subtract-item-row" id="sub-row-${ci}-${ii}">
+          <span class="subtract-item-text">${item}</span>
+          <button class="subtract-remove-btn" id="sub-btn-${ci}-${ii}" onclick="toggleRemove(${ci},${ii})">${T[lang].removeBtnLbl}</button>
+        </div>`;
+    });
+    catEl.innerHTML=`
+      <div class="subtract-cat-title">${cat.icon} ${cat.title}</div>
+      <div class="subtract-cat-hint">${cat.hint}</div>
+      <div id="subcat-items-${ci}">${itemsHtml}</div>
+      <div class="add-custom-row">
+        <input type="text" class="add-custom-input" id="custom-input-${ci}" placeholder="${T[lang].addCustomPlaceholder}">
+        <button class="add-custom-btn" onclick="addCustomItem(${ci})">${T[lang].addCustomBtn}</button>
+      </div>`;
+    box.appendChild(catEl);
+  });
+  updateSubtractCount();
+}
+function toggleRemove(ci,ii){
+  const row=document.getElementById(`sub-row-${ci}-${ii}`);
+  const btn=document.getElementById(`sub-btn-${ci}-${ii}`);
+  const isRemoved=row.classList.toggle('removed');
+  btn.classList.toggle('is-removed',isRemoved);
+  btn.textContent=isRemoved?T[lang].keepBtnLbl:T[lang].removeBtnLbl;
+  removedCount+=isRemoved?1:-1;
+  updateSubtractCount();
+}
+function addCustomItem(ci){
+  const input=document.getElementById(`custom-input-${ci}`);
+  const val=input.value.trim();
+  if(!val)return;
+  customCounter++;
+  const wrap=document.getElementById(`subcat-items-${ci}`);
+  const id=`custom-${ci}-${customCounter}`;
+  const row=document.createElement('div');
+  row.className='subtract-item-row';row.id=`sub-row-${id}`;
+  row.innerHTML=`<span class="subtract-item-text">${val}</span><button class="subtract-remove-btn" id="sub-btn-${id}" onclick="toggleRemoveCustom('${id}')">${T[lang].removeBtnLbl}</button>`;
+  wrap.appendChild(row);
+  input.value='';
+}
+function toggleRemoveCustom(id){
+  const row=document.getElementById(`sub-row-${id}`);
+  const btn=document.getElementById(`sub-btn-${id}`);
+  const isRemoved=row.classList.toggle('removed');
+  btn.classList.toggle('is-removed',isRemoved);
+  btn.textContent=isRemoved?T[lang].keepBtnLbl:T[lang].removeBtnLbl;
+  removedCount+=isRemoved?1:-1;
+  updateSubtractCount();
+}
+function updateSubtractCount(){
+  document.getElementById('subtract-count').textContent=removedCount;
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-add').classList.toggle('show',type==='add');
+  document.getElementById('cons-remove').classList.toggle('show',type==='remove');
+  dilemmaScore=type==='remove'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

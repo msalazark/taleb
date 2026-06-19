@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aversión a la Pérdida — Kahneman & Tversky</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.scale-vis{display:flex;align-items:center;justify-content:center;gap:1rem;margin:1.75rem 0;}
+.scale-side{text-align:center;}
+.scale-emoji{font-size:2.2rem;}
+.scale-lbl{font-size:.78rem;color:var(--text2);margin-top:.3rem;}
+.scale-mult{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--red);}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* BETS GAME */
+.bet-progress{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.08em;}
+.bet-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;}
+.bet-frame-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;padding:3px 10px;border-radius:10px;display:inline-block;margin-bottom:.85rem;letter-spacing:.06em;}
+.bet-frame-label.gain{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+.bet-frame-label.loss{background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+.bet-question{font-size:.95rem;color:var(--text);margin-bottom:1.1rem;line-height:1.6;}
+.bet-options{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+@media(max-width:520px){.bet-options{grid-template-columns:1fr;}}
+.bet-opt{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.bet-opt:hover:not(:disabled){border-color:var(--accent2);}
+.bet-opt:disabled{cursor:default;}
+.bet-opt.chosen{border-color:var(--accent2);background:rgba(242,166,35,.1);}
+.bet-opt-title{font-weight:600;font-size:.9rem;margin-bottom:.3rem;}
+.bet-opt-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.bet-reveal{display:none;margin-top:1rem;padding:.9rem 1.1rem;border-radius:var(--radius-sm);background:rgba(155,89,182,.07);border:1px solid rgba(155,89,182,.25);font-size:.84rem;line-height:1.6;}
+.bet-reveal.show{display:block;}
+
+/* PORTFOLIO SIM */
+.portfolio-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.portfolio-value{text-align:center;margin-bottom:1rem;}
+.portfolio-value-num{font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:600;}
+.portfolio-value-num.up{color:var(--green);}
+.portfolio-value-num.down{color:var(--red);}
+.portfolio-value-lbl{font-size:.75rem;color:var(--text3);margin-top:.2rem;}
+.portfolio-actions{display:flex;gap:.75rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap;}
+.portfolio-btn{padding:.65rem 1.4rem;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text);cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;}
+.portfolio-btn.sell-btn{border-color:var(--red);color:var(--red);}
+.portfolio-btn.sell-btn:hover{background:rgba(231,76,60,.1);}
+.portfolio-btn.hold-btn{border-color:var(--green);color:var(--green);}
+.portfolio-btn.hold-btn:hover{background:rgba(46,204,113,.1);}
+.portfolio-btn:disabled{opacity:.4;cursor:default;}
+.portfolio-day-log{font-size:.78rem;color:var(--text3);text-align:center;margin-top:.85rem;font-family:'IBM Plex Mono',monospace;}
+.portfolio-result{display:none;margin-top:1.25rem;padding:1.1rem;border-radius:var(--radius-sm);text-align:center;}
+.portfolio-result.show{display:block;}
+.portfolio-result.sold-loss{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);}
+.portfolio-result.sold-gain{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);}
+
+/* COEFFICIENT RESULT */
+.coef-box{display:none;background:var(--bg2);border:1px solid var(--accent2);border-radius:var(--radius);padding:2rem;text-align:center;margin-top:1.5rem;}
+.coef-box.show{display:block;}
+.coef-num{font-family:'IBM Plex Mono',monospace;font-size:3rem;font-weight:700;color:var(--accent2);}
+.coef-compare{display:flex;justify-content:center;gap:2rem;margin:1.25rem 0;flex-wrap:wrap;}
+.coef-compare-item{text-align:center;}
+.coef-compare-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;}
+.coef-compare-lbl{font-size:.72rem;color:var(--text3);margin-top:.2rem;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 15</span>
+    <span class="header-title" id="hdr-title">Aversión a la Pérdida</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">Perder duele el doble<br>de lo que ganar place</h1>
+  <div class="scale-vis">
+    <div class="scale-side"><div class="scale-emoji">😢</div><div class="scale-lbl" id="lose-lbl">Perder $100</div></div>
+    <span class="scale-mult">≈ 2×</span>
+    <div class="scale-side"><div class="scale-emoji">🙂</div><div class="scale-lbl" id="gain-lbl">Ganar $100</div></div>
+  </div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Este es el hallazgo central de la Prospect Theory de Kahneman y Tversky — el trabajo que ganó el Premio Nobel de Economía 2002. Vas a medir tu propio coeficiente de aversión a la pérdida en dos juegos.</p>
+  <button class="btn-primary" onclick="startBets()" id="s1-btn">Medir mi aversión → Empezar</button>
+</section>
+
+<!-- S2 BETS GAME -->
+<section id="sec-bets">
+  <div class="section-tag" id="s2-tag">Parte 2 · Las Apuestas Clásicas (1979)</div>
+  <h2 id="s2-h2">El experimento original de Kahneman y Tversky</h2>
+  <p id="s2-p">4 escenarios. Algunos están enmarcados como ganancia, otros como pérdida — pero matemáticamente son equivalentes. Elige rápido, con tu primer instinto.</p>
+  <div class="bet-progress" id="bet-progress">0 / 4 respondidas</div>
+  <div id="bets-area"></div>
+</section>
+
+<!-- S3 PORTFOLIO SIM -->
+<section id="sec-portfolio" style="display:none">
+  <div class="section-tag" id="s3-tag">Parte 3 · Simulador de Portafolio</div>
+  <h2 id="s3-h2">Tu inversión sube y baja. ¿Cuándo vendes?</h2>
+  <p id="s3-p">Invertiste $1,000. El valor fluctúa día a día. Puedes vender en cualquier momento o mantener la posición — observa tu propio patrón de decisión.</p>
+  <div class="portfolio-box">
+    <div class="portfolio-value">
+      <div class="portfolio-value-num" id="pf-value">$1,000</div>
+      <div class="portfolio-value-lbl" id="pf-value-lbl">Valor actual de tu inversión</div>
+    </div>
+    <canvas id="pfChart" height="140"></canvas>
+    <div class="portfolio-day-log" id="pf-day-log">Día 0 / 10</div>
+    <div class="portfolio-actions" id="pf-actions">
+      <button class="portfolio-btn hold-btn" onclick="pfHold()" id="pf-hold-btn">Mantener (siguiente día)</button>
+      <button class="portfolio-btn sell-btn" onclick="pfSell()" id="pf-sell-btn">Vender ahora</button>
+    </div>
+    <div class="portfolio-result" id="pf-result"></div>
+  </div>
+</section>
+
+<!-- S4 COEFFICIENT -->
+<section id="sec-coef" style="display:none">
+  <div class="section-tag" id="s4-tag">Parte 4 · Tu Resultado</div>
+  <h2 id="s4-h2">Tu coeficiente de aversión a la pérdida</h2>
+  <div class="coef-box show" id="coef-box">
+    <div class="coef-num" id="coef-num">—</div>
+    <p style="font-size:.85rem;color:var(--text2);margin:.5rem 0 0" id="coef-desc">—</p>
+    <div class="coef-compare">
+      <div class="coef-compare-item"><div class="coef-compare-val" style="color:var(--accent2)" id="coef-yours">—</div><div class="coef-compare-lbl">Tu coeficiente</div></div>
+      <div class="coef-compare-item"><div class="coef-compare-val" style="color:var(--text2)">~2.0x</div><div class="coef-compare-lbl" id="coef-kahneman-lbl">Promedio Kahneman (1979)</div></div>
+    </div>
+    <button class="btn-accent" onclick="showTheory()" id="coef-btn">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S5 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s5-tag">Parte 5 · La Teoría</div>
+  <h2 id="s5-h2">Prospect Theory: el Nobel de Kahneman</h2>
+  <p id="s5-p">Tres marcos para entender la asimetría entre ganancia y pérdida.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s5-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S6 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s6-tag">Parte 6 · Mini-test</div>
+  <h2 id="s6-h2">¿Decides racional o emocionalmente con el dinero?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Compraste una acción a $100. Ahora vale $70. Un análisis objetivo sugiere que el dinero estaría mejor invertido en otro lugar. ¿Qué haces?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('hold',this)">
+        <div class="d-emoji">⏳</div>
+        <div class="d-title" id="d1a-t">Espero a que se recupere</div>
+        <div class="d-desc" id="d1a-d">No quiero vender con pérdida. Esperaré hasta que vuelva a $100 al menos.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('sell',this)">
+        <div class="d-emoji">🔄</div>
+        <div class="d-title" id="d1b-t">Vendo y reasigno</div>
+        <div class="d-desc" id="d1b-d">El precio de compra es irrelevante ahora. Evalúo el mejor uso del dinero desde hoy.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-hold">
+      <strong id="cs-t">Caíste en la aversión a la pérdida.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">El precio de compra original ($100) no tiene ninguna relevancia económica para tu decisión actual. Esperar a "recuperar" es una trampa mental — el dinero atrapado en esa acción tiene un costo de oportunidad real.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-sell">
+      <strong id="cv-t">Evitaste la trampa del costo hundido.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cv-p">Evaluar la decisión desde el presente, ignorando el precio de compra original, es exactamente el pensamiento racional que la aversión a la pérdida nos impide hacer naturalmente.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde te ha costado más reconocer una pérdida que asumir el riesgo de una nueva decisión?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Las pérdidas duelen más de lo que las ganancias equivalentes complacen — esta asimetría es uno de los hallazgos más robustos de la psicología cognitiva."</p>
+  <p class="footer-cite">— Daniel Kahneman · Pensar rápido, pensar despacio (2011)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_14_anclaje.html">← 14 Anclaje y Ajuste</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">16 Heurísticas de la Abuela →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Aversión a la Pérdida",
+  s1tag:"Parte 1 · El Gancho",s1h1:"Perder duele el doble\nde lo que ganar place",
+  loseLbl:"Perder $100",gainLbl:"Ganar $100",
+  s1p:"Este es el hallazgo central de la Prospect Theory de Kahneman y Tversky — el trabajo que ganó el Premio Nobel de Economía 2002. Vas a medir tu propio coeficiente de aversión a la pérdida en dos juegos.",
+  s1btn:"Medir mi aversión → Empezar",
+  s2tag:"Parte 2 · Las Apuestas Clásicas (1979)",s2h2:"El experimento original de Kahneman y Tversky",
+  s2p:"4 escenarios. Algunos están enmarcados como ganancia, otros como pérdida — pero matemáticamente son equivalentes. Elige rápido, con tu primer instinto.",
+  s3tag:"Parte 3 · Simulador de Portafolio",s3h2:"Tu inversión sube y baja. ¿Cuándo vendes?",
+  s3p:"Invertiste $1,000. El valor fluctúa día a día. Puedes vender en cualquier momento o mantener la posición — observa tu propio patrón de decisión.",
+  pfValueLbl:"Valor actual de tu inversión",
+  pfHoldBtn:"Mantener (siguiente día)",pfSellBtn:"Vender ahora",
+  s4tag:"Parte 4 · Tu Resultado",s4h2:"Tu coeficiente de aversión a la pérdida",
+  coefKahnemanLbl:"Promedio Kahneman (1979)",
+  s5tag:"Parte 5 · La Teoría",s5h2:"Prospect Theory: el Nobel de Kahneman",s5p:"Tres marcos para entender la asimetría entre ganancia y pérdida.",
+  s5btn:"Hacer el mini-test →",
+  s6tag:"Parte 6 · Mini-test",s6h2:"¿Decides racional o emocionalmente con el dinero?",
+  tn1:"DILEMA · 01",
+  tq1:"Compraste una acción a $100. Ahora vale $70. Un análisis objetivo sugiere que el dinero estaría mejor invertido en otro lugar. ¿Qué haces?",
+  d1aT:"Espero a que se recupere",d1aD:"No quiero vender con pérdida. Esperaré hasta que vuelva a $100 al menos.",
+  d1bT:"Vendo y reasigno",d1bD:"El precio de compra es irrelevante ahora. Evalúo el mejor uso del dinero desde hoy.",
+  csT:"Caíste en la aversión a la pérdida.",csP:"El precio de compra original ($100) no tiene ninguna relevancia económica para tu decisión actual. Esperar a 'recuperar' es una trampa mental — el dinero atrapado en esa acción tiene un costo de oportunidad real.",
+  cvT:"Evitaste la trampa del costo hundido.",cvP:"Evaluar la decisión desde el presente, ignorando el precio de compra original, es exactamente el pensamiento racional que la aversión a la pérdida nos impide hacer naturalmente.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Dónde te ha costado más reconocer una pérdida que asumir el riesgo de una nueva decisión?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Una inversión que no debí mantener","Una relación que debí terminar antes","Un proyecto de trabajo sin retorno","Una propiedad o compra que perdió valor","Un curso de estudios equivocado","Una sociedad de negocios que no funcionaba"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Las pérdidas duelen más de lo que las ganancias equivalentes complacen — esta asimetría es uno de los hallazgos más robustos de la psicología cognitiva."',
+  bets:[
+    {frame:"gain",frameLabel:"MARCO: GANANCIA",
+     question:"Te dan $1,000 adicionales. Ahora elige entre estas dos opciones:",
+     optA:{title:"Opción A (segura)",desc:"Recibes $500 garantizados adicionales."},
+     optB:{title:"Opción B (riesgo)",desc:"50% de probabilidad de recibir $1,000 más, 50% de no recibir nada más."},
+     reveal:"En el marco de ganancia, la mayoría de la gente (~84% en el estudio original) elige la opción segura (A) — preferimos asegurar una ganancia certera, aunque el valor esperado de ambas opciones sea matemáticamente idéntico ($500)."},
+    {frame:"loss",frameLabel:"MARCO: PÉRDIDA",
+     question:"Te dan $2,000 adicionales, pero ahora elige entre estas dos opciones de pérdida:",
+     optA:{title:"Opción A (segura)",desc:"Pierdes $500 garantizados de los $2,000."},
+     optB:{title:"Opción B (riesgo)",desc:"50% de probabilidad de perder $1,000, 50% de no perder nada."},
+     reveal:"En el marco de pérdida (matemáticamente idéntico al anterior, solo cambia el lenguaje), la mayoría (~69% en el estudio original) elige la opción de riesgo (B) — buscamos evitar una pérdida segura, aunque el valor esperado sea el mismo. Este es el corazón de la asimetría: nos volvemos buscadores de riesgo cuando se trata de evitar pérdidas."},
+    {frame:"gain",frameLabel:"MARCO: GANANCIA",
+     question:"Una enfermedad amenaza a 600 personas. Tienes que elegir un programa:",
+     optA:{title:"Programa A",desc:"200 personas se salvarán con certeza."},
+     optB:{title:"Programa B",desc:"33% de probabilidad de salvar a las 600, 67% de no salvar a nadie."},
+     reveal:"Enmarcado como 'salvar vidas' (ganancia), la mayoría elige el Programa A (certeza) — el famoso experimento de Tversky y Kahneman (1981) sobre el 'problema de la enfermedad asiática', que mostró cómo el lenguaje de ganancia/pérdida cambia decisiones de vida o muerte."},
+    {frame:"loss",frameLabel:"MARCO: PÉRDIDA",
+     question:"La misma enfermedad amenaza a las mismas 600 personas, mismo escenario, pero ahora:",
+     optA:{title:"Programa C",desc:"400 personas morirán con certeza."},
+     optB:{title:"Programa D",desc:"33% de probabilidad de que nadie muera, 67% de que mueran las 600."},
+     reveal:"Estos programas son matemáticamente IDÉNTICOS a los anteriores (200 salvados = 400 muertos; 33%/600 = 33%/0 muertes). Pero enmarcados como 'pérdida de vidas', la mayoría ahora elige el Programa D (riesgo) — la misma persona que eligió 'certeza' en el marco de ganancia, elige 'riesgo' en el marco de pérdida, para el mismo resultado matemático."},
+  ],
+  pfScenario:[1000,1080,950,1120,890,1050,820,980,1150,870,1200],
+  pfSoldEarly:"Vendiste en el día {day} con un valor de ${val}. Tu patrón de decisión coincide con un hallazgo muy común: la gente vende rápido cuando hay ganancias modestas (asegurando el placer) pero mantiene posiciones perdedoras esperando recuperación (evitando el dolor de formalizar la pérdida).",
+  pfHeldToEnd:"Mantuviste la posición hasta el final, terminando en ${val}. Esto puede reflejar disciplina racional — o también puede ser aversión a formalizar pérdidas intermedias, esperando 'no vender en rojo' incluso cuando la racionalidad sugería salir antes.",
+  theories:[
+    {icon:"🏆",name:"Prospect Theory: el Nobel de Kahneman",body:`<p>Daniel Kahneman recibió el Premio Nobel de Economía en 2002 (compartido con Vernon Smith) principalmente por la Prospect Theory, desarrollada junto a Amos Tversky en su paper seminal de 1979.</p><div class="quote-block"><p>"Las pérdidas duelen aproximadamente el doble que las ganancias equivalentes complacen. Este coeficiente, que va de 1.5 a 2.5 según el estudio, es uno de los hallazgos más replicados en economía conductual."</p><cite>— Kahneman & Tversky, Econometrica (1979)</cite></div><p>Tversky murió en 1996 y no pudo compartir el Nobel (no se otorga póstumamente), pero Kahneman reconoció extensamente su contribución conjunta en su discurso de aceptación.</p><div class="tag-list"><span class="tag">Premio Nobel 2002</span><span class="tag">Prospect Theory</span><span class="tag">Tversky</span></div>`},
+    {icon:"📐",name:"La función de valor asimétrica",body:`<p>El descubrimiento matemático central de la Prospect Theory es que la "función de valor" subjetiva de las personas no es simétrica respecto al punto de referencia (usualmente el estado actual). La curva es más empinada para pérdidas que para ganancias.</p><p>Esto significa que la diferencia subjetiva entre $0 y -$100 se siente mayor que la diferencia entre $0 y +$100 — aunque objetivamente ambas distancias sean idénticas en términos monetarios.</p><div class="quote-block"><p>"La función de valor es generalmente cóncava para ganancias y convexa para pérdidas, y es más empinada para pérdidas que para ganancias."</p><cite>— Kahneman & Tversky, Prospect Theory (1979)</cite></div><div class="tag-list"><span class="tag">Función de valor</span><span class="tag">Punto de referencia</span><span class="tag">Psicofísica</span></div>`},
+    {icon:"💸",name:"El efecto disposición en inversiones reales",body:`<p>El "efecto disposición" (disposition effect), documentado extensamente en finanzas conductuales (Shefrin & Statman, 1985), es la aplicación directa de la aversión a la pérdida a los mercados financieros: los inversores tienden a vender ganadores demasiado pronto (asegurar el placer) y mantener perdedores demasiado tiempo (evitar formalizar el dolor).</p><p>Este patrón se ha documentado en millones de cuentas de corretaje reales, y es uno de los sesgos más costosos para inversores individuales — ya que estadísticamente, las acciones que suben tienden a seguir subiendo en promedio más que las que bajan a recuperarse.</p><div class="quote-block"><p>"Los inversores individuales venden sus ganadores con más frecuencia que sus perdedores, exactamente al revés de lo que la teoría de inversión racional sugeriría."</p><cite>— Shefrin & Statman, The Disposition to Sell Winners (1985)</cite></div><div class="tag-list"><span class="tag">Efecto disposición</span><span class="tag">Finanzas conductuales</span><span class="tag">Costo hundido</span></div>`},
+  ],
+  mcqs:[
+    {q:"Según el problema de la enfermedad asiática de Tversky y Kahneman, ¿qué demuestra el hecho de que la gente responda diferente a programas matemáticamente idénticos según estén enmarcados como 'vidas salvadas' o 'vidas perdidas'?",opts:["Que la gente no entiende matemáticas básicas de probabilidad","Que las decisiones bajo incertidumbre dependen del marco lingüístico (framing), no solo del valor esperado objetivo","Que los programas de salud pública son inherentemente confusos","Que las decisiones grupales son menos racionales que las individuales"],correct:1,feedOk:"Exacto. El experimento demuestra que el 'framing' — cómo se presenta lingüísticamente una decisión idéntica — cambia sistemáticamente las elecciones de las personas, incluso en decisiones de vida o muerte. No es un problema de comprensión matemática, sino de cómo procesamos ganancias vs pérdidas.",feedKo:"No se trata de comprensión matemática ni de decisiones grupales específicamente. El punto central es que el mismo valor esperado objetivo produce decisiones sistemáticamente diferentes según el lenguaje (ganancia vs pérdida) usado para describirlo."},
+    {q:"Según el 'efecto disposición' documentado en finanzas conductuales, ¿qué patrón muestran los inversores individuales?",opts:["Venden tanto ganadores como perdedores al mismo ritmo","Venden ganadores demasiado pronto y mantienen perdedores demasiado tiempo, lo opuesto a lo que sugiere la inversión racional","Mantienen todas sus posiciones indefinidamente sin vender nunca","Venden únicamente basándose en análisis técnico, sin sesgos emocionales"],correct:1,feedOk:"Correcto. El efecto disposición muestra que los inversores aseguran el placer de las ganancias vendiendo rápido, pero evitan el dolor de formalizar pérdidas manteniendo posiciones perdedoras — un patrón documentado en millones de cuentas reales y que reduce sistemáticamente los retornos.",feedKo:"El patrón no es simétrico ni libre de sesgos. Específicamente, los inversores tienden a vender ganadores rápidamente (para 'asegurar' la ganancia) mientras mantienen perdedores por más tiempo del que el análisis racional sugeriría, esperando 'recuperar' antes de vender."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"😰",title:"Tu aversión a la pérdida domina",desc:"Tus decisiones financieras están fuertemente sesgadas por evitar el dolor de perder, más que por maximizar resultados.",taleb:"'Perder duele el doble de lo que ganar place.' — Kahneman",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a notar el sesgo",desc:"Reconoces cuándo el miedo a perder está distorsionando una decisión racional.",taleb:"'El precio de compra no tiene memoria del futuro.' — Sabiduría financiera (parafraseado)",color:"#f39c12"},
+    {min:70,emoji:"⚖️",title:"Evalúas desde el presente",desc:"Tomas decisiones financieras ignorando costos hundidos y precios de referencia pasados.",taleb:"'La decisión racional ignora lo que ya se gastó.' — Economía del comportamiento",color:"#2ecc71"},
+    {min:90,emoji:"🏆",title:"Nivel Prospect Theory",desc:"Reconoces activamente el framing de ganancia/pérdida y ajustas tu juicio en consecuencia.",taleb:"'Las pérdidas duelen aproximadamente el doble que las ganancias equivalentes complacen.' — Kahneman & Tversky (1979)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Loss Aversion",
+  s1tag:"Part 1 · The Hook",s1h1:"Losing hurts twice as much\nas gaining feels good",
+  loseLbl:"Losing $100",gainLbl:"Gaining $100",
+  s1p:"This is the central finding of Kahneman and Tversky's Prospect Theory — the work that won the 2002 Nobel Prize in Economics. You'll measure your own loss aversion coefficient across two games.",
+  s1btn:"Measure my aversion → Start",
+  s2tag:"Part 2 · The Classic Bets (1979)",s2h2:"The original Kahneman and Tversky experiment",
+  s2p:"4 scenarios. Some are framed as gain, others as loss — but they're mathematically equivalent. Choose quickly, with your first instinct.",
+  s3tag:"Part 3 · Portfolio Simulator",s3h2:"Your investment rises and falls. When do you sell?",
+  s3p:"You invested $1,000. The value fluctuates day by day. You can sell anytime or hold the position — observe your own decision pattern.",
+  pfValueLbl:"Current value of your investment",
+  pfHoldBtn:"Hold (next day)",pfSellBtn:"Sell now",
+  s4tag:"Part 4 · Your Result",s4h2:"Your loss aversion coefficient",
+  coefKahnemanLbl:"Kahneman average (1979)",
+  s5tag:"Part 5 · The Theory",s5h2:"Prospect Theory: Kahneman's Nobel",s5p:"Three frameworks for understanding the asymmetry between gain and loss.",
+  s5btn:"Take the mini-test →",
+  s6tag:"Part 6 · Mini-test",s6h2:"Do you decide rationally or emotionally with money?",
+  tn1:"DILEMMA · 01",
+  tq1:"You bought a stock at $100. It's now worth $70. An objective analysis suggests the money would be better invested elsewhere. What do you do?",
+  d1aT:"I wait for it to recover",d1aD:"I don't want to sell at a loss. I'll wait until it's back to at least $100.",
+  d1bT:"I sell and reallocate",d1bD:"The purchase price is irrelevant now. I evaluate the best use of the money starting today.",
+  csT:"You fell for loss aversion.",csP:"The original purchase price ($100) has no economic relevance to your current decision. Waiting to 'recover' is a mental trap — the money tied up in that stock has a real opportunity cost.",
+  cvT:"You avoided the sunk cost trap.",cvP:"Evaluating the decision from the present, ignoring the original purchase price, is exactly the rational thinking that loss aversion naturally prevents us from doing.",
+  tn3:"REFLECTION · 03",
+  tq3:"Where has it cost you more to acknowledge a loss than to take the risk of a new decision?",
+  refHint:"Examples to trigger reflection:",
+  chips:["An investment I shouldn't have held","A relationship I should have ended sooner","A work project with no return","A property or purchase that lost value","The wrong course of study","A business partnership that wasn't working"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"Losses loom larger than gains — this asymmetry is one of the most robust findings in cognitive psychology."',
+  bets:[
+    {frame:"gain",frameLabel:"FRAME: GAIN",
+     question:"You're given an extra $1,000. Now choose between these two options:",
+     optA:{title:"Option A (safe)",desc:"You receive a guaranteed extra $500."},
+     optB:{title:"Option B (risky)",desc:"50% chance of receiving $1,000 more, 50% chance of receiving nothing more."},
+     reveal:"In the gain frame, most people (~84% in the original study) choose the safe option (A) — we prefer to lock in a certain gain, even though the expected value of both options is mathematically identical ($500)."},
+    {frame:"loss",frameLabel:"FRAME: LOSS",
+     question:"You're given an extra $2,000, but now choose between these two loss options:",
+     optA:{title:"Option A (safe)",desc:"You lose a guaranteed $500 of the $2,000."},
+     optB:{title:"Option B (risky)",desc:"50% chance of losing $1,000, 50% chance of losing nothing."},
+     reveal:"In the loss frame (mathematically identical to the previous one, only the language changes), most people (~69% in the original study) choose the risky option (B) — we seek to avoid a certain loss, even when the expected value is the same. This is the heart of the asymmetry: we become risk-seeking when it comes to avoiding losses."},
+    {frame:"gain",frameLabel:"FRAME: GAIN",
+     question:"A disease threatens 600 people. You must choose a program:",
+     optA:{title:"Program A",desc:"200 people will be saved with certainty."},
+     optB:{title:"Program B",desc:"33% chance of saving all 600, 67% chance of saving no one."},
+     reveal:"Framed as 'saving lives' (gain), most people choose Program A (certainty) — the famous Tversky and Kahneman (1981) 'Asian disease problem' experiment, which showed how gain/loss language changes life-and-death decisions."},
+    {frame:"loss",frameLabel:"FRAME: LOSS",
+     question:"The same disease threatens the same 600 people, same scenario, but now:",
+     optA:{title:"Program C",desc:"400 people will die with certainty."},
+     optB:{title:"Program D",desc:"33% chance no one dies, 67% chance all 600 die."},
+     reveal:"These programs are mathematically IDENTICAL to the previous ones (200 saved = 400 dead; 33%/600 saved = 33%/0 deaths). But framed as 'loss of lives', most people now choose Program D (risk) — the same person who chose 'certainty' in the gain frame chooses 'risk' in the loss frame, for the same mathematical outcome."},
+  ],
+  pfScenario:[1000,1080,950,1120,890,1050,820,980,1150,870,1200],
+  pfSoldEarly:"You sold on day {day} at a value of ${val}. Your decision pattern matches a very common finding: people sell quickly when there are modest gains (locking in the pleasure) but hold losing positions hoping for recovery (avoiding the pain of formalizing the loss).",
+  pfHeldToEnd:"You held the position until the end, finishing at ${val}. This could reflect rational discipline — or it could also be aversion to formalizing intermediate losses, hoping 'not to sell in the red' even when rationality suggested exiting earlier.",
+  theories:[
+    {icon:"🏆",name:"Prospect Theory: Kahneman's Nobel",body:`<p>Daniel Kahneman received the 2002 Nobel Prize in Economics (shared with Vernon Smith) primarily for Prospect Theory, developed together with Amos Tversky in their seminal 1979 paper.</p><div class="quote-block"><p>"Losses hurt approximately twice as much as equivalent gains please. This coefficient, ranging from 1.5 to 2.5 depending on the study, is one of the most replicated findings in behavioral economics."</p><cite>— Kahneman & Tversky, Econometrica (1979)</cite></div><p>Tversky died in 1996 and couldn't share the Nobel (it's not awarded posthumously), but Kahneman extensively acknowledged their joint contribution in his acceptance speech.</p><div class="tag-list"><span class="tag">2002 Nobel Prize</span><span class="tag">Prospect Theory</span><span class="tag">Tversky</span></div>`},
+    {icon:"📐",name:"The asymmetric value function",body:`<p>Prospect Theory's central mathematical discovery is that people's subjective "value function" isn't symmetric with respect to the reference point (usually the current state). The curve is steeper for losses than for gains.</p><p>This means the subjective difference between $0 and -$100 feels greater than the difference between $0 and +$100 — even though both distances are objectively identical in monetary terms.</p><div class="quote-block"><p>"The value function is generally concave for gains and convex for losses, and is steeper for losses than for gains."</p><cite>— Kahneman & Tversky, Prospect Theory (1979)</cite></div><div class="tag-list"><span class="tag">Value function</span><span class="tag">Reference point</span><span class="tag">Psychophysics</span></div>`},
+    {icon:"💸",name:"The disposition effect in real investments",body:`<p>The "disposition effect," extensively documented in behavioral finance (Shefrin & Statman, 1985), is the direct application of loss aversion to financial markets: investors tend to sell winners too early (locking in pleasure) and hold losers too long (avoiding formalizing pain).</p><p>This pattern has been documented across millions of real brokerage accounts, and is one of the costliest biases for individual investors — since statistically, stocks that rise tend on average to keep rising more than falling stocks recover.</p><div class="quote-block"><p>"Individual investors sell their winners more frequently than their losers, exactly the opposite of what rational investment theory would suggest."</p><cite>— Shefrin & Statman, The Disposition to Sell Winners (1985)</cite></div><div class="tag-list"><span class="tag">Disposition effect</span><span class="tag">Behavioral finance</span><span class="tag">Sunk cost</span></div>`},
+  ],
+  mcqs:[
+    {q:"According to Tversky and Kahneman's Asian disease problem, what does it demonstrate that people respond differently to mathematically identical programs depending on whether they're framed as 'lives saved' or 'lives lost'?",opts:["That people don't understand basic probability math","That decisions under uncertainty depend on linguistic framing, not just objective expected value","That public health programs are inherently confusing","That group decisions are less rational than individual ones"],correct:1,feedOk:"Exactly. The experiment shows that 'framing' — how an identical decision is linguistically presented — systematically changes people's choices, even in life-and-death decisions. It's not a math comprehension issue, but how we process gains vs losses.",feedKo:"It's not about math comprehension or group decisions specifically. The central point is that the same objective expected value produces systematically different decisions depending on the language (gain vs loss) used to describe it."},
+    {q:"According to the 'disposition effect' documented in behavioral finance, what pattern do individual investors show?",opts:["They sell winners and losers at the same rate","They sell winners too soon and hold losers too long, the opposite of what rational investing suggests","They hold all their positions indefinitely without ever selling","They sell only based on technical analysis, free of emotional bias"],correct:1,feedOk:"Correct. The disposition effect shows that investors lock in the pleasure of gains by selling quickly, but avoid the pain of formalizing losses by holding losing positions — a pattern documented across millions of real accounts that systematically reduces returns.",feedKo:"The pattern isn't symmetric or bias-free. Specifically, investors tend to sell winners quickly (to 'lock in' the gain) while holding losers longer than rational analysis would suggest, hoping to 'recover' before selling."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"😰",title:"Your loss aversion dominates",desc:"Your financial decisions are strongly biased toward avoiding the pain of losing, more than maximizing outcomes.",taleb:"'Losing hurts twice as much as gaining feels good.' — Kahneman",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to notice the bias",desc:"You recognize when fear of loss is distorting a rational decision.",taleb:"'The purchase price has no memory of the future.' — Financial wisdom (paraphrased)",color:"#f39c12"},
+    {min:70,emoji:"⚖️",title:"You evaluate from the present",desc:"You make financial decisions ignoring sunk costs and past reference prices.",taleb:"'The rational decision ignores what's already spent.' — Behavioral economics",color:"#2ecc71"},
+    {min:90,emoji:"🏆",title:"Prospect Theory Level",desc:"You actively recognize gain/loss framing and adjust your judgment accordingly.",taleb:"'Losses loom larger than gains.' — Kahneman & Tversky (1979)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', betIdx=0, betAnswered=0;
+let betChoices=[]; // store 'safe' or 'risky' for each
+let pfDay=0, pfChartInst=null, pfSold=false;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn','lose-lbl':'loseLbl','gain-lbl':'gainLbl',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','pf-value-lbl':'pfValueLbl','pf-hold-btn':'pfHoldBtn','pf-sell-btn':'pfSellBtn',
+    's4-tag':'s4tag','s4-h2':'s4h2','coef-kahneman-lbl':'coefKahnemanLbl',
+    's5-tag':'s5tag','s5-h2':'s5h2','s5-p':'s5p','s5-btn':'s5btn',
+    's6-tag':'s6tag','s6-h2':'s6h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','cv-t':'cvT','cv-p':'cvP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderTheoryCards();renderChips();
+  if(betAnswered>0 || document.getElementById('bets-area').children.length===0) renderBets();
+}
+
+/* BETS GAME */
+function startBets(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-bets').scrollIntoView({behavior:'smooth'});renderBets();}
+function renderBets(){
+  const area=document.getElementById('bets-area');if(!area)return;
+  area.innerHTML='';betIdx=0;betAnswered=0;betChoices=[];
+  renderOneBet();
+}
+function renderOneBet(){
+  const area=document.getElementById('bets-area');
+  const bets=T[lang].bets;
+  if(betIdx>=bets.length){
+    setTimeout(()=>{
+      document.getElementById('sec-portfolio').style.display='block';
+      pfDay=0;pfSold=false;
+      renderPortfolio();
+      document.getElementById('sec-portfolio').scrollIntoView({behavior:'smooth'});
+    },300);
+    return;
+  }
+  const b=bets[betIdx];
+  const card=document.createElement('div');
+  card.className='bet-card';card.id=`bet-${betIdx}`;
+  card.innerHTML=`
+    <span class="bet-frame-label ${b.frame}">${b.frameLabel}</span>
+    <div class="bet-question">${b.question}</div>
+    <div class="bet-options">
+      <div class="bet-opt" onclick="answerBet('safe',this)">
+        <div class="bet-opt-title">${b.optA.title}</div>
+        <div class="bet-opt-desc">${b.optA.desc}</div>
+      </div>
+      <div class="bet-opt" onclick="answerBet('risky',this)">
+        <div class="bet-opt-title">${b.optB.title}</div>
+        <div class="bet-opt-desc">${b.optB.desc}</div>
+      </div>
+    </div>
+    <div class="bet-reveal" id="bet-reveal-${betIdx}">${b.reveal}</div>`;
+  area.innerHTML='';
+  area.appendChild(card);
+  document.getElementById('bet-progress').textContent=`${betIdx} / ${bets.length} ${lang==='es'?'respondidas':'answered'}`;
+}
+function answerBet(choice,el){
+  document.querySelectorAll('.bet-opt').forEach(o=>{o.style.pointerEvents='none';});
+  el.classList.add('chosen');
+  betChoices.push(choice);
+  document.getElementById(`bet-reveal-${betIdx}`).classList.add('show');
+  setTimeout(()=>{
+    betIdx++;
+    betAnswered++;
+    renderOneBet();
+  },2200);
+}
+
+/* PORTFOLIO SIM */
+function renderPortfolio(){
+  updatePfValue();
+  buildPfChart();
+  document.getElementById('pf-day-log').textContent=`${lang==='es'?'Día':'Day'} ${pfDay} / 10`;
+  document.getElementById('pf-result').classList.remove('show');
+  document.getElementById('pf-hold-btn').disabled=false;
+  document.getElementById('pf-sell-btn').disabled=false;
+}
+function updatePfValue(){
+  const val=T[lang].pfScenario[pfDay];
+  const el=document.getElementById('pf-value');
+  el.textContent='$'+val.toLocaleString();
+  el.className='portfolio-value-num '+(val>=1000?'up':'down');
+}
+function buildPfChart(){
+  const data=T[lang].pfScenario.slice(0,pfDay+1);
+  const labels=data.map((_,i)=>i);
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const gridC=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  const textC=isDark?'#4a5568':'#aaa';
+  const ctx=document.getElementById('pfChart').getContext('2d');
+  if(pfChartInst)pfChartInst.destroy();
+  pfChartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:'#f2a623',backgroundColor:'rgba(242,166,35,.1)',fill:true,tension:.3,pointRadius:3,borderWidth:2.5}]},
+    options:{responsive:true,animation:{duration:400},plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:gridC},ticks:{color:textC}},y:{grid:{color:gridC},ticks:{color:textC},min:700,max:1300}}}
+  });
+}
+function pfHold(){
+  if(pfDay>=10){return;}
+  pfDay++;
+  if(pfDay>=10){
+    document.getElementById('pf-hold-btn').disabled=true;
+    document.getElementById('pf-sell-btn').disabled=true;
+    updatePfValue();buildPfChart();
+    document.getElementById('pf-day-log').textContent=`${lang==='es'?'Día':'Day'} ${pfDay} / 10`;
+    finishPortfolio(false);
+    return;
+  }
+  updatePfValue();buildPfChart();
+  document.getElementById('pf-day-log').textContent=`${lang==='es'?'Día':'Day'} ${pfDay} / 10`;
+}
+function pfSell(){
+  pfSold=true;
+  document.getElementById('pf-hold-btn').disabled=true;
+  document.getElementById('pf-sell-btn').disabled=true;
+  finishPortfolio(true);
+}
+function finishPortfolio(sold){
+  const val=T[lang].pfScenario[pfDay];
+  const resBox=document.getElementById('pf-result');
+  resBox.classList.add('show');
+  resBox.className='portfolio-result show '+(val<1000?'sold-loss':'sold-gain');
+  if(sold){
+    resBox.textContent=T[lang].pfSoldEarly.replace('{day}',pfDay).replace('{val}',val.toLocaleString());
+  } else {
+    resBox.textContent=T[lang].pfHeldToEnd.replace('{val}',val.toLocaleString());
+  }
+  setTimeout(()=>{
+    document.getElementById('sec-coef').style.display='block';
+    computeCoefficient(sold,val);
+    document.getElementById('sec-coef').scrollIntoView({behavior:'smooth'});
+  },1800);
+}
+
+/* COEFFICIENT */
+function computeCoefficient(sold,finalVal){
+  // Score based on: how many "safe" choices in gain frame + "risky" choices in loss frame (classic pattern) vs reverse
+  // betChoices: array of 'safe'/'risky' for bets[0..3], frames: gain,loss,gain,loss
+  let classicPattern=0;
+  const frames=T[lang].bets.map(b=>b.frame);
+  betChoices.forEach((c,i)=>{
+    if(frames[i]==='gain' && c==='safe') classicPattern++;
+    if(frames[i]==='loss' && c==='risky') classicPattern++;
+  });
+  // classicPattern 0-4. Base coefficient mapped roughly 1.0 (0 classic) to 2.6 (4 classic)
+  let coef=1.0 + (classicPattern/4)*1.6;
+  // Portfolio behavior adjustment: selling early at a loss = lower aversion (more rational;
+  // holding to the end while in loss = higher aversion (avoidance)
+  if(!sold && finalVal<1000) coef+=0.3;
+  if(sold && finalVal<1000) coef-=0.2;
+  coef=Math.max(1.0,Math.min(3.0,coef));
+  coef=Math.round(coef*10)/10;
+
+  document.getElementById('coef-num').textContent=coef+'x';
+  document.getElementById('coef-yours').textContent=coef+'x';
+  let desc;
+  if(lang==='es'){
+    desc = coef>=2.2 ? "Tu aversión a la pérdida es más alta que el promedio encontrado por Kahneman y Tversky — las pérdidas te duelen significativamente más de lo que las ganancias equivalentes te complacen."
+         : coef<=1.4 ? "Tu aversión a la pérdida es más baja que el promedio — tiendes a evaluar ganancias y pérdidas de forma más simétrica que la mayoría de las personas."
+         : "Tu aversión a la pérdida está cerca del promedio encontrado en el estudio original de Kahneman y Tversky (~2.0x).";
+  } else {
+    desc = coef>=2.2 ? "Your loss aversion is higher than the average found by Kahneman and Tversky — losses hurt you significantly more than equivalent gains please you."
+         : coef<=1.4 ? "Your loss aversion is lower than average — you tend to evaluate gains and losses more symmetrically than most people."
+         : "Your loss aversion is close to the average found in the original Kahneman and Tversky study (~2.0x).";
+  }
+  document.getElementById('coef-desc').textContent=desc;
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-hold').classList.toggle('show',type==='hold');
+  document.getElementById('cons-sell').classList.toggle('show',type==='sell');
+  dilemmaScore=type==='sell'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

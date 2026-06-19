@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Las Heurísticas de la Abuela — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.vs-vis{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin:1.75rem 0;flex-wrap:wrap;}
+.vs-side{text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.4rem;}
+.vs-emoji{font-size:2rem;}
+.vs-lbl{font-size:.82rem;color:var(--text);margin-top:.4rem;font-weight:500;}
+.vs-sub{font-size:.7rem;color:var(--text3);margin-top:.2rem;}
+.vs-versus{font-family:'IBM Plex Mono',monospace;color:var(--text3);font-size:.85rem;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* HEURISTICS COLLECTION */
+.heuristic-grid{display:grid;gap:.85rem;margin:1.5rem 0;}
+.heuristic-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.heuristic-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.heuristic-header:hover{background:var(--bg3);}
+.heuristic-header-left{display:flex;align-items:center;gap:.75rem;}
+.heuristic-emoji{font-size:1.4rem;}
+.heuristic-culture{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--accent2);letter-spacing:.06em;margin-bottom:.2rem;}
+.heuristic-saying{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:.92rem;color:var(--text);}
+.heuristic-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.heuristic-card.open .heuristic-chevron{transform:rotate(180deg);}
+.heuristic-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.25rem;}
+.heuristic-card.open .heuristic-body{max-height:400px;padding:0 1.25rem 1.1rem;}
+.heuristic-body p{font-size:.85rem;margin-bottom:.6rem;}
+.heuristic-science{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.22);border-radius:var(--radius-sm);padding:.7rem .9rem;font-size:.8rem;line-height:1.55;}
+.heuristic-science-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--green);letter-spacing:.06em;margin-bottom:.3rem;display:block;}
+
+/* PERSONAL HEURISTIC BUILDER */
+.builder-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.builder-input-group{margin-bottom:1.1rem;}
+.builder-label{font-size:.82rem;color:var(--text2);margin-bottom:.4rem;display:block;}
+.builder-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:70px;outline:none;}
+.builder-textarea:focus{border-color:var(--accent2);}
+.builder-criteria{margin-top:1.25rem;}
+.criteria-q{font-size:.85rem;color:var(--text);margin-bottom:.6rem;}
+.criteria-scale{display:flex;gap:.5rem;flex-wrap:wrap;}
+.criteria-btn{flex:1;min-width:90px;padding:.55rem .5rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:.78rem;text-align:center;transition:all .2s;}
+.criteria-btn:hover{border-color:var(--accent2);}
+.criteria-btn.selected{background:rgba(242,166,35,.15);border-color:var(--accent2);color:var(--accent2);font-weight:500;}
+.builder-submit{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;margin-top:1.25rem;}
+.builder-submit:disabled{opacity:.4;cursor:default;}
+.builder-result{display:none;margin-top:1.25rem;padding:1.25rem;border-radius:var(--radius);background:var(--bg3);}
+.builder-result.show{display:block;}
+.builder-result-verdict{font-weight:600;font-size:.95rem;margin-bottom:.5rem;}
+.builder-result-verdict.robust{color:var(--green);}
+.builder-result-verdict.fragile{color:var(--accent2);}
+.my-heuristics-list{margin-top:1.5rem;}
+.my-heuristic-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:.6rem;font-size:.85rem;}
+.my-heuristic-saying{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);margin-bottom:.3rem;}
+.my-heuristic-score{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent2);}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 16</span>
+    <span class="header-title" id="hdr-title">Las Heurísticas de la Abuela</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">Tu abuela sabía cosas<br>que el economista no sabe</h1>
+  <div class="vs-vis">
+    <div class="vs-side">
+      <div class="vs-emoji">👵</div>
+      <div class="vs-lbl" id="vs-abuela-lbl">La abuela</div>
+      <div class="vs-sub" id="vs-abuela-sub">Reglas probadas por generaciones</div>
+    </div>
+    <span class="vs-versus">VS</span>
+    <div class="vs-side">
+      <div class="vs-emoji">📊</div>
+      <div class="vs-lbl" id="vs-economist-lbl">El economista</div>
+      <div class="vs-sub" id="vs-economist-sub">Modelo probado en un paper de 2019</div>
+    </div>
+  </div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Taleb confía más en las reglas prácticas de su abuela que en los modelos sofisticados de los académicos. Su razón: la sabiduría tradicional sobrevivió un proceso de selección mucho más riguroso que cualquier estudio reciente.</p>
+  <button class="btn-primary" onclick="startHeuristics()" id="s1-btn">Explorar heurísticas → Empezar</button>
+</section>
+
+<!-- S2 HEURISTICS COLLECTION -->
+<section id="sec-heuristics">
+  <div class="section-tag" id="s2-tag">Parte 2 · Sabiduría que Sobrevivió Generaciones</div>
+  <h2 id="s2-h2">Heurísticas tradicionales y su respaldo científico</h2>
+  <p id="s2-p">Cada una de estas reglas existió mucho antes de que la ciencia las explicara. Haz clic para ver qué dice la evidencia moderna.</p>
+  <div class="heuristic-grid" id="heuristic-grid"></div>
+  <button class="btn-accent" onclick="startBuilder()" id="s2-btn" style="margin-top:1rem">Aportar las mías propias →</button>
+</section>
+
+<!-- S3 PERSONAL BUILDER -->
+<section id="sec-builder">
+  <div class="section-tag" id="s3-tag">Parte 3 · Tus Propias Heurísticas</div>
+  <h2 id="s3-h2">¿Qué regla práctica heredaste tú?</h2>
+  <p id="s3-p">Piensa en un dicho, regla o consejo que se ha repetido en tu familia o cultura por generaciones. Evalúalo con el criterio de Taleb.</p>
+  <div class="builder-box">
+    <div class="builder-input-group">
+      <span class="builder-label" id="builder-label">Tu heurística (un dicho, regla o consejo tradicional):</span>
+      <textarea class="builder-textarea" id="heuristic-input" placeholder="Ej: 'No firmes nada sin leerlo dos veces' / 'El que mucho abarca, poco aprieta'"></textarea>
+    </div>
+    <div class="builder-criteria">
+      <div class="criteria-q" id="criteria-q1">¿Cuántas generaciones la han usado en tu familia/cultura, hasta donde sepas?</div>
+      <div class="criteria-scale" id="criteria-gen"></div>
+    </div>
+    <div class="builder-criteria">
+      <div class="criteria-q" id="criteria-q2">¿La persona que te la enseñó la aplicaba ella misma en su propia vida (skin in the game)?</div>
+      <div class="criteria-scale" id="criteria-skin"></div>
+    </div>
+    <button class="builder-submit" id="builder-submit" onclick="submitHeuristic()" disabled>Evaluar mi heurística</button>
+    <div class="builder-result" id="builder-result"></div>
+  </div>
+  <div class="my-heuristics-list" id="my-heuristics-list"></div>
+  <button class="btn-accent" onclick="showTheory()" id="s3-btn2" style="margin-top:1rem;display:none" id="builder-continue">Explorar la teoría →</button>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">¿Por qué confiar en la sabiduría antigua?</h2>
+  <p id="s4-p">Tres marcos para entender por qué Taleb prefiere las heurísticas probadas al conocimiento académico reciente.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Confías en la abuela o en el paper?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Un nuevo estudio científico contradice una regla tradicional de nutrición que tu familia ha seguido por generaciones (ej. "desayuna como rey"). ¿Qué haces?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('study',this)">
+        <div class="d-emoji">📄</div>
+        <div class="d-title" id="d1a-t">Sigo el estudio nuevo</div>
+        <div class="d-desc" id="d1a-d">La ciencia más reciente debería prevalecer sobre el dicho tradicional.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('tradition',this)">
+        <div class="d-emoji">👵</div>
+        <div class="d-title" id="d1b-t">Mantengo escepticismo sano</div>
+        <div class="d-desc" id="d1b-d">Un estudio individual reciente tiene menos evidencia acumulada que generaciones de práctica.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-study">
+      <strong id="cs-t">Cuidado con el "Nuevo Fraude Intelectual".</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Taleb es escéptico específicamente de estudios individuales recientes, que frecuentemente se revierten años después. Esto no significa ignorar la ciencia — significa exigir el mismo rigor de evidencia acumulada que exigirías a una tradición.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-tradition">
+      <strong id="ct-t">Aplicaste el criterio de Taleb correctamente.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="ct-p">No se trata de rechazar la ciencia, sino de reconocer que un estudio individual tiene mucha menos "evidencia acumulada" que una práctica que sobrevivió generaciones de escrutinio práctico real.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">De todo lo que exploraste en esta serie sobre Taleb, ¿cuál idea cambia más cómo vas a tomar una decisión esta semana?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Algunas ideas de la serie para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Confío más en las heurísticas de mi abuela y en la sabiduría popular que en los estudios publicados — la sabiduría popular ha sido probada por el tiempo, mientras que la mayoría de los estudios no sobreviven la replicación."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · Antifrágil (2012)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_15_perdida.html">← 15 Aversión a la Pérdida</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Las Heurísticas de la Abuela",
+  s1tag:"Parte 1 · El Gancho",s1h1:"Tu abuela sabía cosas\nque el economista no sabe",
+  vsAbuelaLbl:"La abuela",vsAbuelaSub:"Reglas probadas por generaciones",
+  vsEconomistLbl:"El economista",vsEconomistSub:"Modelo probado en un paper de 2019",
+  s1p:"Taleb confía más en las reglas prácticas de su abuela que en los modelos sofisticados de los académicos. Su razón: la sabiduría tradicional sobrevivió un proceso de selección mucho más riguroso que cualquier estudio reciente.",
+  s1btn:"Explorar heurísticas → Empezar",
+  s2tag:"Parte 2 · Sabiduría que Sobrevivió Generaciones",s2h2:"Heurísticas tradicionales y su respaldo científico",
+  s2p:"Cada una de estas reglas existió mucho antes de que la ciencia las explicara. Haz clic para ver qué dice la evidencia moderna.",
+  s2btn:"Aportar las mías propias →",
+  s3tag:"Parte 3 · Tus Propias Heurísticas",s3h2:"¿Qué regla práctica heredaste tú?",
+  s3p:"Piensa en un dicho, regla o consejo que se ha repetido en tu familia o cultura por generaciones. Evalúalo con el criterio de Taleb.",
+  builderLabel:"Tu heurística (un dicho, regla o consejo tradicional):",
+  builderPlaceholder:"Ej: 'No firmes nada sin leerlo dos veces' / 'El que mucho abarca, poco aprieta'",
+  criteriaQ1:"¿Cuántas generaciones la han usado en tu familia/cultura, hasta donde sepas?",
+  criteriaQ2:"¿La persona que te la enseñó la aplicaba ella misma en su propia vida (skin in the game)?",
+  genOptions:["1 generación","2 generaciones","3+ generaciones","No estoy seguro"],
+  skinOptions:["Sí, totalmente","Parcialmente","No realmente","No lo sé"],
+  builderSubmitBtn:"Evaluar mi heurística",
+  s4tag:"Parte 4 · La Teoría",s4h2:"¿Por qué confiar en la sabiduría antigua?",s4p:"Tres marcos para entender por qué Taleb prefiere las heurísticas probadas al conocimiento académico reciente.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Confías en la abuela o en el paper?",
+  tn1:"DILEMA · 01",
+  tq1:'Un nuevo estudio científico contradice una regla tradicional de nutrición que tu familia ha seguido por generaciones (ej. "desayuna como rey"). ¿Qué haces?',
+  d1aT:"Sigo el estudio nuevo",d1aD:"La ciencia más reciente debería prevalecer sobre el dicho tradicional.",
+  d1bT:"Mantengo escepticismo sano",d1bD:"Un estudio individual reciente tiene menos evidencia acumulada que generaciones de práctica.",
+  csT:'Cuidado con el "Nuevo Fraude Intelectual".',csP:"Taleb es escéptico específicamente de estudios individuales recientes, que frecuentemente se revierten años después. Esto no significa ignorar la ciencia — significa exigir el mismo rigor de evidencia acumulada que exigirías a una tradición.",
+  ctT:"Aplicaste el criterio de Taleb correctamente.",ctP:"No se trata de rechazar la ciencia, sino de reconocer que un estudio individual tiene mucha menos 'evidencia acumulada' que una práctica que sobrevivió generaciones de escrutinio práctico real.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"De todo lo que exploraste en esta serie sobre Taleb, ¿cuál idea cambia más cómo vas a tomar una decisión esta semana?",
+  refHint:"Algunas ideas de la serie para activar la reflexión:",
+  chips:["El problema del pavo (inducción)","Extremistán vs Mediocristán","La falacia narrativa","Skin in the game","Convexidad y opcionalidad","Via negativa (restar en vez de sumar)","La estrategia barbell","Antifragilidad"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Confío más en las heurísticas de mi abuela y en la sabiduría popular que en los estudios publicados — la sabiduría popular ha sido probada por el tiempo, mientras que la mayoría de los estudios no sobreviven la replicación."',
+  heuristics:[
+    {emoji:"🍲",culture:"Sabiduría italiana",saying:'"Pasta al dente, nunca pasada."',
+     explain:"La regla tradicional italiana de cocinar pasta 'al diente' (firme, no blanda) no es solo preferencia de textura.",
+     science:"La pasta al dente tiene un índice glucémico significativamente menor que la pasta muy cocida — la estructura del almidón se digiere más lentamente, generando una respuesta de glucosa en sangre más estable. La 'abuela' optimizaba metabolismo sin saber la palabra 'glucémico'."},
+    {emoji:"🧂",culture:"Sabiduría mediterránea",saying:'"Una pizca de sal en el agua de cocción, nunca después."',
+     explain:"Salar el agua de cocción en vez de la comida ya servida es una regla universal en cocinas mediterráneas.",
+     science:"La sal disuelta en agua hirviendo penetra uniformemente los alimentos durante la cocción, distribuyendo el sabor desde adentro — mientras que salar al final solo afecta la superficie. Estudios de ciencia culinaria moderna confirman la superioridad de esta técnica."},
+    {emoji:"🛌",culture:"Sabiduría popular global",saying:'"No tomes decisiones importantes de noche."',
+     explain:"Esta regla aparece en casi todas las culturas humanas, en distintas formas.",
+     science:"La investigación en cronobiología muestra que la capacidad de autocontrol y juicio racional (regulada por la corteza prefrontal) disminuye significativamente con la fatiga acumulada del día — el fenómeno conocido como 'agotamiento del ego' o decision fatigue."},
+    {emoji:"💰",culture:"Sabiduría comercial tradicional",saying:'"No le prestes a quien no te pueda mirar a los ojos para pagarte."',
+     explain:"Una variante de esta regla aparece en culturas comerciales de todo el mundo, mucho antes de la ciencia de scoring crediticio.",
+     science:"Esta heurística captura intuitivamente lo que los modelos modernos de riesgo crediticio formalizan: la relación entre carácter observable, reputación social y probabilidad de repago — variables que los algoritmos de crédito moderno aún luchan por capturar tan bien como el juicio humano directo."},
+    {emoji:"🌙",culture:"Sabiduría agrícola tradicional",saying:'"Siembra y cosecha según las fases — pero nunca apuestes toda la cosecha a un solo campo."',
+     explain:"La diversificación de cultivos en distintos terrenos era práctica agrícola universal mucho antes de la teoría de portafolios.",
+     science:"Esta es, literalmente, la estrategia barbell y de diversificación que Harry Markowitz formalizó matemáticamente en 1952 (Premio Nobel 1990) — los agricultores tradicionales la practicaban por generaciones sin necesitar el aparato matemático."},
+    {emoji:"🤝",culture:"Sabiduría popular sobre relaciones",saying:'"Mejor solo que mal acompañado."',
+     explain:"Variantes de este dicho existen en docenas de idiomas y culturas distintas.",
+     science:"La investigación en psicología social moderna sobre relaciones tóxicas confirma que la soledad temporal tiene un costo psicológico menor a largo plazo que permanecer en relaciones de mala calidad — aunque la soledad crónica tiene sus propios riesgos documentados."},
+  ],
+  theories:[
+    {icon:"🧬",name:"Selección darwiniana de ideas",body:`<p>Taleb argumenta que las heurísticas tradicionales pasaron por un proceso de selección mucho más riguroso que cualquier estudio académico individual: miles de generaciones de práctica real, en condiciones reales, con consecuencias reales para quienes las seguían o ignoraban.</p><div class="quote-block"><p>"Lo que ha sobrevivido un largo periodo de tiempo tiene una probabilidad mucho mayor de seguir siendo válido que algo nuevo — esto es esencialmente el argumento de Lindy."</p><cite>— Nassim Taleb, Antifrágil (2012)</cite></div><p>Una regla que sobrevivió 200 años de aplicación práctica ya pasó por innumerables 'pruebas de fuego' que un estudio publicado hace 2 años simplemente no ha enfrentado todavía.</p><div class="tag-list"><span class="tag">Efecto Lindy</span><span class="tag">Selección natural de ideas</span><span class="tag">Evidencia acumulada</span></div>`},
+    {icon:"📉",name:"La crisis de replicación en ciencia",body:`<p>Taleb es particularmente escéptico de estudios académicos individuales debido a la "crisis de replicación" documentada extensamente en psicología, medicina y ciencias sociales: una proporción sorprendentemente alta de estudios publicados no logran replicarse cuando otros investigadores intentan reproducir los resultados.</p><p>Esto no significa que la ciencia sea inútil — significa que un solo estudio tiene mucha menos "evidencia acumulada" de lo que su publicación formal podría sugerir, especialmente comparado con una práctica validada durante siglos.</p><div class="quote-block"><p>"Si algo ha sobrevivido por generaciones, tiene una carga de la prueba menor que algo nuevo. La novedad debería tener que demostrar su valor, no asumirlo."</p><cite>— Nassim Taleb (síntesis de su obra)</cite></div><div class="tag-list"><span class="tag">Crisis de replicación</span><span class="tag">Metodología científica</span><span class="tag">Carga de la prueba</span></div>`},
+    {icon:"⚖️",name:"Heurísticas con skin in the game implícito",body:`<p>Las heurísticas tradicionales típicamente fueron transmitidas por personas que las practicaban ellas mismas — abuelas, artesanos, comerciantes que vivían las consecuencias directas de seguir o ignorar sus propias reglas. Esto conecta directamente con el concepto de Skin in the Game explorado anteriormente en esta serie.</p><p>En contraste, muchos estudios académicos modernos son producidos por investigadores cuyo incentivo principal es publicar (no necesariamente que el hallazgo sea cierto o útil en la práctica) — un desalineamiento de incentivos que Taleb conecta directamente con el problema de agencia.</p><div class="quote-block"><p>"La abuela tenía piel en el juego de sus propias recetas y reglas. El investigador académico, frecuentemente, no la tiene en sus propias conclusiones publicadas."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><div class="tag-list"><span class="tag">Skin in the Game</span><span class="tag">Transmisión generacional</span><span class="tag">Incentivos académicos</span></div>`},
+  ],
+  mcqs:[
+    {q:"Según el 'efecto Lindy' que Taleb aplica a las heurísticas tradicionales, ¿qué predice sobre la durabilidad futura de algo no-perecedero?",opts:["Que cuanto más tiempo algo ha existido, menos tiempo le queda por desgaste natural","Que cuanto más tiempo algo ha existido sin desaparecer, mayor es su expectativa de vida futura","Que solo aplica a tecnología digital, no a ideas o costumbres","Que la edad de una idea no tiene relación con su validez futura"],correct:1,feedOk:"Exacto. El efecto Lindy (nombrado así por una cafetería de Nueva York donde se discutía esta observación sobre comediantes) predice que para cosas no-perecederas como ideas, libros o tecnologías, la esperanza de vida futura aumenta con cada periodo que sobreviven — lo opuesto a los seres vivos.",feedKo:"Es exactamente lo opuesto al desgaste por tiempo de vida biológica. El efecto Lindy aplica específicamente a información, ideas y prácticas culturales no-perecederas — y predice mayor (no menor) longevidad futura cuanto más tiempo ha sobrevivido algo."},
+    {q:"¿Por qué Taleb conecta la crisis de replicación científica con su preferencia por heurísticas tradicionales?",opts:["Porque cree que toda la ciencia moderna es falsa","Porque un estudio individual reciente, sin replicación extensa, tiene menos evidencia acumulada de validez que una práctica que sobrevivió generaciones de aplicación real","Porque las heurísticas tradicionales nunca pueden estar equivocadas","Porque prefiere la tradición sobre la innovación en todos los casos sin excepción"],correct:1,feedOk:"Correcto. El punto no es rechazar la ciencia en general, sino reconocer que muchos hallazgos individuales recientes no han pasado por el mismo nivel de escrutinio acumulado que una práctica validada por generaciones de uso real con consecuencias reales.",feedKo:"Taleb no rechaza la ciencia en general ni afirma que las heurísticas tradicionales sean infalibles. Su punto específico es comparativo: la cantidad de evidencia acumulada real detrás de cada tipo de conocimiento, no una afirmación categórica sobre cuál es 'siempre' correcto."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"📄",title:"Confías más en el paper nuevo",desc:"Priorizas la novedad académica sobre la sabiduría acumulada. Vale la pena calibrar ese instinto.",taleb:"'La novedad debería demostrar su valor, no asumirlo.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a valorar lo probado",desc:"Reconoces el valor de la evidencia acumulada por tiempo. Sigue calibrando entre ambas fuentes.",taleb:"'Lo que ha sobrevivido tiene mayor probabilidad de seguir siendo válido.' — Antifrágil",color:"#f39c12"},
+    {min:70,emoji:"👵",title:"Valoras la sabiduría heredada",desc:"Aplicas el efecto Lindy conscientemente al evaluar qué conocimiento confiar.",taleb:"'Confío más en las heurísticas de mi abuela que en los estudios publicados.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🧬",title:"Nivel Selección Darwiniana de Ideas",desc:"Evalúas activamente la evidencia acumulada real detrás de cualquier conocimiento, tradicional o académico.",taleb:"'La sabiduría popular ha sido probada por el tiempo.' — Antifrágil (2012)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Grandmother's Heuristics",
+  s1tag:"Part 1 · The Hook",s1h1:"Your grandmother knew things\nthe economist doesn't",
+  vsAbuelaLbl:"Grandmother",vsAbuelaSub:"Rules tested across generations",
+  vsEconomistLbl:"The economist",vsEconomistSub:"Model tested in a 2019 paper",
+  s1p:"Taleb trusts his grandmother's practical rules more than academics' sophisticated models. His reason: traditional wisdom survived a far more rigorous selection process than any recent study.",
+  s1btn:"Explore heuristics → Start",
+  s2tag:"Part 2 · Wisdom That Survived Generations",s2h2:"Traditional heuristics and their scientific backing",
+  s2p:"Each of these rules existed long before science explained them. Click to see what modern evidence says.",
+  s2btn:"Contribute my own →",
+  s3tag:"Part 3 · Your Own Heuristics",s3h2:"What practical rule did you inherit?",
+  s3p:"Think of a saying, rule, or piece of advice that's been repeated in your family or culture for generations. Evaluate it with Taleb's criteria.",
+  builderLabel:"Your heuristic (a traditional saying, rule, or piece of advice):",
+  builderPlaceholder:"E.g.: 'Never sign anything without reading it twice' / 'Measure twice, cut once'",
+  criteriaQ1:"How many generations have used it in your family/culture, as far as you know?",
+  criteriaQ2:"Did the person who taught it to you actually apply it in their own life (skin in the game)?",
+  genOptions:["1 generation","2 generations","3+ generations","Not sure"],
+  skinOptions:["Yes, fully","Partially","Not really","Don't know"],
+  builderSubmitBtn:"Evaluate my heuristic",
+  s4tag:"Part 4 · The Theory",s4h2:"Why trust ancient wisdom?",s4p:"Three frameworks for understanding why Taleb prefers tested heuristics over recent academic knowledge.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you trust grandma or the paper?",
+  tn1:"DILEMMA · 01",
+  tq1:'A new scientific study contradicts a traditional nutrition rule your family has followed for generations (e.g. "eat breakfast like a king"). What do you do?',
+  d1aT:"I follow the new study",d1aD:"The most recent science should prevail over the traditional saying.",
+  d1bT:"I maintain healthy skepticism",d1bD:"A single recent study has less accumulated evidence than generations of practice.",
+  csT:'Beware the "New Intellectual Fraud".',csP:"Taleb is specifically skeptical of recent individual studies, which frequently get reversed years later. This doesn't mean ignoring science — it means demanding the same rigor of accumulated evidence you'd demand from a tradition.",
+  ctT:"You applied Taleb's criteria correctly.",ctP:"It's not about rejecting science, but recognizing that a single study has far less 'accumulated evidence' than a practice that survived generations of real practical scrutiny.",
+  tn3:"REFLECTION · 03",
+  tq3:"Of everything you explored in this series about Taleb, which idea most changes how you'll make a decision this week?",
+  refHint:"Some ideas from the series to trigger reflection:",
+  chips:["The turkey problem (induction)","Extremistan vs Mediocristan","The narrative fallacy","Skin in the game","Convexity and optionality","Via negativa (subtracting instead of adding)","The barbell strategy","Antifragility"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"I trust my grandmother\'s heuristics and popular wisdom more than published studies — popular wisdom has been tested by time, while most studies do not survive replication."',
+  heuristics:[
+    {emoji:"🍲",culture:"Italian wisdom",saying:'"Pasta al dente, never overcooked."',
+     explain:"The traditional Italian rule of cooking pasta 'al dente' (firm, not soft) isn't just texture preference.",
+     science:"Al dente pasta has a significantly lower glycemic index than overcooked pasta — the starch structure digests more slowly, producing a more stable blood glucose response. 'Grandma' was optimizing metabolism without knowing the word 'glycemic'."},
+    {emoji:"🧂",culture:"Mediterranean wisdom",saying:'"A pinch of salt in the cooking water, never after."',
+     explain:"Salting the cooking water instead of the already-served food is a universal rule in Mediterranean kitchens.",
+     science:"Salt dissolved in boiling water penetrates food uniformly during cooking, distributing flavor from within — while salting at the end only affects the surface. Modern culinary science studies confirm the superiority of this technique."},
+    {emoji:"🛌",culture:"Global popular wisdom",saying:'"Never make important decisions at night."',
+     explain:"This rule appears in almost every human culture, in various forms.",
+     science:"Chronobiology research shows that self-control and rational judgment capacity (regulated by the prefrontal cortex) decline significantly with accumulated daily fatigue — the phenomenon known as 'ego depletion' or decision fatigue."},
+    {emoji:"💰",culture:"Traditional commercial wisdom",saying:'"Don\'t lend to someone who can\'t look you in the eye to pay you back."',
+     explain:"A variant of this rule appears in commercial cultures worldwide, long before credit scoring science.",
+     science:"This heuristic intuitively captures what modern credit risk models formalize: the relationship between observable character, social reputation, and repayment probability — variables modern credit algorithms still struggle to capture as well as direct human judgment."},
+    {emoji:"🌙",culture:"Traditional agricultural wisdom",saying:'"Plant and harvest by the seasons — but never bet the whole crop on one field."',
+     explain:"Diversifying crops across different plots was universal agricultural practice long before portfolio theory.",
+     science:"This is, literally, the barbell and diversification strategy that Harry Markowitz mathematically formalized in 1952 (1990 Nobel Prize) — traditional farmers practiced it for generations without needing the mathematical apparatus."},
+    {emoji:"🤝",culture:"Popular relationship wisdom",saying:'"Better alone than in bad company."',
+     explain:"Variants of this saying exist in dozens of different languages and cultures.",
+     science:"Modern social psychology research on toxic relationships confirms that temporary loneliness has a lower long-term psychological cost than remaining in poor-quality relationships — though chronic loneliness has its own documented risks."},
+  ],
+  theories:[
+    {icon:"🧬",name:"Darwinian selection of ideas",body:`<p>Taleb argues that traditional heuristics went through a far more rigorous selection process than any individual academic study: thousands of generations of real practice, in real conditions, with real consequences for those who followed or ignored them.</p><div class="quote-block"><p>"What has survived a long period of time has a much higher probability of continuing to be valid than something new — this is essentially the Lindy argument."</p><cite>— Nassim Taleb, Antifragile (2012)</cite></div><p>A rule that survived 200 years of practical application has already passed countless 'trials by fire' that a study published 2 years ago simply hasn't faced yet.</p><div class="tag-list"><span class="tag">Lindy effect</span><span class="tag">Natural selection of ideas</span><span class="tag">Accumulated evidence</span></div>`},
+    {icon:"📉",name:"The replication crisis in science",body:`<p>Taleb is particularly skeptical of individual academic studies due to the extensively documented "replication crisis" in psychology, medicine, and social sciences: a surprisingly high proportion of published studies fail to replicate when other researchers attempt to reproduce the results.</p><p>This doesn't mean science is useless — it means a single study has far less "accumulated evidence" than its formal publication might suggest, especially compared to a practice validated over centuries.</p><div class="quote-block"><p>"If something has survived for generations, it carries a lighter burden of proof than something new. Novelty should have to prove its worth, not assume it."</p><cite>— Nassim Taleb (synthesis of his work)</cite></div><div class="tag-list"><span class="tag">Replication crisis</span><span class="tag">Scientific methodology</span><span class="tag">Burden of proof</span></div>`},
+    {icon:"⚖️",name:"Heuristics with implicit skin in the game",body:`<p>Traditional heuristics were typically passed down by people who practiced them themselves — grandmothers, craftspeople, merchants who lived the direct consequences of following or ignoring their own rules. This connects directly to the Skin in the Game concept explored earlier in this series.</p><p>In contrast, many modern academic studies are produced by researchers whose primary incentive is to publish (not necessarily that the finding be true or practically useful) — a misalignment of incentives Taleb connects directly to the agency problem.</p><div class="quote-block"><p>"Grandmother had skin in the game of her own recipes and rules. The academic researcher, often, does not have it in their own published conclusions."</p><cite>— Nassim Taleb, Skin in the Game (2018)</cite></div><div class="tag-list"><span class="tag">Skin in the Game</span><span class="tag">Generational transmission</span><span class="tag">Academic incentives</span></div>`},
+  ],
+  mcqs:[
+    {q:"According to the 'Lindy effect' that Taleb applies to traditional heuristics, what does it predict about the future durability of something non-perishable?",opts:["That the longer something has existed, the less time it has left due to natural wear","That the longer something has existed without disappearing, the greater its future life expectancy","That it only applies to digital technology, not ideas or customs","That the age of an idea has no relation to its future validity"],correct:1,feedOk:"Exactly. The Lindy effect (named after a New York deli where this observation about comedians was discussed) predicts that for non-perishable things like ideas, books, or technologies, future life expectancy increases with every period they survive — the opposite of living beings.",feedKo:"It's exactly the opposite of biological lifespan wear. The Lindy effect applies specifically to non-perishable information, ideas, and cultural practices — and predicts greater (not lesser) future longevity the longer something has survived."},
+    {q:"Why does Taleb connect the scientific replication crisis with his preference for traditional heuristics?",opts:["Because he believes all modern science is false","Because a recent individual study, without extensive replication, has less accumulated evidence of validity than a practice that survived generations of real application","Because traditional heuristics can never be wrong","Because he prefers tradition over innovation in all cases without exception"],correct:1,feedOk:"Correct. The point isn't to reject science in general, but to recognize that many recent individual findings haven't passed through the same level of accumulated scrutiny as a practice validated by generations of real use with real consequences.",feedKo:"Taleb doesn't reject science in general nor claim traditional heuristics are infallible. His specific point is comparative: the amount of real accumulated evidence behind each type of knowledge, not a categorical claim about which is 'always' correct."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"📄",title:"You trust the new paper more",desc:"You prioritize academic novelty over accumulated wisdom. Worth calibrating that instinct.",taleb:"'Novelty should prove its worth, not assume it.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to value the proven",desc:"You recognize the value of evidence accumulated over time. Keep calibrating between both sources.",taleb:"'What has survived has a higher probability of remaining valid.' — Antifragile",color:"#f39c12"},
+    {min:70,emoji:"👵",title:"You value inherited wisdom",desc:"You consciously apply the Lindy effect when evaluating which knowledge to trust.",taleb:"'I trust my grandmother's heuristics more than published studies.' — Taleb",color:"#2ecc71"},
+    {min:90,emoji:"🧬",title:"Darwinian Selection of Ideas Level",desc:"You actively evaluate the real accumulated evidence behind any knowledge, traditional or academic.",taleb:"'Popular wisdom has been tested by time.' — Antifragile (2012)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', selectedGen=null, selectedSkin=null, myHeuristics=[];
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    'vs-abuela-lbl':'vsAbuelaLbl','vs-abuela-sub':'vsAbuelaSub','vs-economist-lbl':'vsEconomistLbl','vs-economist-sub':'vsEconomistSub',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p','s2-btn':'s2btn',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','builder-label':'builderLabel',
+    'criteria-q1':'criteriaQ1','criteria-q2':'criteriaQ2','builder-submit':'builderSubmitBtn',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','ct-t':'ctT','ct-p':'ctP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  document.getElementById('heuristic-input').placeholder=tx.builderPlaceholder;
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderHeuristics();renderCriteria();renderTheoryCards();renderChips();
+}
+
+/* HEURISTICS COLLECTION */
+function startHeuristics(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-heuristics').scrollIntoView({behavior:'smooth'});}
+function renderHeuristics(){
+  const wrap=document.getElementById('heuristic-grid');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].heuristics.forEach(h=>{
+    const card=document.createElement('div');card.className='heuristic-card';
+    card.innerHTML=`
+      <div class="heuristic-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="heuristic-header-left">
+          <span class="heuristic-emoji">${h.emoji}</span>
+          <div>
+            <div class="heuristic-culture">${h.culture}</div>
+            <div class="heuristic-saying">${h.saying}</div>
+          </div>
+        </div>
+        <span class="heuristic-chevron">▾</span>
+      </div>
+      <div class="heuristic-body">
+        <p>${h.explain}</p>
+        <div class="heuristic-science">
+          <span class="heuristic-science-label">${lang==='es'?'RESPALDO CIENTÍFICO MODERNO':'MODERN SCIENTIFIC BACKING'}</span>
+          ${h.science}
+        </div>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* PERSONAL BUILDER */
+function startBuilder(){document.getElementById('sec-builder').scrollIntoView({behavior:'smooth'});}
+function renderCriteria(){
+  const genWrap=document.getElementById('criteria-gen');
+  const skinWrap=document.getElementById('criteria-skin');
+  if(!genWrap||!skinWrap)return;
+  genWrap.innerHTML='';skinWrap.innerHTML='';
+  selectedGen=null;selectedSkin=null;
+  T[lang].genOptions.forEach((opt,i)=>{
+    const b=document.createElement('button');b.className='criteria-btn';b.textContent=opt;
+    b.onclick=()=>{document.querySelectorAll('#criteria-gen .criteria-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedGen=i;checkBuilderReady();};
+    genWrap.appendChild(b);
+  });
+  T[lang].skinOptions.forEach((opt,i)=>{
+    const b=document.createElement('button');b.className='criteria-btn';b.textContent=opt;
+    b.onclick=()=>{document.querySelectorAll('#criteria-skin .criteria-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedSkin=i;checkBuilderReady();};
+    skinWrap.appendChild(b);
+  });
+}
+function checkBuilderReady(){
+  const text=document.getElementById('heuristic-input').value.trim();
+  document.getElementById('builder-submit').disabled=!(text && selectedGen!==null && selectedSkin!==null);
+}
+document.getElementById('heuristic-input').addEventListener('input',checkBuilderReady);
+
+function submitHeuristic(){
+  const text=document.getElementById('heuristic-input').value.trim();
+  if(!text||selectedGen===null||selectedSkin===null)return;
+  // Score: gen index 0-3 (3=unsure->mid), skin index 0-3 (0=yes best)
+  const genScore = selectedGen===3 ? 1 : selectedGen; // 0,1,2 good increasing; 3(unsure)->1
+  const skinScore = selectedSkin===3 ? 1 : (3-selectedSkin); // yes=3,partially=2,not really=1,unsure->1
+  const total=genScore+skinScore; // max ~5
+  const robust = total>=4;
+  myHeuristics.push({text,robust});
+
+  const result=document.getElementById('builder-result');
+  result.classList.add('show');
+  if(lang==='es'){
+    result.innerHTML = robust
+      ? `<div class="builder-result-verdict robust">✓ Heurística robusta</div><p style="font-size:.85rem;color:var(--text2)">Tu heurística pasa el criterio de Taleb: tiene historia generacional y fue practicada por quien te la enseñó. Es exactamente el tipo de sabiduría que Taleb recomienda confiar.</p>`
+      : `<div class="builder-result-verdict fragile">~ Heurística parcial</div><p style="font-size:.85rem;color:var(--text2)">Tu heurística tiene cierto valor, pero no cumple completamente el criterio de Taleb (historia larga + skin in the game del transmisor). Eso no la hace falsa — solo significa que merece un poco más de escrutinio que una tradición muy establecida.</p>`;
+  } else {
+    result.innerHTML = robust
+      ? `<div class="builder-result-verdict robust">✓ Robust heuristic</div><p style="font-size:.85rem;color:var(--text2)">Your heuristic passes Taleb's criteria: it has generational history and was practiced by whoever taught it to you. This is exactly the kind of wisdom Taleb recommends trusting.</p>`
+      : `<div class="builder-result-verdict fragile">~ Partial heuristic</div><p style="font-size:.85rem;color:var(--text2)">Your heuristic has some value, but doesn't fully meet Taleb's criteria (long history + transmitter's skin in the game). That doesn't make it false — it just means it deserves a bit more scrutiny than a well-established tradition.</p>`;
+  }
+
+  renderMyHeuristics();
+  document.getElementById('heuristic-input').value='';
+  document.querySelectorAll('.criteria-btn').forEach(b=>b.classList.remove('selected'));
+  selectedGen=null;selectedSkin=null;
+  document.getElementById('builder-submit').disabled=true;
+  document.getElementById('s3-btn2').style.display='inline-block';
+}
+function renderMyHeuristics(){
+  const wrap=document.getElementById('my-heuristics-list');
+  wrap.innerHTML='';
+  myHeuristics.forEach(h=>{
+    const el=document.createElement('div');el.className='my-heuristic-item';
+    el.innerHTML=`<div class="my-heuristic-saying">"${h.text}"</div><div class="my-heuristic-score">${h.robust?(lang==='es'?'✓ Robusta':'✓ Robust'):(lang==='es'?'~ Parcial':'~ Partial')}</div>`;
+    wrap.appendChild(el);
+  });
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-study').classList.toggle('show',type==='study');
+  document.getElementById('cons-tradition').classList.toggle('show',type==='tradition');
+  dilemmaScore=type==='tradition'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

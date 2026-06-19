@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Lecho de Procusto — Taleb</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.bed-icon{font-size:3.5rem;margin:1.5rem 0;}
+.aphorism-box{background:rgba(232,89,60,.06);border:1px solid rgba(232,89,60,.2);border-radius:var(--radius);padding:1.1rem 1.4rem;margin:1.5rem auto;max-width:500px;}
+.aphorism-text{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text);}
+.aphorism-cite{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--text3);margin-top:.5rem;}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* BED VISUAL GAME */
+.bed-game-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin:1.5rem 0;}
+.bed-frame{position:relative;background:var(--bg3);border:2px solid var(--border2);border-radius:var(--radius-sm);height:90px;margin:1.5rem 0;display:flex;align-items:center;overflow:hidden;}
+.bed-frame::before,.bed-frame::after{content:'';position:absolute;top:0;bottom:0;width:8px;background:var(--text3);}
+.bed-frame::before{left:0;}
+.bed-frame::after{right:0;}
+.bed-content{position:absolute;left:8px;right:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:.5rem 1rem;font-size:.78rem;color:var(--text);line-height:1.4;transition:all .5s ease;overflow:hidden;}
+.concept-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;margin-bottom:.5rem;text-align:center;}
+.concept-full{font-size:.85rem;color:var(--text);text-align:center;margin-bottom:1rem;line-height:1.6;}
+.fit-slider-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
+.fit-slider-row span{font-size:.72rem;color:var(--text3);white-space:nowrap;}
+.fit-slider{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--bg3);outline:none;}
+.fit-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent2);cursor:pointer;border:2px solid var(--bg);}
+.fit-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent2);cursor:pointer;border:2px solid var(--bg);}
+.lost-info-box{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.22);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-top:.5rem;font-size:.82rem;color:var(--text);line-height:1.55;}
+.lost-info-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--red);letter-spacing:.07em;margin-bottom:.35rem;display:block;}
+.bed-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem;}
+.bed-nav-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.5rem 1.2rem;border-radius:20px;cursor:pointer;font-size:.82rem;font-family:'IBM Plex Sans',sans-serif;}
+.bed-nav-btn:disabled{opacity:.3;cursor:default;}
+.bed-progress-dots{display:flex;gap:6px;}
+.bed-dot{width:7px;height:7px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);}
+.bed-dot.active{background:var(--accent2);border-color:var(--accent2);}
+.bed-dot.done{background:var(--text3);}
+
+/* APHORISM TEST */
+.aph-progress{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);margin-bottom:1rem;letter-spacing:.08em;}
+.aph-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;}
+.aph-situation{font-size:.9rem;color:var(--text);line-height:1.6;margin-bottom:1rem;}
+.aph-btns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.aph-btn{font-size:.82rem;padding:.65rem .5rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;cursor:pointer;transition:all .2s;text-align:center;}
+.aph-btn.procusto-btn:hover:not(:disabled){border-color:var(--red);color:var(--red);}
+.aph-btn.honest-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
+.aph-btn:disabled{cursor:default;opacity:.5;}
+.aph-btn.chosen-procusto{background:rgba(231,76,60,.15);border-color:var(--red);color:var(--red);opacity:1;}
+.aph-btn.chosen-honest{background:rgba(46,204,113,.15);border-color:var(--green);color:var(--green);opacity:1;}
+.aph-reveal{display:none;margin-top:.85rem;padding:.75rem .9rem;border-radius:var(--radius-sm);font-size:.82rem;line-height:1.55;}
+.aph-reveal.show{display:block;}
+.aph-reveal.correct{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);}
+.aph-reveal.wrong{background:rgba(242,166,35,.08);border:1px solid rgba(242,166,35,.25);}
+.aph-quote-tag{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:.8rem;color:var(--accent);margin-top:.5rem;display:block;}
+.aph-score-strip{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.aph-score-strip.show{display:flex;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 13</span>
+    <span class="header-title" id="hdr-title">El Lecho de Procusto</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Mito</div>
+  <h1 id="s1-h1">Procusto tenía<br>una cama de hierro</h1>
+  <div class="bed-icon">🛏️</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">En la mitología griega, Procusto invitaba viajeros a dormir en su cama. Si eran muy altos, les cortaba las piernas. Si eran muy bajos, los estiraba. La cama nunca se ajustaba a la persona — la persona se ajustaba a la cama.</p>
+  <div class="aphorism-box">
+    <p class="aphorism-text" id="aph-1">"Procrustes, o el lecho de Procusto, es una metáfora para describir el daño causado cuando forzamos la realidad a encajar en nuestros modelos mentales preconcebidos."</p>
+    <p class="aphorism-cite" id="aph-1-cite">— Nassim Taleb, El Lecho de Procusto (2010)</p>
+  </div>
+  <button class="btn-primary" onclick="startBedGame()" id="s1-btn">Ver la cama en acción → Empezar</button>
+</section>
+
+<!-- S2 BED VISUAL GAME -->
+<section id="sec-bed">
+  <div class="section-tag" id="s2-tag">Parte 2 · La Cama en Acción</div>
+  <h2 id="s2-h2">Fuerza estos conceptos a caber en la cama</h2>
+  <p id="s2-p">Cada concepto es complejo y matizado. Ajusta el slider para "forzarlo" a caber en una categoría simple — y mira qué información se pierde en el proceso.</p>
+  <div class="bed-game-box">
+    <div class="concept-label" id="concept-counter">CONCEPTO 1 / 5</div>
+    <div class="concept-full" id="concept-full-text">—</div>
+    <div class="bed-frame">
+      <div class="bed-content" id="bed-content-text">—</div>
+    </div>
+    <div class="fit-slider-row">
+      <span id="fit-label-left">Realidad completa</span>
+      <input type="range" class="fit-slider" id="fit-slider" min="0" max="100" value="0">
+      <span id="fit-label-right">Forzado a la cama</span>
+    </div>
+    <div class="lost-info-box" id="lost-info-box" style="display:none">
+      <span class="lost-info-label" id="lost-info-label">LO QUE SE PIERDE AL FORZAR</span>
+      <span id="lost-info-text">—</span>
+    </div>
+    <div class="bed-nav">
+      <button class="bed-nav-btn" id="bed-prev-btn" onclick="bedPrev()" disabled>← Anterior</button>
+      <div class="bed-progress-dots" id="bed-dots"></div>
+      <button class="bed-nav-btn" id="bed-next-btn" onclick="bedNext()">Siguiente →</button>
+    </div>
+  </div>
+</section>
+
+<!-- S3 APHORISM TEST -->
+<section id="sec-aphtest">
+  <div class="section-tag" id="s3-tag">Parte 3 · Test de Aforismos</div>
+  <h2 id="s3-h2">¿Estás forzando la realidad a tu categoría?</h2>
+  <p id="s3-p">6 situaciones cotidianas. Decide si la persona está cometiendo el error de Procusto, o siendo honesta con la complejidad.</p>
+  <div class="aph-progress" id="aph-progress">0 / 6 evaluadas</div>
+  <div id="aph-area"></div>
+  <div class="aph-score-strip" id="aph-score-strip">
+    <div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:500" id="aph-score-n">—</span>
+      <span style="font-size:.82rem;color:var(--text2);margin-left:.5rem" id="aph-score-txt">correctas de 6</span>
+    </div>
+    <button class="btn-accent" onclick="showTheory()">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">El lecho de Procusto en la filosofía de Taleb</h2>
+  <p id="s4-p">Tres marcos para entender por qué forzamos la realidad a categorías.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Adaptas la cama, o cortas las piernas?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Un candidato a un puesto no encaja perfectamente en ninguna de tus categorías estándar de evaluación (técnico / gerencial / creativo). ¿Qué haces?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('force',this)">
+        <div class="d-emoji">📏</div>
+        <div class="d-title" id="d1a-t">Lo encajo en una categoría</div>
+        <div class="d-desc" id="d1a-d">Elijo la categoría más cercana y evalúo según ese criterio, aunque no encaje del todo.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('adapt',this)">
+        <div class="d-emoji">🔓</div>
+        <div class="d-title" id="d1b-t">Adapto mi marco de evaluación</div>
+        <div class="d-desc" id="d1b-d">Reconozco que este candidato no encaja en mis categorías — y ajusto cómo evalúo, no a la persona.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-force">
+      <strong id="cs-t">Aplicaste el lecho de Procusto.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Forzar a alguien complejo dentro de una categoría predefinida significa perder exactamente la información que lo hacía valioso — sus cualidades que no encajan en ninguna casilla.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-adapt">
+      <strong id="ca-t">Evitaste el lecho de Procusto.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="ca-p">Adaptar el marco a la realidad, en vez de forzar la realidad al marco, es exactamente lo que Taleb recomienda. La categoría debe servir a la verdad, no al revés.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿Dónde forzaste recientemente algo (una persona, una situación, una idea) para que encajara en una categoría que ya tenías?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Modernidad: vivimos en sociedades altamente complejas, e intentamos forzarlas dentro de modelos simplistas — el lecho de Procusto de las ideas."</p>
+  <p class="footer-cite">— Nassim Nicholas Taleb · El Lecho de Procusto (2010)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_12_vianegativa.html">← 12 Via Negativa</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">14 Anclaje y Ajuste →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"El Lecho de Procusto",
+  s1tag:"Parte 1 · El Mito",s1h1:"Procusto tenía\nuna cama de hierro",
+  s1p:"En la mitología griega, Procusto invitaba viajeros a dormir en su cama. Si eran muy altos, les cortaba las piernas. Si eran muy bajos, los estiraba. La cama nunca se ajustaba a la persona — la persona se ajustaba a la cama.",
+  aph1:'"Procrustes, o el lecho de Procusto, es una metáfora para describir el daño causado cuando forzamos la realidad a encajar en nuestros modelos mentales preconcebidos."',
+  aph1Cite:"— Nassim Taleb, El Lecho de Procusto (2010)",
+  s1btn:"Ver la cama en acción → Empezar",
+  s2tag:"Parte 2 · La Cama en Acción",s2h2:"Fuerza estos conceptos a caber en la cama",
+  s2p:"Cada concepto es complejo y matizado. Ajusta el slider para 'forzarlo' a caber en una categoría simple — y mira qué información se pierde en el proceso.",
+  conceptCounterLbl:"CONCEPTO",
+  fitLeftLbl:"Realidad completa",fitRightLbl:"Forzado a la cama",
+  lostInfoLabel:"LO QUE SE PIERDE AL FORZAR",
+  bedPrev:"← Anterior",bedNext:"Siguiente →",bedFinish:"Continuar →",
+  s3tag:"Parte 3 · Test de Aforismos",s3h2:"¿Estás forzando la realidad a tu categoría?",
+  s3p:"6 situaciones cotidianas. Decide si la persona está cometiendo el error de Procusto, o siendo honesta con la complejidad.",
+  aphScoreTxt:"correctas de 6",
+  s4tag:"Parte 4 · La Teoría",s4h2:"El lecho de Procusto en la filosofía de Taleb",s4p:"Tres marcos para entender por qué forzamos la realidad a categorías.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Adaptas la cama, o cortas las piernas?",
+  tn1:"DILEMA · 01",
+  tq1:"Un candidato a un puesto no encaja perfectamente en ninguna de tus categorías estándar de evaluación (técnico / gerencial / creativo). ¿Qué haces?",
+  d1aT:"Lo encajo en una categoría",d1aD:"Elijo la categoría más cercana y evalúo según ese criterio, aunque no encaje del todo.",
+  d1bT:"Adapto mi marco de evaluación",d1bD:"Reconozco que este candidato no encaja en mis categorías — y ajusto cómo evalúo, no a la persona.",
+  csT:"Aplicaste el lecho de Procusto.",csP:"Forzar a alguien complejo dentro de una categoría predefinida significa perder exactamente la información que lo hacía valioso — sus cualidades que no encajan en ninguna casilla.",
+  caT:"Evitaste el lecho de Procusto.",caP:"Adaptar el marco a la realidad, en vez de forzar la realidad al marco, es exactamente lo que Taleb recomienda. La categoría debe servir a la verdad, no al revés.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿Dónde forzaste recientemente algo (una persona, una situación, una idea) para que encajara en una categoría que ya tenías?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Al juzgar a alguien por su primera impresión","Al clasificar un proyecto en un proceso rígido","Al encasillar a un colega en un rol fijo","Al simplificar un problema complejo para un reporte","Al etiquetar políticamente a alguien","Al forzar una decisión binaria donde había matices"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Modernidad: vivimos en sociedades altamente complejas, e intentamos forzarlas dentro de modelos simplistas — el lecho de Procusto de las ideas."',
+  bedConcepts:[
+    {label:"Una persona real",full:"Tu colega Marina: ambivertida, brillante en crisis pero ansiosa en lo rutinario, generosa con su tiempo pero defensiva con sus ideas, apasionada por el arte y por las hojas de cálculo.",
+     forcedLabel:"\"Introvertida\"",lost:"Se pierde toda la variabilidad contextual: que es extrovertida bajo presión, que su 'defensividad' es realmente perfeccionismo, y que su personalidad cambia según el dominio (arte vs trabajo)."},
+    {label:"Una decisión de negocio",full:"La empresa lanzó el producto a tiempo, gracias a decisiones rápidas del equipo, pero también gracias a un golpe de suerte en la cadena de suministro, con calidad ligeramente comprometida en 2 de 8 componentes.",
+     forcedLabel:"\"Éxito del equipo\"",lost:"Se pierde el rol del azar (la suerte en la cadena de suministro) y los compromisos de calidad — la narrativa de 'puro mérito del equipo' es más simple pero menos verdadera."},
+    {label:"Una emoción humana",full:"Sientes una mezcla de alivio porque terminó la relación, tristeza por lo que pudo haber sido, alivio de culpa porque tú también fallaste, y ansiedad anticipatoria sobre el futuro — todo simultáneamente.",
+     forcedLabel:"\"Estás triste\"",lost:"Se pierde la coexistencia simultánea de emociones contradictorias — reducir una experiencia emocional compleja a una sola palabra borra la mayor parte de la información real."},
+    {label:"Un evento histórico",full:"La crisis tuvo causas regulatorias, errores de modelos matemáticos, codicia individual de algunos actores, ignorancia genuina de otros, y un componente de pura mala suerte estadística simultáneamente.",
+     forcedLabel:"\"Causada por la codicia\"",lost:"Se pierden las causas estructurales y técnicas, reduciendo un evento multicausal a una narrativa moral simple — más satisfactoria emocionalmente, pero menos útil para prevenir la próxima crisis."},
+    {label:"Una idea política",full:"La política propuesta beneficia a corto plazo a un grupo, perjudica a corto plazo a otro, tiene efectos inciertos a largo plazo, y combina elementos que normalmente se asocian a posiciones políticas opuestas.",
+     forcedLabel:"\"De izquierda\" o \"de derecha\"",lost:"Se pierde toda la complejidad de los efectos diferenciados en el tiempo y entre grupos — el espectro político de una sola dimensión no puede capturar la multidimensionalidad real de la política."},
+  ],
+  aphItems:[
+    {situation:"Un médico diagnostica 'depresión' a un paciente después de una consulta de 10 minutos, sin explorar factores físicos, sociales o transitorios que podrían explicar los síntomas.",isProcusto:true,
+     reveal:"Procusto. Forzar una experiencia humana compleja en una categoría diagnóstica rígida, sin explorar la complejidad real, es precisamente el error que Taleb critica en sistemas que premian la categorización rápida sobre la comprensión genuina.",
+     quote:'"Confundimos el mapa con el territorio cuando dejamos que la categoría reemplace a la realidad que describe."'},
+    {situation:"Un consultor le dice a un cliente: 'Tu problema no encaja exactamente en ningún framework estándar — necesito entender mejor tu situación específica antes de proponer algo.'",isProcusto:false,
+     reveal:"Honestidad con la complejidad. El consultor reconoce los límites de sus categorías predefinidas en vez de forzar la situación del cliente para que encaje en un framework conveniente.",
+     quote:'"La humildad epistémica empieza con admitir que no toda realidad cabe en tus categorías."'},
+    {situation:"Un periodista resume una investigación científica matizada y llena de salvedades en un titular: 'La ciencia dice X causa Y'.",isProcusto:true,
+     reveal:"Procusto. Los titulares simplifican brutalmente hallazgos científicos probabilísticos y condicionales en afirmaciones causales absolutas — perdiendo exactamente los matices que hacían la investigación rigurosa.",
+     quote:'"Lo que se gana en claridad de un titular, casi siempre se pierde en verdad."'},
+    {situation:"Un profesor de historia explica que una guerra tuvo 'múltiples causas entrelazadas: económicas, territoriales, ideológicas y personales', sin reducirlo a una causa única simple.",isProcusto:false,
+     reveal:"Honestidad con la complejidad. Resistir la tentación de dar 'la causa' de un evento histórico complejo, manteniendo la multicausalidad real, es exactamente lo opuesto al lecho de Procusto.",
+     quote:'"Las explicaciones de una sola causa son casi siempre falsas, aunque sean satisfactorias."'},
+    {situation:"Un test de personalidad de 4 letras clasifica a millones de personas únicas en una de 16 categorías fijas, y la gente empieza a explicar su comportamiento 'porque soy [tipo X]'.",isProcusto:true,
+     reveal:"Procusto. Reducir la inmensa variabilidad de la personalidad humana a 16 cajas fijas, y luego usar esa caja para explicar (en vez de describir aproximadamente) el comportamiento, es el lecho de Procusto aplicado a la psicología popular.",
+     quote:'"Las categorías son herramientas útiles hasta que empezamos a creer que son la realidad misma."'},
+    {situation:"Un gerente de RRHH dice: 'Tenemos un formulario estándar de evaluación, pero para este caso específico vamos a hacer una excepción y evaluar cualitativamente, porque la situación no encaja bien en las casillas habituales.'",isProcusto:false,
+     reveal:"Honestidad con la complejidad. Reconocer cuándo el sistema estándar no captura la situación real, y adaptarse en vez de forzar, es la aplicación práctica de evitar el lecho de Procusto.",
+     quote:'"El sabio adapta sus herramientas a la realidad; el necio adapta la realidad a sus herramientas."'},
+  ],
+  theories:[
+    {icon:"🛏️",name:"El Lecho de Procusto según Taleb",body:`<p>Taleb dedicó un libro entero (2010) a aforismos breves construidos alrededor de esta metáfora griega. El concepto central: las categorías, modelos y marcos mentales son herramientas útiles — pero se vuelven peligrosas cuando empezamos a forzar la realidad para que encaje en ellos, en vez de ajustar las herramientas a la realidad.</p><div class="quote-block"><p>"Mi lecho de Procusto reúne aforismos que destilan algunas ideas de mis libros anteriores y exploran nuevas a través de la forma fragmentaria que prefiero — la de un filósofo que rechaza la sistematización excesiva."</p><cite>— Nassim Taleb, El Lecho de Procusto (2010)</cite></div><p>El libro mismo es un acto de via negativa estilística: en vez de un argumento sistemático y largo, son fragmentos breves que resisten la categorización fácil — practicando lo que predican.</p><div class="tag-list"><span class="tag">Aforismos</span><span class="tag">Mito griego</span><span class="tag">Categorización</span></div>`},
+    {icon:"🗺️",name:"El mapa no es el territorio",body:`<p>El concepto del lecho de Procusto se conecta con la famosa frase de Alfred Korzybski (1879–1950): "el mapa no es el territorio". Todo modelo, categoría o resumen es necesariamente una simplificación de la realidad — útil precisamente porque simplifica, pero peligrosa cuando olvidamos que es una simplificación.</p><p>El error de Procusto ocurre específicamente cuando dejamos de tratar el mapa como una herramienta y empezamos a tratarlo como si fuera el territorio mismo — forzando la realidad observada para que coincida con el mapa, en vez de actualizar el mapa.</p><div class="quote-block"><p>"Un mapa no es el territorio que representa, pero, si es correcto, tiene una estructura similar al territorio, lo cual explica su utilidad."</p><cite>— Alfred Korzybski, Science and Sanity (1933)</cite></div><div class="tag-list"><span class="tag">Korzybski</span><span class="tag">Mapa y territorio</span><span class="tag">Epistemología</span></div>`},
+    {icon:"🔲",name:"Reduccionismo vs complejidad genuina",body:`<p>Taleb conecta el lecho de Procusto con su crítica más amplia al reduccionismo académico y burocrático: la tendencia de las instituciones modernas a preferir métricas simples y categorías claras sobre la comprensión genuina y matizada de fenómenos complejos.</p><p>Esto no significa que toda simplificación sea mala — Taleb mismo valora la simplicidad robusta (las heurísticas de la abuela). La diferencia clave es si la simplificación reconoce sus propios límites, o si pretende capturar toda la verdad.</p><div class="quote-block"><p>"Hay una diferencia entre la simplicidad que viene de la sabiduría destilada, y la simplificación que viene de la pereza intelectual disfrazada de claridad."</p><cite>— Nassim Taleb (síntesis de su obra)</cite></div><div class="tag-list"><span class="tag">Reduccionismo</span><span class="tag">Simplicidad robusta</span><span class="tag">Complejidad</span></div>`},
+  ],
+  mcqs:[
+    {q:"Una empresa reduce la evaluación de desempeño de sus empleados a un único número del 1 al 10, ignorando contexto, circunstancias y matices del trabajo realizado. ¿Qué error describe mejor esto?",opts:["Es una práctica neutral de gestión sin sesgos filosóficos","El lecho de Procusto — fuerza la complejidad real del desempeño humano a encajar en una métrica simple, perdiendo información esencial","Un ejemplo correcto de via negativa aplicada a RRHH","Un caso de skin in the game bien implementado"],correct:1,feedOk:"Exacto. Reducir algo inherentemente complejo y multifactorial (el desempeño humano) a un solo número es precisamente forzar la realidad para que quepa en una categoría conveniente — el lecho de Procusto aplicado a la gestión de personas.",feedKo:"No es neutral ni se relaciona con via negativa o skin in the game. Es específicamente el error de Procusto: tomar algo rico y complejo y comprimirlo violentamente en una sola dimensión simplificada, perdiendo la información real en el proceso."},
+    {q:"Según la conexión entre el lecho de Procusto y 'el mapa no es el territorio' de Korzybski, ¿cuándo se vuelve peligroso un modelo o categoría?",opts:["Cuando es demasiado complejo para entenderse fácilmente","Cuando empezamos a tratarlo como si fuera la realidad misma, en vez de una simplificación útil de ella","Cuando no ha sido validado científicamente","Cuando lo usan personas sin entrenamiento académico"],correct:1,feedOk:"Correcto. El peligro no está en tener modelos o categorías —son herramientas necesarias—, sino en olvidar que son simplificaciones y empezar a forzar la realidad observada para que coincida con el modelo, en vez de actualizar el modelo.",feedKo:"La complejidad del modelo, su validación científica o quién lo usa no son el punto central. El peligro específico de Procusto es confundir la herramienta de simplificación con la realidad que pretende describir."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🔪",title:"Tiendes a cortar las piernas",desc:"Fuerzas la realidad compleja a categorías simples con frecuencia. Es eficiente — pero pierde información valiosa.",taleb:"'La cama de Procusto nunca se ajusta a la persona.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a notar el forzamiento",desc:"Reconoces cuándo una categoría está distorsionando la realidad. Sigue practicando.",taleb:"'Pregúntate: ¿es la categoría la que sirve a la verdad, o al revés?' — Taleb (parafraseado)",color:"#f39c12"},
+    {min:70,emoji:"🛏️",title:"Adaptas el marco a la realidad",desc:"Reconoces los límites de tus categorías y las ajustas en vez de forzar la realidad.",taleb:"'El mapa no es el territorio.' — Korzybski / Taleb",color:"#2ecc71"},
+    {min:90,emoji:"📜",title:"Nivel Aforístico",desc:"Resistes activamente la simplificación falsa, manteniendo la complejidad genuina cuando importa.",taleb:"'Modernidad: forzar sociedades complejas dentro de modelos simplistas.' — El Lecho de Procusto (2010)",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"The Bed of Procrustes",
+  s1tag:"Part 1 · The Myth",s1h1:"Procrustes had\nan iron bed",
+  s1p:"In Greek mythology, Procrustes invited travelers to sleep in his bed. If they were too tall, he cut off their legs. If too short, he stretched them. The bed never adjusted to the person — the person was adjusted to the bed.",
+  aph1:'"Procrustes, or the bed of Procrustes, is a metaphor describing the harm done when we force reality to fit our preconceived mental models."',
+  aph1Cite:"— Nassim Taleb, The Bed of Procrustes (2010)",
+  s1btn:"See the bed in action → Start",
+  s2tag:"Part 2 · The Bed in Action",s2h2:"Force these concepts to fit the bed",
+  s2p:"Each concept is complex and nuanced. Adjust the slider to 'force' it into a simple category — and watch what information gets lost in the process.",
+  conceptCounterLbl:"CONCEPT",
+  fitLeftLbl:"Full reality",fitRightLbl:"Forced into the bed",
+  lostInfoLabel:"WHAT'S LOST WHEN FORCED",
+  bedPrev:"← Previous",bedNext:"Next →",bedFinish:"Continue →",
+  s3tag:"Part 3 · Aphorism Test",s3h2:"Are you forcing reality into your category?",
+  s3p:"6 everyday situations. Decide if the person is committing the Procrustes error, or being honest with complexity.",
+  aphScoreTxt:"correct out of 6",
+  s4tag:"Part 4 · The Theory",s4h2:"The Bed of Procrustes in Taleb's philosophy",s4p:"Three frameworks for understanding why we force reality into categories.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you adapt the bed, or cut off the legs?",
+  tn1:"DILEMMA · 01",
+  tq1:"A job candidate doesn't perfectly fit any of your standard evaluation categories (technical / managerial / creative). What do you do?",
+  d1aT:"I force them into a category",d1aD:"I pick the closest category and evaluate by that criteria, even if it doesn't fully fit.",
+  d1bT:"I adapt my evaluation framework",d1bD:"I recognize this candidate doesn't fit my categories — and adjust how I evaluate, not the person.",
+  csT:"You applied the bed of Procrustes.",csP:"Forcing someone complex into a predefined category means losing exactly the information that made them valuable — their qualities that don't fit any box.",
+  caT:"You avoided the bed of Procrustes.",caP:"Adapting the framework to reality, instead of forcing reality into the framework, is exactly what Taleb recommends. The category should serve the truth, not the other way around.",
+  tn3:"REFLECTION · 03",
+  tq3:"Where did you recently force something (a person, a situation, an idea) to fit into a category you already had?",
+  refHint:"Examples to trigger reflection:",
+  chips:["Judging someone by first impression","Forcing a project into a rigid process","Pigeonholing a colleague into a fixed role","Oversimplifying a complex problem for a report","Politically labeling someone","Forcing a binary decision where there were nuances"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"Modernity: we live in highly complex societies, and try to force them into simplistic models — the bed of Procrustes of ideas."',
+  bedConcepts:[
+    {label:"A real person",full:"Your colleague Marina: ambiverted, brilliant in crises but anxious with routine, generous with her time but defensive about her ideas, passionate about art and spreadsheets alike.",
+     forcedLabel:"\"Introverted\"",lost:"All contextual variability is lost: that she's extroverted under pressure, that her 'defensiveness' is really perfectionism, and that her personality shifts by domain (art vs work)."},
+    {label:"A business decision",full:"The company shipped the product on time, thanks to quick decisions by the team, but also thanks to a lucky break in the supply chain, with quality slightly compromised in 2 of 8 components.",
+     forcedLabel:"\"Team success\"",lost:"The role of luck (the supply chain break) and the quality compromises get lost — the 'pure team merit' narrative is simpler but less true."},
+    {label:"A human emotion",full:"You feel a mix of relief that the relationship ended, sadness for what could have been, guilt-relief because you also failed, and anticipatory anxiety about the future — all simultaneously.",
+     forcedLabel:"\"You're sad\"",lost:"The simultaneous coexistence of contradictory emotions is lost — reducing a complex emotional experience to one word erases most of the real information."},
+    {label:"A historical event",full:"The crisis had regulatory causes, mathematical model errors, individual greed from some actors, genuine ignorance from others, and a component of pure statistical bad luck, all at once.",
+     forcedLabel:"\"Caused by greed\"",lost:"Structural and technical causes are lost, reducing a multi-causal event to a simple moral narrative — more emotionally satisfying, but less useful for preventing the next crisis."},
+    {label:"A political idea",full:"The proposed policy benefits one group short-term, harms another short-term, has uncertain long-term effects, and combines elements normally associated with opposing political positions.",
+     forcedLabel:'"Left-wing" or "right-wing"',lost:"All the complexity of differentiated effects over time and across groups is lost — a single-dimension political spectrum can't capture the real multidimensionality of policy."},
+  ],
+  aphItems:[
+    {situation:"A doctor diagnoses 'depression' in a patient after a 10-minute consultation, without exploring physical, social, or transient factors that could explain the symptoms.",isProcusto:true,
+     reveal:"Procrustes. Forcing a complex human experience into a rigid diagnostic category, without exploring real complexity, is precisely the error Taleb criticizes in systems that reward fast categorization over genuine understanding.",
+     quote:'"We confuse the map with the territory when we let the category replace the reality it describes."'},
+    {situation:"A consultant tells a client: 'Your problem doesn't exactly fit any standard framework — I need to understand your specific situation better before proposing anything.'",isProcusto:false,
+     reveal:"Honesty with complexity. The consultant acknowledges the limits of their predefined categories instead of forcing the client's situation to fit a convenient framework.",
+     quote:'"Epistemic humility begins with admitting that not all reality fits your categories."'},
+    {situation:"A journalist summarizes a nuanced scientific study full of caveats into a headline: 'Science says X causes Y'.",isProcusto:true,
+     reveal:"Procrustes. Headlines brutally simplify probabilistic, conditional scientific findings into absolute causal claims — losing exactly the nuance that made the research rigorous.",
+     quote:'"What is gained in headline clarity is almost always lost in truth."'},
+    {situation:"A history professor explains that a war had 'multiple intertwined causes: economic, territorial, ideological, and personal', without reducing it to one simple cause.",isProcusto:false,
+     reveal:"Honesty with complexity. Resisting the temptation to give 'the cause' of a complex historical event, maintaining real multi-causality, is exactly the opposite of the bed of Procrustes.",
+     quote:'"Single-cause explanations are almost always false, even when satisfying."'},
+    {situation:"A 4-letter personality test classifies millions of unique people into one of 16 fixed categories, and people start explaining their behavior 'because I'm type [X]'.",isProcusto:true,
+     reveal:"Procrustes. Reducing the immense variability of human personality to 16 fixed boxes, then using that box to explain (instead of approximately describe) behavior, is the bed of Procrustes applied to pop psychology.",
+     quote:'"Categories are useful tools until we start believing they are reality itself."'},
+    {situation:"An HR manager says: 'We have a standard evaluation form, but for this specific case we're going to make an exception and evaluate qualitatively, because the situation doesn't fit well into the usual boxes.'",isProcusto:false,
+     reveal:"Honesty with complexity. Recognizing when the standard system doesn't capture the real situation, and adapting instead of forcing, is the practical application of avoiding the bed of Procrustes.",
+     quote:'"The wise adapt their tools to reality; the fool adapts reality to their tools."'},
+  ],
+  theories:[
+    {icon:"🛏️",name:"The Bed of Procrustes according to Taleb",body:`<p>Taleb dedicated an entire book (2010) to short aphorisms built around this Greek metaphor. The central concept: categories, models, and mental frameworks are useful tools — but become dangerous when we start forcing reality to fit them, instead of adjusting the tools to reality.</p><div class="quote-block"><p>"My bed of Procrustes collects aphorisms that distill some ideas from my previous books and explore new ones through the fragmentary form I prefer — that of a philosopher who rejects excessive systematization."</p><cite>— Nassim Taleb, The Bed of Procrustes (2010)</cite></div><p>The book itself is a stylistic act of via negativa: instead of a long, systematic argument, it's short fragments that resist easy categorization — practicing what they preach.</p><div class="tag-list"><span class="tag">Aphorisms</span><span class="tag">Greek myth</span><span class="tag">Categorization</span></div>`},
+    {icon:"🗺️",name:"The map is not the territory",body:`<p>The bed of Procrustes concept connects with Alfred Korzybski's (1879–1950) famous phrase: "the map is not the territory". Every model, category, or summary is necessarily a simplification of reality — useful precisely because it simplifies, but dangerous when we forget it's a simplification.</p><p>The Procrustes error occurs specifically when we stop treating the map as a tool and start treating it as if it were the territory itself — forcing observed reality to match the map, instead of updating the map.</p><div class="quote-block"><p>"A map is not the territory it represents, but, if correct, it has a structure similar to the territory, which accounts for its usefulness."</p><cite>— Alfred Korzybski, Science and Sanity (1933)</cite></div><div class="tag-list"><span class="tag">Korzybski</span><span class="tag">Map and territory</span><span class="tag">Epistemology</span></div>`},
+    {icon:"🔲",name:"Reductionism vs genuine complexity",body:`<p>Taleb connects the bed of Procrustes to his broader critique of academic and bureaucratic reductionism: modern institutions' tendency to prefer simple metrics and clear categories over genuine, nuanced understanding of complex phenomena.</p><p>This doesn't mean all simplification is bad — Taleb himself values robust simplicity (grandmother's heuristics). The key difference is whether the simplification acknowledges its own limits, or pretends to capture the whole truth.</p><div class="quote-block"><p>"There is a difference between the simplicity that comes from distilled wisdom, and the simplification that comes from intellectual laziness disguised as clarity."</p><cite>— Nassim Taleb (synthesis of his work)</cite></div><div class="tag-list"><span class="tag">Reductionism</span><span class="tag">Robust simplicity</span><span class="tag">Complexity</span></div>`},
+  ],
+  mcqs:[
+    {q:"A company reduces employee performance evaluation to a single number from 1 to 10, ignoring context, circumstances, and nuances of work performed. What error best describes this?",opts:["It's a neutral management practice with no philosophical bias","The bed of Procrustes — it forces the real complexity of human performance to fit a simple metric, losing essential information","A correct example of via negativa applied to HR","A well-implemented case of skin in the game"],correct:1,feedOk:"Exactly. Reducing something inherently complex and multifactorial (human performance) to a single number is precisely forcing reality to fit a convenient category — the bed of Procrustes applied to people management.",feedKo:"It's neither neutral nor related to via negativa or skin in the game. It's specifically the Procrustes error: taking something rich and complex and violently compressing it into a single simplified dimension, losing real information in the process."},
+    {q:"According to the connection between the bed of Procrustes and Korzybski's 'the map is not the territory', when does a model or category become dangerous?",opts:["When it's too complex to easily understand","When we start treating it as if it were reality itself, instead of a useful simplification of it","When it hasn't been scientifically validated","When it's used by people without academic training"],correct:1,feedOk:"Correct. The danger isn't in having models or categories — they're necessary tools — but in forgetting they're simplifications and starting to force observed reality to match the model, instead of updating the model.",feedKo:"The model's complexity, scientific validation, or who uses it aren't the central point. Procrustes' specific danger is confusing the simplification tool with the reality it's meant to describe."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"🔪",title:"You tend to cut off the legs",desc:"You frequently force complex reality into simple categories. It's efficient — but loses valuable information.",taleb:"'The bed of Procrustes never adjusts to the person.' — Taleb",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to notice the forcing",desc:"You recognize when a category is distorting reality. Keep practicing.",taleb:"'Ask yourself: does the category serve the truth, or the other way around?' — Taleb (paraphrased)",color:"#f39c12"},
+    {min:70,emoji:"🛏️",title:"You adapt the framework to reality",desc:"You recognize the limits of your categories and adjust them instead of forcing reality.",taleb:"'The map is not the territory.' — Korzybski / Taleb",color:"#2ecc71"},
+    {min:90,emoji:"📜",title:"Aphoristic Level",desc:"You actively resist false simplification, maintaining genuine complexity when it matters.",taleb:"'Modernity: forcing complex societies into simplistic models.' — The Bed of Procrustes (2010)",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', bedIdx=0;
+let aphAnswered=0, aphCorrect=0;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn','aph-1':'aph1','aph-1-cite':'aph1Cite',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p','fit-label-left':'fitLeftLbl','fit-label-right':'fitRightLbl','lost-info-label':'lostInfoLabel',
+    'bed-prev-btn':'bedPrev',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','ca-t':'caT','ca-p':'caP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.textContent=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderBedDots();renderBedConcept();renderAphTest();renderTheoryCards();renderChips();
+}
+
+/* BED GAME */
+function startBedGame(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-bed').scrollIntoView({behavior:'smooth'});}
+function renderBedDots(){
+  const wrap=document.getElementById('bed-dots');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].bedConcepts.forEach((_,i)=>{
+    const d=document.createElement('div');d.className='bed-dot'+(i===bedIdx?' active':i<bedIdx?' done':'');
+    wrap.appendChild(d);
+  });
+}
+function renderBedConcept(){
+  const concepts=T[lang].bedConcepts;
+  const c=concepts[bedIdx];
+  document.getElementById('concept-counter').textContent=`${T[lang].conceptCounterLbl} ${bedIdx+1} / ${concepts.length}`;
+  document.getElementById('concept-full-text').textContent=c.full;
+  document.getElementById('bed-content-text').textContent=c.full;
+  document.getElementById('fit-slider').value=0;
+  document.getElementById('lost-info-box').style.display='none';
+  document.getElementById('lost-info-text').textContent=c.lost;
+  updateBedFit();
+  document.getElementById('bed-prev-btn').disabled=bedIdx===0;
+  document.getElementById('bed-next-btn').textContent=bedIdx===concepts.length-1?T[lang].bedFinish:T[lang].bedNext;
+  renderBedDots();
+}
+document.getElementById('fit-slider').addEventListener('input',updateBedFit);
+function updateBedFit(){
+  const val=parseInt(document.getElementById('fit-slider').value);
+  const c=T[lang].bedConcepts[bedIdx];
+  const contentEl=document.getElementById('bed-content-text');
+  const lostBox=document.getElementById('lost-info-box');
+  if(val<30){
+    contentEl.textContent=c.full;
+    contentEl.style.fontSize='.78rem';
+    lostBox.style.display='none';
+  } else if(val<70){
+    contentEl.textContent=c.full.slice(0,Math.max(20,Math.round(c.full.length*(1-val/100))))+'...';
+    contentEl.style.fontSize='.78rem';
+    lostBox.style.display='none';
+  } else {
+    contentEl.textContent=c.forcedLabel;
+    contentEl.style.fontSize='1.3rem';
+    contentEl.style.fontWeight='600';
+    contentEl.style.color='var(--accent2)';
+    lostBox.style.display='block';
+  }
+}
+function bedNext(){
+  const concepts=T[lang].bedConcepts;
+  if(bedIdx<concepts.length-1){bedIdx++;renderBedConcept();}
+  else { showAphTest(); }
+}
+function bedPrev(){ if(bedIdx>0){bedIdx--;renderBedConcept();} }
+function showAphTest(){document.getElementById('sec-aphtest').scrollIntoView({behavior:'smooth'});}
+
+/* APHORISM TEST */
+function renderAphTest(){
+  const area=document.getElementById('aph-area');if(!area)return;
+  area.innerHTML='';aphAnswered=0;aphCorrect=0;
+  document.getElementById('aph-score-strip').classList.remove('show');
+  const procustoLbl=lang==='es'?'🔪 Lecho de Procusto':'🔪 Bed of Procrustes';
+  const honestLbl=lang==='es'?'✓ Honesto con la complejidad':'✓ Honest with complexity';
+  T[lang].aphItems.forEach((item,i)=>{
+    const card=document.createElement('div');card.className='aph-card';card.id=`aph-${i}`;
+    card.innerHTML=`
+      <div class="aph-situation">${item.situation}</div>
+      <div class="aph-btns">
+        <button class="aph-btn procusto-btn" onclick="answerAph(${i},true,this)">${procustoLbl}</button>
+        <button class="aph-btn honest-btn" onclick="answerAph(${i},false,this)">${honestLbl}</button>
+      </div>
+      <div class="aph-reveal" id="aph-reveal-${i}"></div>`;
+    area.appendChild(card);
+  });
+  updateAphProgress();
+}
+function answerAph(i,guessProcusto,btn){
+  const card=document.getElementById(`aph-${i}`);
+  if(card.querySelector('.aph-btn:disabled'))return;
+  const item=T[lang].aphItems[i];
+  const correct=guessProcusto===item.isProcusto;
+  if(correct)aphCorrect++;
+  aphAnswered++;
+  card.querySelectorAll('.aph-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(guessProcusto?'chosen-procusto':'chosen-honest');
+  const rev=document.getElementById(`aph-reveal-${i}`);
+  rev.className='aph-reveal show '+(correct?'correct':'wrong');
+  rev.innerHTML=`${item.reveal}<span class="aph-quote-tag">${item.quote}</span>`;
+  updateAphProgress();
+  if(aphAnswered===T[lang].aphItems.length){
+    const strip=document.getElementById('aph-score-strip');
+    strip.classList.add('show');
+    document.getElementById('aph-score-n').textContent=`${aphCorrect}/6`;
+    document.getElementById('aph-score-txt').textContent=T[lang].aphScoreTxt;
+    strip.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+function updateAphProgress(){
+  const el=document.getElementById('aph-progress');
+  if(el)el.textContent=`${aphAnswered} / ${T[lang].aphItems.length} ${lang==='es'?'evaluadas':'evaluated'}`;
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-force').classList.toggle('show',type==='force');
+  document.getElementById('cons-adapt').classList.toggle('show',type==='adapt');
+  dilemmaScore=type==='adapt'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>

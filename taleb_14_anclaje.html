@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark" data-lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anclaje y Ajuste — Kahneman & Tversky</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--bg2:#13181f;--bg3:#1c2330;--border:#2a3340;--border2:#3a4555;--text:#e8eaf0;--text2:#8892a0;--text3:#4a5568;--accent:#e8593c;--accent2:#f2a623;--green:#2ecc71;--red:#e74c3c;--blue:#4a9eff;--purple:#9b59b6;--teal:#1abc9c;--radius:12px;--radius-sm:6px;}
+[data-theme="light"]{--bg:#f4f2ed;--bg2:#fff;--bg3:#eae7e0;--border:#d8d3c8;--border2:#c4bdb0;--text:#1a1a1a;--text2:#555;--text3:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.series-label{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;background:rgba(232,89,60,.12);padding:3px 8px;border-radius:3px;border:1px solid rgba(232,89,60,.25);}
+.header-left{display:flex;align-items:center;gap:.75rem;}
+.header-title{font-size:.85rem;color:var(--text2);}
+.header-controls{display:flex;align-items:center;gap:.75rem;}
+.lang-toggle{display:flex;background:var(--bg3);border-radius:20px;padding:2px;border:1px solid var(--border);}
+.lang-btn{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;padding:3px 10px;border-radius:16px;border:none;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2);}
+.lang-btn.active{background:var(--accent);color:#fff;}
+.theme-toggle{width:36px;height:20px;position:relative;cursor:pointer;}
+.theme-toggle input{opacity:0;width:0;height:0;}
+.theme-slider{position:absolute;inset:0;background:var(--bg3);border-radius:20px;border:1px solid var(--border);transition:.3s;}
+.theme-slider::before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--text2);border-radius:50%;transition:.3s;}
+input:checked+.theme-slider{background:var(--blue);}
+input:checked+.theme-slider::before{transform:translateX(16px);background:#fff;}
+section{max-width:820px;margin:0 auto;padding:3.5rem 1.5rem;}
+section+section{border-top:1px solid var(--border);}
+.section-tag{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:.5rem;}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(1.9rem,4.5vw,2.8rem);font-weight:600;line-height:1.2;margin-bottom:1rem;}
+h2{font-family:'IBM Plex Serif',serif;font-size:1.5rem;font-weight:600;margin-bottom:.75rem;}
+p{color:var(--text2);margin-bottom:1rem;}
+p strong{color:var(--text);font-weight:500;}
+.hero{text-align:center;padding-top:4.5rem;padding-bottom:2.5rem;}
+.anchor-icon{font-size:3.5rem;margin:1.5rem 0;}
+.connect-banner{background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.25);border-radius:var(--radius);padding:1rem 1.25rem;margin:1.5rem auto;max-width:560px;text-align:left;display:flex;gap:.75rem;align-items:flex-start;}
+.connect-banner-icon{font-size:1.3rem;flex-shrink:0;}
+.connect-banner p{margin:0;font-size:.85rem;color:var(--text2);}
+.btn-primary{display:inline-block;background:var(--accent);color:#fff;font-weight:500;padding:.7rem 1.8rem;border-radius:30px;border:none;cursor:pointer;font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(232,89,60,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,89,60,.4);}
+
+/* MINI EXPERIMENTS */
+.exp-tabs{display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.exp-tab{font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:.4rem 1rem;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all .2s;}
+.exp-tab.done{border-color:var(--green);color:var(--green);}
+.exp-tab.current{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+.exp-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;}
+.exp-num{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--accent2);letter-spacing:.08em;margin-bottom:.5rem;}
+.exp-prompt{font-size:.95rem;color:var(--text);margin-bottom:1.1rem;line-height:1.6;}
+.exp-anchor-shown{display:inline-block;background:var(--bg3);border:1px solid var(--accent2);border-radius:var(--radius-sm);padding:.5rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:1.1rem;color:var(--accent2);font-weight:600;margin-bottom:1rem;}
+.exp-input-row{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;}
+.exp-input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:1rem;width:130px;outline:none;}
+.exp-input:focus{border-color:var(--accent2);}
+.exp-submit{background:var(--accent);color:#fff;border:none;padding:.6rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;}
+.exp-submit:disabled{opacity:.4;cursor:default;}
+.exp-result{display:none;margin-top:1rem;padding:1rem 1.1rem;border-radius:var(--radius-sm);background:rgba(74,158,255,.07);border:1px solid rgba(74,158,255,.25);font-size:.86rem;line-height:1.6;}
+.exp-result.show{display:block;}
+.exp-next-btn{display:none;}
+.exp-next-btn.show{display:inline-block;margin-top:1rem;}
+
+/* NEGOTIATION GAME */
+.nego-hud{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.nego-budget{text-align:center;}
+.nego-budget-lbl{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--text3);letter-spacing:.07em;}
+.nego-budget-val{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--accent2);}
+.nego-round-badge{font-family:'IBM Plex Mono',monospace;font-size:.65rem;padding:3px 10px;border-radius:10px;background:rgba(232,89,60,.12);color:var(--accent);border:1px solid rgba(232,89,60,.25);}
+
+.chat-bubble{border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;max-width:90%;}
+.chat-bubble.consultant{background:var(--bg2);border:1px solid var(--border);margin-right:auto;}
+.chat-bubble.consultant-label{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--accent2);margin-bottom:.4rem;letter-spacing:.06em;}
+.chat-bubble-text{font-size:.88rem;color:var(--text);line-height:1.55;}
+.chat-anchor-val{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--accent);}
+
+.nego-options{display:grid;gap:.6rem;margin-bottom:1rem;}
+.nego-opt{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;cursor:pointer;font-size:.86rem;text-align:left;transition:all .2s;color:var(--text);}
+.nego-opt:hover:not(:disabled){border-color:var(--accent2);}
+.nego-opt:disabled{cursor:default;}
+.nego-opt.chosen{border-color:var(--accent2);background:rgba(242,166,35,.1);}
+.nego-feedback{display:none;margin-top:.75rem;padding:.85rem 1rem;border-radius:var(--radius-sm);font-size:.84rem;line-height:1.6;background:var(--bg3);}
+.nego-feedback.show{display:block;}
+.nego-final{display:none;background:var(--bg2);border:1px solid var(--accent2);border-radius:var(--radius);padding:1.75rem;text-align:center;margin-top:1rem;}
+.nego-final.show{display:block;}
+
+/* THEORY */
+.theory-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;}
+.theory-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;cursor:pointer;transition:background .2s;}
+.theory-header:hover{background:var(--bg3);}
+.theory-name{font-weight:500;font-size:.92rem;}
+.theory-chevron{color:var(--text3);transition:transform .3s;font-size:.75rem;}
+.theory-card.open .theory-chevron{transform:rotate(180deg);}
+.theory-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;padding:0 1.1rem;}
+.theory-card.open .theory-body{max-height:500px;padding:0 1.1rem 1.1rem;}
+.theory-body p{font-size:.88rem;}
+.quote-block{border-left:3px solid var(--accent);padding:.65rem .9rem;margin:.75rem 0;background:rgba(232,89,60,.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.quote-block p{font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text);font-size:.87rem;margin:0;}
+.quote-block cite{font-size:.72rem;color:var(--text3);margin-top:4px;display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;}
+.tag-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+
+/* TEST */
+.test-step{display:none;}
+.test-step.active{display:block;}
+.test-number{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+.test-q{font-size:1rem;color:var(--text);margin-bottom:1.1rem;}
+.mcq-options{display:grid;gap:.55rem;margin-bottom:.75rem;}
+.mcq-btn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1rem;text-align:left;cursor:pointer;font-size:.88rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:.7rem;}
+.mcq-btn:hover:not(:disabled){border-color:var(--blue);}
+.mcq-btn.correct{border-color:var(--green);background:rgba(46,204,113,.1);color:var(--green);}
+.mcq-btn.wrong{border-color:var(--red);background:rgba(231,76,60,.1);color:var(--red);}
+.mcq-btn:disabled{cursor:default;}
+.mcq-letter{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'IBM Plex Mono',monospace;flex-shrink:0;color:var(--text2);}
+.feedback-box{display:none;padding:.9rem 1.1rem;border-radius:var(--radius-sm);margin-top:.5rem;font-size:.85rem;line-height:1.6;}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);}
+.feedback-box.ko{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);}
+.dilemma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+@media(max-width:500px){.dilemma-grid{grid-template-columns:1fr;}}
+.dilemma-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;cursor:pointer;transition:all .2s;text-align:center;}
+.dilemma-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dilemma-card.selected{border-color:var(--accent);background:rgba(232,89,60,.07);}
+.d-emoji{font-size:2rem;margin-bottom:.5rem;}
+.d-title{font-weight:500;margin-bottom:.3rem;font-size:.9rem;}
+.d-desc{font-size:.78rem;color:var(--text2);line-height:1.5;}
+.consequence{display:none;padding:1rem 1.1rem;border-radius:var(--radius-sm);margin-top:.75rem;font-size:.85rem;line-height:1.6;}
+.consequence.show{display:block;}
+.consequence-bad{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.3);}
+.consequence-good{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.3);}
+.reflection-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.75rem;}
+.chip{font-size:.8rem;padding:.3rem .85rem;border-radius:16px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;}
+.chip:hover,.chip.active{border-color:var(--accent2);color:var(--accent2);background:rgba(242,166,35,.08);}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:.88rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;margin-top:.65rem;transition:border-color .2s;}
+textarea:focus{border-color:var(--accent2);}
+.score-box{text-align:center;padding:2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-top:1.5rem;}
+.score-emoji{font-size:3rem;margin-bottom:.75rem;display:block;}
+.score-title{font-family:'IBM Plex Serif',serif;font-size:1.5rem;margin-bottom:.4rem;}
+.score-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:1.25rem 0 .4rem;}
+.score-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.score-pct{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--text3);}
+.btn-next{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.55rem 1.3rem;border-radius:20px;cursor:pointer;font-size:.85rem;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;margin-top:.75rem;}
+.btn-next:hover{border-color:var(--text2);}
+.btn-next:disabled{opacity:.3;cursor:default;}
+.btn-accent{background:var(--accent);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:20px;cursor:pointer;font-size:.88rem;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:.9rem;box-shadow:0 4px 16px rgba(232,89,60,.25);}
+.btn-accent:hover{transform:translateY(-1px);}
+footer{border-top:1px solid var(--border);padding:3rem 1.5rem;text-align:center;max-width:820px;margin:0 auto;}
+.footer-quote{font-family:'IBM Plex Serif',serif;font-style:italic;font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto .5rem;line-height:1.7;}
+.footer-cite{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.06em;}
+.nav-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:1.75rem;padding:.55rem 1.3rem;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:.82rem;cursor:pointer;background:none;font-family:'IBM Plex Sans',sans-serif;transition:all .2s;text-decoration:none;}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="series-label">INCERTO 14</span>
+    <span class="header-title" id="hdr-title">Anclaje y Ajuste</span>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <label class="theme-toggle">
+      <input type="checkbox" id="theme-check" onchange="toggleTheme()">
+      <span class="theme-slider"></span>
+    </label>
+  </div>
+</header>
+
+<!-- S1 HERO -->
+<section class="hero" id="sec-hero">
+  <div class="section-tag" id="s1-tag">Parte 1 · El Gancho</div>
+  <h1 id="s1-h1">El primer número<br>que escuchas te marca</h1>
+  <div class="anchor-icon">⚓</div>
+  <p id="s1-p" style="max-width:560px;margin:0 auto;">Ya viste el experimento clásico de Kahneman y Tversky en otro artefacto de esta serie. Ahora vas a ver cómo el mismo sesgo decide cuánto pagas, cuánto cobras y cómo negocias — todos los días, en el mundo profesional.</p>
+  <div class="connect-banner">
+    <span class="connect-banner-icon">🔗</span>
+    <p id="connect-text">Si quieres revivir el experimento original de la ONU y la ruleta, está en <strong>04 · El Problema de Linda</strong>. Aquí profundizamos en cómo el anclaje afecta dinero real.</p>
+  </div>
+  <button class="btn-primary" onclick="startExp()" id="s1-btn">Probar 3 anclas → Empezar</button>
+</section>
+
+<!-- S2 MINI EXPERIMENTS -->
+<section id="sec-exp">
+  <div class="section-tag" id="s2-tag">Parte 2 · Tres Anclas, Tres Contextos</div>
+  <h2 id="s2-h2">Cada respuesta está sesgada antes de que pienses</h2>
+  <p id="s2-p">3 mini-experimentos. En cada uno verás un número primero — luego una pregunta totalmente distinta donde ese número no debería importar.</p>
+  <div class="exp-tabs" id="exp-tabs"></div>
+
+  <!-- Exp 1: Precio de producto -->
+  <div class="exp-box" id="exp-box-0">
+    <div class="exp-num" id="e0-num">EXPERIMENTO 1 / 3 · ANCLAJE DE PRECIO</div>
+    <div class="exp-prompt" id="e0-prompt">Estás por cotizar el rediseño completo de un sitio web. Antes de pensar tu número, mira este dato de la industria:</div>
+    <div class="exp-anchor-shown" id="e0-anchor">Proyecto similar reciente: $45,000</div>
+    <div class="exp-prompt" id="e0-q" style="margin-top:1rem">¿Cuánto cobrarías por un rediseño de sitio web de complejidad media, sin más contexto que el dato anterior?</div>
+    <div class="exp-input-row">
+      <span style="color:var(--text2)">$</span>
+      <input type="number" class="exp-input" id="e0-input" placeholder="0">
+      <button class="exp-submit" id="e0-submit" onclick="submitExp(0)">Responder</button>
+    </div>
+    <div class="exp-result" id="e0-result"></div>
+    <button class="btn-accent exp-next-btn" id="e0-next" onclick="nextExp(1)">Siguiente experimento →</button>
+  </div>
+
+  <!-- Exp 2: Propina -->
+  <div class="exp-box" id="exp-box-1" style="display:none">
+    <div class="exp-num" id="e1-num">EXPERIMENTO 2 / 3 · ANCLAJE SOCIAL</div>
+    <div class="exp-prompt" id="e1-prompt">Vas a cenar a un restaurante. El recibo digital te sugiere automáticamente un rango de propina, con la opción más alta preseleccionada:</div>
+    <div class="exp-anchor-shown" id="e1-anchor">Sugerido: 25% — $31.25 sobre $125</div>
+    <div class="exp-prompt" id="e1-q" style="margin-top:1rem">¿Qué porcentaje de propina dejarías, sin pensar mucho, sobre una cuenta de $125?</div>
+    <div class="exp-input-row">
+      <input type="number" class="exp-input" id="e1-input" placeholder="0" style="width:90px">
+      <span style="color:var(--text2)">%</span>
+      <button class="exp-submit" id="e1-submit" onclick="submitExp(1)">Responder</button>
+    </div>
+    <div class="exp-result" id="e1-result"></div>
+    <button class="btn-accent exp-next-btn" id="e1-next" onclick="nextExp(2)">Siguiente experimento →</button>
+  </div>
+
+  <!-- Exp 3: Honorarios consultoría -->
+  <div class="exp-box" id="exp-box-2" style="display:none">
+    <div class="exp-num" id="e2-num">EXPERIMENTO 3 / 3 · ANCLAJE EN COTIZACIÓN</div>
+    <div class="exp-prompt" id="e2-prompt">Un colega consultor te comenta casualmente, antes de que armes tu propia propuesta para un proyecto similar:</div>
+    <div class="exp-anchor-shown" id="e2-anchor">"Mi última propuesta similar fue de $8,000"</div>
+    <div class="exp-prompt" id="e2-q" style="margin-top:1rem">¿Cuánto cotizarías tú por un proyecto de consultoría de alcance similar?</div>
+    <div class="exp-input-row">
+      <span style="color:var(--text2)">$</span>
+      <input type="number" class="exp-input" id="e2-input" placeholder="0">
+      <button class="exp-submit" id="e2-submit" onclick="submitExp(2)">Responder</button>
+    </div>
+    <div class="exp-result" id="e2-result"></div>
+    <button class="btn-accent exp-next-btn" id="e2-next" onclick="showNego()">Ir al juego de negociación →</button>
+  </div>
+</section>
+
+<!-- S3 NEGOTIATION GAME -->
+<section id="sec-nego">
+  <div class="section-tag" id="s3-tag">Parte 3 · El Juego de Negociación</div>
+  <h2 id="s3-h2">Eres el cliente. El consultor ancla alto.</h2>
+  <p id="s3-p">Un consultor te presenta una propuesta con un ancla deliberadamente alta. Tu presupuesto real es de $6,000. Vas a tomar 4 decisiones — cada una afecta tu resultado final.</p>
+
+  <div class="nego-hud">
+    <div class="nego-budget"><div class="nego-budget-lbl">TU PRESUPUESTO REAL</div><div class="nego-budget-val">$6,000</div></div>
+    <span class="nego-round-badge" id="nego-round-badge">RONDA 1/4</span>
+  </div>
+
+  <div id="nego-area"></div>
+
+  <div class="nego-final" id="nego-final">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">🤝</div>
+    <h3 id="nf-title" style="font-family:'IBM Plex Serif',serif;margin-bottom:.5rem">—</h3>
+    <p id="nf-text" style="font-size:.9rem;color:var(--text2);max-width:480px;margin:0 auto"></p>
+    <button class="btn-accent" onclick="showTheory()" id="nf-btn">Explorar la teoría →</button>
+  </div>
+</section>
+
+<!-- S4 TEORÍA -->
+<section id="sec-theory">
+  <div class="section-tag" id="s4-tag">Parte 4 · La Teoría</div>
+  <h2 id="s4-h2">El anclaje en el mundo de los negocios</h2>
+  <p id="s4-p">Tres marcos para entender cómo el anclaje moldea decisiones financieras reales.</p>
+  <div id="theory-cards"></div>
+  <button class="btn-accent" onclick="showTest()" style="margin-top:1.5rem" id="s4-btn">Hacer el mini-test →</button>
+</section>
+
+<!-- S5 TEST -->
+<section id="sec-test">
+  <div class="section-tag" id="s5-tag">Parte 5 · Mini-test</div>
+  <h2 id="s5-h2">¿Resistes el ancla o caes en ella?</h2>
+
+  <div class="test-step active" id="step-dilema">
+    <div class="test-number" id="tn1">DILEMA · 01</div>
+    <div class="test-q" id="tq1">Estás por enviar tu primera propuesta comercial a un cliente nuevo. ¿Qué estrategia usas?</div>
+    <div class="dilemma-grid">
+      <div class="dilemma-card" onclick="chooseDilemma('low',this)">
+        <div class="d-emoji">📉</div>
+        <div class="d-title" id="d1a-t">Cotizo bajo para "no espantar"</div>
+        <div class="d-desc" id="d1a-d">Empiezo con un número conservador, pensando que así es más fácil que acepten.</div>
+      </div>
+      <div class="dilemma-card" onclick="chooseDilemma('anchor',this)">
+        <div class="d-emoji">⚓</div>
+        <div class="d-title" id="d1b-t">Yo pongo el ancla primero</div>
+        <div class="d-desc" id="d1b-d">Presento mi número con confianza, sabiendo que será el punto de referencia de toda la negociación.</div>
+      </div>
+    </div>
+    <div class="consequence consequence-bad" id="cons-low">
+      <strong id="cs-t">Regalaste tu propia ancla.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="cs-p">Al cotizar bajo "para no espantar", tú mismo fijaste un ancla baja que limitará toda la negociación posterior — incluso si después intentas subir el precio.</p>
+    </div>
+    <div class="consequence consequence-good" id="cons-anchor">
+      <strong id="ca-t">Usaste el anclaje a tu favor.</strong>
+      <p style="margin-top:.4rem;font-size:.83rem;" id="ca-p">Quien pone el primer número generalmente controla el rango de la negociación. Esto no es manipulación deshonesta — es entender cómo funciona realmente el proceso psicológico.</p>
+    </div>
+    <button class="btn-next" id="btn-d1" onclick="goToMCQ()" disabled>Siguiente →</button>
+  </div>
+
+  <div class="test-step" id="step-mcq">
+    <div id="mcq-area"></div>
+  </div>
+
+  <div class="test-step" id="step-reflection">
+    <div class="test-number" id="tn3">REFLEXIÓN · 03</div>
+    <div class="test-q" id="tq3">¿En qué negociación reciente (de trabajo o personal) crees que un ancla — tuya o ajena — determinó el resultado final?</div>
+    <p style="color:var(--text2);font-size:.85rem;margin-bottom:.75rem" id="ref-hint">Ejemplos para activar la reflexión:</p>
+    <div class="reflection-chips" id="chips-area"></div>
+    <textarea id="reflection-text"></textarea>
+    <button class="btn-accent" onclick="showScore()">Ver mi resultado →</button>
+  </div>
+
+  <div class="test-step" id="step-score">
+    <div class="score-box">
+      <span class="score-emoji" id="sc-emoji">🎓</span>
+      <div class="score-title" id="sc-title">—</div>
+      <p id="sc-desc" style="color:var(--text2);font-size:.88rem;margin:.4rem 0 1.25rem;"></p>
+      <div class="score-bar"><div class="score-fill" id="sc-fill" style="width:0%"></div></div>
+      <div class="score-pct" id="sc-pct">—</div>
+      <p id="sc-taleb" style="font-family:'IBM Plex Serif',serif;font-style:italic;color:var(--text2);font-size:.88rem;margin-top:1.25rem;"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote" id="footer-q">"Diferentes puntos de partida producen diferentes estimaciones, que están sesgadas hacia los valores iniciales."</p>
+  <p class="footer-cite">— Tversky & Kahneman · Science (1974)</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.75rem;">
+    <a class="nav-btn" href="taleb_13_procusto.html">← 13 El Lecho de Procusto</a>
+    <a class="nav-btn" href="index.html">⊞ Índice</a>
+    <span class="nav-btn" style="opacity:.4;cursor:default">15 Aversión a la Pérdida →</span>
+  </div>
+</footer>
+
+<script>
+const T={
+es:{
+  hdrTitle:"Anclaje y Ajuste",
+  s1tag:"Parte 1 · El Gancho",s1h1:"El primer número\nque escuchas te marca",
+  s1p:"Ya viste el experimento clásico de Kahneman y Tversky en otro artefacto de esta serie. Ahora vas a ver cómo el mismo sesgo decide cuánto pagas, cuánto cobras y cómo negocias — todos los días, en el mundo profesional.",
+  connectText:"Si quieres revivir el experimento original de la ONU y la ruleta, está en <strong>04 · El Problema de Linda</strong>. Aquí profundizamos en cómo el anclaje afecta dinero real.",
+  s1btn:"Probar 3 anclas → Empezar",
+  s2tag:"Parte 2 · Tres Anclas, Tres Contextos",s2h2:"Cada respuesta está sesgada antes de que pienses",
+  s2p:"3 mini-experimentos. En cada uno verás un número primero — luego una pregunta totalmente distinta donde ese número no debería importar.",
+  expTabs:["1. Precio","2. Propina","3. Honorarios"],
+  e0num:"EXPERIMENTO 1 / 3 · ANCLAJE DE PRECIO",
+  e0prompt:"Estás por cotizar el rediseño completo de un sitio web. Antes de pensar tu número, mira este dato de la industria:",
+  e0anchor:"Proyecto similar reciente: $45,000",
+  e0q:"¿Cuánto cobrarías por un rediseño de sitio web de complejidad media, sin más contexto que el dato anterior?",
+  e1num:"EXPERIMENTO 2 / 3 · ANCLAJE SOCIAL",
+  e1prompt:"Vas a cenar a un restaurante. El recibo digital te sugiere automáticamente un rango de propina, con la opción más alta preseleccionada:",
+  e1anchor:"Sugerido: 25% — $31.25 sobre $125",
+  e1q:"¿Qué porcentaje de propina dejarías, sin pensar mucho, sobre una cuenta de $125?",
+  e2num:"EXPERIMENTO 3 / 3 · ANCLAJE EN COTIZACIÓN",
+  e2prompt:"Un colega consultor te comenta casualmente, antes de que armes tu propia propuesta para un proyecto similar:",
+  e2anchor:'"Mi última propuesta similar fue de $8,000"',
+  e2q:"¿Cuánto cotizarías tú por un proyecto de consultoría de alcance similar?",
+  expSubmit:"Responder",
+  expNext:"Siguiente experimento →",
+  expNextFinal:"Ir al juego de negociación →",
+  e0resultLow:(v)=>`Respondiste $${v.toLocaleString()}. El precio "justo" de mercado para este tipo de proyecto suele rondar $15,000–$20,000 sin ningún ancla previa. Tu respuesta probablemente quedó sesgada hacia el ancla de $45,000 que viste primero — incluso si conscientemente intentaste ser independiente.`,
+  e1resultLow:(v)=>`Respondiste ${v}%. Antes de que existieran las sugerencias digitales preseleccionadas, la propina promedio histórica en restaurantes era 15-18%. Los sistemas POS modernos preseleccionan 20-25-30% deliberadamente — y la mayoría de la gente termina más cerca de esos números que de los históricos.`,
+  e2resultLow:(v)=>`Respondiste $${v.toLocaleString()}. Sin el comentario de tu colega, tu estimación independiente probablemente habría sido diferente. El número que escuchas primero —incluso casualmente, incluso de alguien sin autoridad formal sobre tu decisión— se convierte en tu punto de referencia.`,
+  s3tag:"Parte 3 · El Juego de Negociación",s3h2:"Eres el cliente. El consultor ancla alto.",
+  s3p:"Un consultor te presenta una propuesta con un ancla deliberadamente alta. Tu presupuesto real es de $6,000. Vas a tomar 4 decisiones — cada una afecta tu resultado final.",
+  negoBudgetLbl:"TU PRESUPUESTO REAL",
+  negoRoundLbl:"RONDA",
+  s4tag:"Parte 4 · La Teoría",s4h2:"El anclaje en el mundo de los negocios",s4p:"Tres marcos para entender cómo el anclaje moldea decisiones financieras reales.",
+  s4btn:"Hacer el mini-test →",
+  s5tag:"Parte 5 · Mini-test",s5h2:"¿Resistes el ancla o caes en ella?",
+  tn1:"DILEMA · 01",
+  tq1:"Estás por enviar tu primera propuesta comercial a un cliente nuevo. ¿Qué estrategia usas?",
+  d1aT:"Cotizo bajo para 'no espantar'",d1aD:"Empiezo con un número conservador, pensando que así es más fácil que acepten.",
+  d1bT:"Yo pongo el ancla primero",d1bD:"Presento mi número con confianza, sabiendo que será el punto de referencia de toda la negociación.",
+  csT:"Regalaste tu propia ancla.",csP:"Al cotizar bajo 'para no espantar', tú mismo fijaste un ancla baja que limitará toda la negociación posterior — incluso si después intentas subir el precio.",
+  caT:"Usaste el anclaje a tu favor.",caP:"Quien pone el primer número generalmente controla el rango de la negociación. Esto no es manipulación deshonesta — es entender cómo funciona realmente el proceso psicológico.",
+  tn3:"REFLEXIÓN · 03",
+  tq3:"¿En qué negociación reciente (de trabajo o personal) crees que un ancla — tuya o ajena — determinó el resultado final?",
+  refHint:"Ejemplos para activar la reflexión:",
+  chips:["Una negociación salarial","Una cotización de servicios","La compra de un auto o casa","Una negociación con un proveedor","Una propina o pago social","Una oferta de trabajo inicial"],
+  refPlaceholder:"Escribe tu reflexión...",
+  footerQ:'"Diferentes puntos de partida producen diferentes estimaciones, que están sesgadas hacia los valores iniciales."',
+  negoOpening:'"Nuestra tarifa estándar para este tipo de proyecto es <span class="chat-anchor-val">$18,000</span>. Es lo que cobramos habitualmente a clientes de tu perfil."',
+  negoRounds:[
+    {consultantText:'"Entiendo que el presupuesto es una consideración. ¿Qué rango tenías en mente?"',
+     opts:[
+       {label:"Digo un número cercano al ancla del consultor ($15,000) para 'sonar razonable'",delta:-3,feedback:"Anclarte cerca de su número, aunque sea menor, sigue dejándote atrapado en su marco de referencia. Tu presupuesto real ($6,000) ahora parece 'muy bajo' en comparación — cuando en realidad es tu límite genuino."},
+       {label:"Digo mi presupuesto real con confianza: '$6,000 es lo que tenemos asignado'",delta:8,feedback:"Establecer tu propio ancla, basada en tu realidad y no en la suya, reduce su capacidad de definir el rango de la conversación. Es más difícil de descartar un número firme y justificado."},
+     ]},
+    {consultantText:'"$6,000 es bastante por debajo de lo que normalmente trabajamos. Podríamos hacer una versión reducida del proyecto por $14,000."',
+     opts:[
+       {label:"Acepto que mi presupuesto es 'bajo' y subo mi oferta a $10,000",delta:-5,feedback:"El consultor logró que aceptaras su marco: que tu presupuesto original era insuficiente. El ancla de $18,000 sigue operando, incluso bajando a $14,000."},
+       {label:"Repito mi cifra: 'Nuestro presupuesto sigue siendo $6,000. ¿Qué alcance entra en ese rango?'",delta:7,feedback:"Mantener tu ancla y pedir que ajusten el alcance (en vez de el precio) cambia la naturaleza de la negociación — ahora es sobre qué entregar, no sobre cuánto pagar de más."},
+     ]},
+    {consultantText:'"Podríamos hacer una versión más simple por $9,000, sin algunas funcionalidades avanzadas."',
+     opts:[
+       {label:"Acepto los $9,000 — ya bajó bastante desde los $18,000 originales",delta:-4,feedback:"$9,000 sigue siendo 50% más que tu presupuesto real. El descuento relativo al ancla original (de $18,000 a $9,000) se siente como una gran victoria, aunque objetivamente excedas tu límite real en 50%."},
+       {label:"Sostengo: 'Apreciamos el ajuste, pero $6,000 sigue siendo nuestro techo real'",delta:6,feedback:"Resistir la tentación de sentirte 'ganador' por el descuento relativo, y enfocarte en tu número absoluto real, es la defensa más efectiva contra el anclaje."},
+     ]},
+    {consultantText:'"Entendido. Podemos ajustar el alcance para encajar en $6,000 — cubriremos las funcionalidades core únicamente."',
+     opts:[
+       {label:"Acepto, satisfecho de haber 'negociado' una baja considerable desde $18,000",delta:5,feedback:"Lograste tu presupuesto real, pero nota cómo la sensación de victoria viene de la distancia al ancla inicial, no del valor objetivo del trato."},
+       {label:"Acepto, sabiendo que el número real siempre fue $6,000 — el resto fue teatro de anclaje",delta:9,feedback:"Reconocer explícitamente que el proceso completo fue teatro de anclaje — y que tu resultado refleja tu presupuesto real, no una 'victoria' sobre un número inflado artificialmente — es la mentalidad más robusta."},
+     ]},
+  ],
+  negoFinalTitle:"Negociación cerrada en $6,000",
+  negoFinalGood:"Mantuviste tu ancla propia con consistencia. Tu puntaje de resistencia al anclaje fue alto — reconociste que el número inicial del consultor ($18,000) era un punto de partida estratégico, no una realidad objetiva del mercado.",
+  negoFinalBad:"Aunque terminaste cerca de tu presupuesto, el camino mostró señales claras de anclaje: cada vez que el consultor bajaba su número, tú sentías que estabas 'ganando', incluso cuando seguías por encima de tu límite real.",
+  theories:[
+    {icon:"💼",name:"Anclaje en negociaciones de precio",body:`<p>Estudios de negociación (Galinsky & Mussweiler, 2001) muestran que en negociaciones de precio, quien hace la primera oferta tiende a obtener mejores resultados finales que quien espera a que la otra parte proponga primero — porque esa primera cifra se convierte en el ancla de toda la negociación posterior.</p><div class="quote-block"><p>"El que ofrece primero gana, en promedio, porque ancla la negociación en su favor — incluso si la otra parte 'sabe' sobre el efecto de anclaje."</p><cite>— Galinsky & Mussweiler, Journal of Personality and Social Psychology (2001)</cite></div><p>Esto tiene implicaciones directas en cotizaciones de consultoría, negociaciones salariales y compraventa de cualquier bien o servicio.</p><div class="tag-list"><span class="tag">Galinsky & Mussweiler</span><span class="tag">Negociación</span><span class="tag">Primera oferta</span></div>`},
+    {icon:"🏷️",name:"Anclaje de precio en retail y consumo",body:`<p>El "precio de referencia" o "precio ancla" es una técnica de pricing extensamente documentada: mostrar un precio "original" tachado junto a un precio "rebajado" hace que el segundo precio parezca más atractivo, independientemente de si el primer precio fue realmente real o inflado artificialmente para crear el efecto de ancla.</p><p>Las apps de delivery, los menús de restaurantes (con un plato "premium" caro al inicio) y las plataformas de e-commerce usan anclaje sistemáticamente para influir en decisiones de compra.</p><div class="quote-block"><p>"El primer precio que el consumidor ve en una categoría se convierte en su referencia mental para juzgar todos los precios subsecuentes en esa misma categoría."</p><cite>— Investigación de pricing psicológico, ampliamente replicada en retail</cite></div><div class="tag-list"><span class="tag">Pricing psicológico</span><span class="tag">Retail</span><span class="tag">Precio de referencia</span></div>`},
+    {icon:"⚖️",name:"Cómo defenderse del anclaje (según la investigación)",body:`<p>La investigación sobre anclaje sugiere algunas defensas parciales: (1) generar tu propia ancla independiente ANTES de escuchar la de la otra parte, (2) enfocarte en números absolutos en vez de porcentajes de descuento relativos al ancla, y (3) pedir tiempo para "pensarlo" en vez de responder inmediatamente al ancla.</p><p>Ninguna defensa es perfecta — incluso negociadores expertos que conocen el sesgo siguen siendo influenciados por anclas, aunque en menor grado que quienes no lo conocen.</p><div class="quote-block"><p>"Saber sobre el sesgo de anclaje reduce su efecto, pero no lo elimina — el conocimiento ayuda, pero no es inmunidad completa."</p><cite>— Síntesis de investigación en psicología cognitiva sobre anclaje</cite></div><div class="tag-list"><span class="tag">Defensa cognitiva</span><span class="tag">Negociación efectiva</span><span class="tag">Debiasing</span></div>`},
+  ],
+  mcqs:[
+    {q:"En una negociación salarial, un candidato pregunta primero: '¿Cuál es el rango salarial de este puesto?' en vez de proponer su propio número. Según la investigación de anclaje, ¿qué desventaja estratégica tiene esto?",opts:["Ninguna — siempre es mejor pedir información antes de comprometerse","Cede la oportunidad de anclar la negociación a su favor — el empleador pondrá un ancla que probablemente esté en su propio rango cómodo, no en el ideal del candidato","Es ilegal preguntar el rango salarial en una entrevista","Hace que el candidato parezca poco preparado"],correct:1,feedOk:"Exacto. Al preguntar el rango primero, el candidato renuncia a la ventaja del primer ancla. El empleador propondrá un rango optimizado para su propio presupuesto, no para el valor de mercado del candidato.",feedKo:"No es ilegal ni necesariamente hace parecer poco preparado al candidato. El problema estratégico específico es que renuncia a poner el ancla inicial — dejando que el empleador defina el rango de la conversación salarial."},
+    {q:"Un restaurante muestra en su menú un plato de $85 junto a otros platos de $25-35. El plato caro casi nunca se vende. ¿Cuál es la función más probable de ese plato según la teoría del anclaje?",opts:["Es un error de pricing del restaurante","Funciona como ancla alta para que los platos de $25-35 parezcan razonables en comparación","Está destinado a ser el plato más rentable del menú","Refleja el costo real de los ingredientes premium"],correct:1,feedOk:"Correcto. Esta es una técnica de pricing psicológico extremadamente común: un ítem caro (que rara vez se vende) hace que el resto del menú parezca más razonable por comparación — ancla el rango de precios percibido como 'normal'.",feedKo:"No es necesariamente un error ni refleja solo el costo de ingredientes. La función estratégica más probable es servir de ancla alta, haciendo que los precios reales objetivo del restaurante parezcan más accesibles en comparación."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"⚓",title:"El ancla te define",desc:"Tu primer número de referencia domina tus decisiones financieras. Es muy común — pero costoso.",taleb:"'El ancla decide antes de que tú decidas.' — Kahneman (parafraseado)",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"Empiezas a notar el ancla",desc:"Reconoces cuándo un número está sesgando tu juicio. Sigue practicando la resistencia activa.",taleb:"'Pregúntate siempre: ¿de dónde vino este número primero?' — Tversky / Kahneman",color:"#f39c12"},
+    {min:70,emoji:"💼",title:"Pones tus propias anclas",desc:"Estableces tu propio punto de referencia en vez de aceptar pasivamente el ajeno.",taleb:"'Quien ofrece primero, generalmente gana.' — Galinsky & Mussweiler",color:"#2ecc71"},
+    {min:90,emoji:"🧮",title:"Nivel Negociador Consciente",desc:"Identificas el teatro del anclaje en tiempo real y respondes desde tus números absolutos reales.",taleb:"'El conocimiento ayuda, pero no es inmunidad completa.' — Investigación en debiasing",color:"#4a9eff"},
+  ],
+},
+en:{
+  hdrTitle:"Anchoring and Adjustment",
+  s1tag:"Part 1 · The Hook",s1h1:"The first number\nyou hear marks you",
+  s1p:"You already saw the classic Kahneman and Tversky experiment in another artifact in this series. Now you'll see how the same bias decides what you pay, what you charge, and how you negotiate — every day, in the professional world.",
+  connectText:"If you want to revisit the original UN and wheel experiment, it's in <strong>04 · The Linda Problem</strong>. Here we dig into how anchoring affects real money.",
+  s1btn:"Try 3 anchors → Start",
+  s2tag:"Part 2 · Three Anchors, Three Contexts",s2h2:"Every answer is biased before you think",
+  s2p:"3 mini-experiments. In each, you'll see a number first — then a totally different question where that number shouldn't matter.",
+  expTabs:["1. Price","2. Tip","3. Fees"],
+  e0num:"EXPERIMENT 1 / 3 · PRICE ANCHORING",
+  e0prompt:"You're about to quote a complete website redesign. Before thinking of your number, look at this industry data point:",
+  e0anchor:"Similar recent project: $45,000",
+  e0q:"How much would you charge for a medium-complexity website redesign, with no more context than the figure above?",
+  e1num:"EXPERIMENT 2 / 3 · SOCIAL ANCHORING",
+  e1prompt:"You're having dinner at a restaurant. The digital receipt automatically suggests a tip range, with the highest option preselected:",
+  e1anchor:"Suggested: 25% — $31.25 on $125",
+  e1q:"What tip percentage would you leave, without thinking too much, on a $125 bill?",
+  e2num:"EXPERIMENT 3 / 3 · QUOTE ANCHORING",
+  e2prompt:"A fellow consultant casually mentions, before you draft your own proposal for a similar project:",
+  e2anchor:'"My last similar proposal was $8,000"',
+  e2q:"How much would you quote for a consulting project of similar scope?",
+  expSubmit:"Answer",
+  expNext:"Next experiment →",
+  expNextFinal:"Go to the negotiation game →",
+  e0resultLow:(v)=>`You answered $${v.toLocaleString()}. The "fair" market price for this type of project usually runs $15,000–$20,000 with no prior anchor. Your answer was likely biased toward the $45,000 anchor you saw first — even if you consciously tried to be independent.`,
+  e1resultLow:(v)=>`You answered ${v}%. Before preselected digital suggestions existed, the historical average restaurant tip was 15-18%. Modern POS systems deliberately preselect 20-25-30% — and most people end up closer to those numbers than the historical ones.`,
+  e2resultLow:(v)=>`You answered $${v.toLocaleString()}. Without your colleague's comment, your independent estimate likely would have been different. The number you hear first — even casually, even from someone with no formal authority over your decision — becomes your reference point.`,
+  s3tag:"Part 3 · The Negotiation Game",s3h2:"You're the client. The consultant anchors high.",
+  s3p:"A consultant presents you a proposal with a deliberately high anchor. Your real budget is $6,000. You'll make 4 decisions — each affects your final outcome.",
+  negoBudgetLbl:"YOUR REAL BUDGET",
+  negoRoundLbl:"ROUND",
+  s4tag:"Part 4 · The Theory",s4h2:"Anchoring in the business world",s4p:"Three frameworks for understanding how anchoring shapes real financial decisions.",
+  s4btn:"Take the mini-test →",
+  s5tag:"Part 5 · Mini-test",s5h2:"Do you resist the anchor or fall for it?",
+  tn1:"DILEMMA · 01",
+  tq1:"You're about to send your first business proposal to a new client. What strategy do you use?",
+  d1aT:"I quote low to 'not scare them off'",d1aD:"I start with a conservative number, thinking it'll be easier for them to accept.",
+  d1bT:"I set the anchor first",d1bD:"I present my number with confidence, knowing it'll be the reference point for the whole negotiation.",
+  csT:"You gave away your own anchor.",csP:"By quoting low 'to not scare them off,' you yourself set a low anchor that will limit the entire subsequent negotiation — even if you later try to raise the price.",
+  caT:"You used anchoring to your advantage.",caP:"Whoever sets the first number generally controls the negotiation range. This isn't dishonest manipulation — it's understanding how the psychological process actually works.",
+  tn3:"REFLECTION · 03",
+  tq3:"In what recent negotiation (work or personal) do you think an anchor — yours or someone else's — determined the final outcome?",
+  refHint:"Examples to trigger reflection:",
+  chips:["A salary negotiation","A service quote","Buying a car or house","A negotiation with a supplier","A tip or social payment","An initial job offer"],
+  refPlaceholder:"Write your reflection here...",
+  footerQ:'"Different starting points yield different estimates, which are biased toward the initial values."',
+  negoOpening:'"Our standard rate for this type of project is <span class="chat-anchor-val">$18,000</span>. That\'s what we typically charge clients with your profile."',
+  negoRounds:[
+    {consultantText:'"I understand budget is a consideration. What range did you have in mind?"',
+     opts:[
+       {label:"I say a number close to the consultant's anchor ($15,000) to 'sound reasonable'",delta:-3,feedback:"Anchoring near their number, even if lower, still keeps you trapped in their frame of reference. Your real budget ($6,000) now seems 'very low' by comparison — when it's actually your genuine limit."},
+       {label:"I state my real budget confidently: '$6,000 is what we have allocated'",delta:8,feedback:"Setting your own anchor, based on your reality and not theirs, reduces their ability to define the range of the conversation. A firm, justified number is harder to dismiss."},
+     ]},
+    {consultantText:'"$6,000 is well below what we typically work with. We could do a reduced version of the project for $14,000."',
+     opts:[
+       {label:"I accept that my budget is 'low' and raise my offer to $10,000",delta:-5,feedback:"The consultant got you to accept their frame: that your original budget was insufficient. The $18,000 anchor is still operating, even when dropping to $14,000."},
+       {label:"I repeat my figure: 'Our budget is still $6,000. What scope fits that range?'",delta:7,feedback:"Holding your anchor and asking them to adjust scope (instead of price) changes the nature of the negotiation — it's now about what to deliver, not how much extra to pay."},
+     ]},
+    {consultantText:'"We could do a simpler version for $9,000, without some advanced features."',
+     opts:[
+       {label:"I accept the $9,000 — it's already dropped a lot from the original $18,000",delta:-4,feedback:"$9,000 is still 50% more than your real budget. The discount relative to the original anchor ($18,000 to $9,000) feels like a big win, even though you objectively exceed your real limit by 50%."},
+       {label:"I hold: 'We appreciate the adjustment, but $6,000 is still our real ceiling'",delta:6,feedback:"Resisting the temptation to feel like a 'winner' from the relative discount, and focusing on your real absolute number, is the most effective defense against anchoring."},
+     ]},
+    {consultantText:'"Understood. We can adjust scope to fit $6,000 — we\'ll cover only the core features."',
+     opts:[
+       {label:"I accept, satisfied to have 'negotiated' a big drop from $18,000",delta:5,feedback:"You achieved your real budget, but notice how the feeling of victory comes from the distance to the initial anchor, not from the objective value of the deal."},
+       {label:"I accept, knowing the real number was always $6,000 — the rest was anchoring theater",delta:9,feedback:"Explicitly recognizing that the whole process was anchoring theater — and that your outcome reflects your real budget, not a 'victory' over an artificially inflated number — is the most robust mindset."},
+     ]},
+  ],
+  negoFinalTitle:"Negotiation closed at $6,000",
+  negoFinalGood:"You held your own anchor consistently. Your anchor-resistance score was high — you recognized the consultant's initial number ($18,000) as a strategic starting point, not an objective market reality.",
+  negoFinalBad:"Although you ended up near your budget, the path showed clear signs of anchoring: every time the consultant lowered their number, you felt like you were 'winning,' even while still above your real limit.",
+  theories:[
+    {icon:"💼",name:"Anchoring in price negotiations",body:`<p>Negotiation studies (Galinsky & Mussweiler, 2001) show that in price negotiations, whoever makes the first offer tends to achieve better final outcomes than whoever waits for the other party to propose first — because that first figure becomes the anchor for the entire subsequent negotiation.</p><div class="quote-block"><p>"The first offerer wins, on average, because they anchor the negotiation in their favor — even if the other party 'knows' about the anchoring effect."</p><cite>— Galinsky & Mussweiler, Journal of Personality and Social Psychology (2001)</cite></div><p>This has direct implications for consulting quotes, salary negotiations, and buying or selling any good or service.</p><div class="tag-list"><span class="tag">Galinsky & Mussweiler</span><span class="tag">Negotiation</span><span class="tag">First offer</span></div>`},
+    {icon:"🏷️",name:"Price anchoring in retail and consumption",body:`<p>The "reference price" or "anchor price" is an extensively documented pricing technique: showing a crossed-out "original" price next to a "discounted" price makes the second price seem more attractive, regardless of whether the first price was ever real or artificially inflated to create the anchor effect.</p><p>Delivery apps, restaurant menus (with an expensive "premium" dish at the start), and e-commerce platforms systematically use anchoring to influence purchase decisions.</p><div class="quote-block"><p>"The first price a consumer sees in a category becomes their mental reference for judging all subsequent prices in that same category."</p><cite>— Psychological pricing research, widely replicated in retail</cite></div><div class="tag-list"><span class="tag">Psychological pricing</span><span class="tag">Retail</span><span class="tag">Reference price</span></div>`},
+    {icon:"⚖️",name:"How to defend against anchoring (per research)",body:`<p>Anchoring research suggests some partial defenses: (1) generate your own independent anchor BEFORE hearing the other party's, (2) focus on absolute numbers instead of percentage discounts relative to the anchor, and (3) ask for time to "think it over" instead of responding immediately to the anchor.</p><p>No defense is perfect — even expert negotiators who know about the bias remain influenced by anchors, though to a lesser degree than those who don't.</p><div class="quote-block"><p>"Knowing about anchoring bias reduces its effect, but doesn't eliminate it — knowledge helps, but isn't complete immunity."</p><cite>— Synthesis of cognitive psychology research on anchoring</cite></div><div class="tag-list"><span class="tag">Cognitive defense</span><span class="tag">Effective negotiation</span><span class="tag">Debiasing</span></div>`},
+  ],
+  mcqs:[
+    {q:"In a salary negotiation, a candidate first asks: 'What's the salary range for this position?' instead of proposing their own number. According to anchoring research, what's the strategic disadvantage?",opts:["None — it's always better to ask for information before committing","It gives up the opportunity to anchor the negotiation in their favor — the employer will set an anchor likely within their own comfortable range, not the candidate's ideal","It's illegal to ask about salary range in an interview","It makes the candidate seem unprepared"],correct:1,feedOk:"Exactly. By asking for the range first, the candidate forfeits the first-anchor advantage. The employer will propose a range optimized for their own budget, not the candidate's market value.",feedKo:"It's neither illegal nor does it necessarily make the candidate seem unprepared. The specific strategic problem is that it forfeits setting the initial anchor — letting the employer define the salary conversation's range."},
+    {q:"A restaurant menu shows an $85 dish next to others at $25-35. The expensive dish almost never sells. According to anchoring theory, what's its most likely function?",opts:["It's a restaurant pricing error","It functions as a high anchor so the $25-35 dishes seem reasonable by comparison","It's meant to be the menu's most profitable dish","It reflects the real cost of premium ingredients"],correct:1,feedOk:"Correct. This is an extremely common psychological pricing technique: an expensive item (that rarely sells) makes the rest of the menu seem more reasonable by comparison — it anchors the perceived 'normal' price range.",feedKo:"It's not necessarily an error nor does it only reflect ingredient costs. The most likely strategic function is to serve as a high anchor, making the restaurant's real target prices seem more accessible by comparison."},
+  ],
+  scoreTexts:[
+    {min:0,emoji:"⚓",title:"The anchor defines you",desc:"Your first reference number dominates your financial decisions. Very common — but costly.",taleb:"'The anchor decides before you decide.' — Kahneman (paraphrased)",color:"#e74c3c"},
+    {min:40,emoji:"🔍",title:"You're starting to notice the anchor",desc:"You recognize when a number is biasing your judgment. Keep practicing active resistance.",taleb:"'Always ask: where did this number first come from?' — Tversky / Kahneman",color:"#f39c12"},
+    {min:70,emoji:"💼",title:"You set your own anchors",desc:"You establish your own reference point instead of passively accepting someone else's.",taleb:"'Whoever offers first generally wins.' — Galinsky & Mussweiler",color:"#2ecc71"},
+    {min:90,emoji:"🧮",title:"Conscious Negotiator Level",desc:"You identify anchoring theater in real time and respond from your real absolute numbers.",taleb:"'Knowledge helps, but isn't complete immunity.' — Debiasing research",color:"#4a9eff"},
+  ],
+}
+};
+
+let lang='es', currentExp=0, expDone=[false,false,false];
+let negoRoundIdx=0, negoScore=0;
+let dilemmaChosen=false, dilemmaScore=0, mcqScore=0, mcqIdx=0;
+
+function t(k){return T[lang][k];}
+function setLang(l){lang=l;document.documentElement.setAttribute('data-lang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));renderAll();}
+function toggleTheme(){document.documentElement.setAttribute('data-theme',document.getElementById('theme-check').checked?'light':'dark');}
+
+function renderAll(){
+  const tx=T[lang];
+  const map={
+    'hdr-title':'hdrTitle','s1-tag':'s1tag','s1-btn':'s1btn',
+    's2-tag':'s2tag','s2-h2':'s2h2','s2-p':'s2p',
+    'e0-num':'e0num','e0-prompt':'e0prompt','e0-anchor':'e0anchor','e0-q':'e0q','e0-submit':'expSubmit','e0-next':'expNext',
+    'e1-num':'e1num','e1-prompt':'e1prompt','e1-anchor':'e1anchor','e1-q':'e1q','e1-submit':'expSubmit','e1-next':'expNext',
+    'e2-num':'e2num','e2-prompt':'e2prompt','e2-anchor':'e2anchor','e2-q':'e2q','e2-submit':'expSubmit','e2-next':'expNextFinal',
+    's3-tag':'s3tag','s3-h2':'s3h2','s3-p':'s3p','nego-budget-lbl':'negoBudgetLbl',
+    's4-tag':'s4tag','s4-h2':'s4h2','s4-p':'s4p','s4-btn':'s4btn',
+    's5-tag':'s5tag','s5-h2':'s5h2',
+    'tn1':'tn1','tq1':'tq1','d1a-t':'d1aT','d1a-d':'d1aD','d1b-t':'d1bT','d1b-d':'d1bD',
+    'cs-t':'csT','cs-p':'csP','ca-t':'caT','ca-p':'caP',
+    'tn3':'tn3','tq3':'tq3','ref-hint':'refHint','footer-q':'footerQ','connect-text':'connectText'
+  };
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&tx[key])el.innerHTML=tx[key];});
+  document.getElementById('s1-h1').innerHTML=tx.s1h1.replace('\n','<br>');
+  const rp=document.getElementById('reflection-text');if(rp)rp.placeholder=tx.refPlaceholder;
+  renderExpTabs();renderTheoryCards();renderChips();
+}
+
+/* MINI EXPERIMENTS */
+function startExp(){document.getElementById('sec-hero').style.display='none';document.getElementById('sec-exp').scrollIntoView({behavior:'smooth'});}
+function renderExpTabs(){
+  const wrap=document.getElementById('exp-tabs');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].expTabs.forEach((tab,i)=>{
+    const el=document.createElement('span');
+    el.className='exp-tab'+(expDone[i]?' done':i===currentExp?' current':'');
+    el.textContent=tab;
+    wrap.appendChild(el);
+  });
+}
+function submitExp(idx){
+  const input=document.getElementById(`e${idx}-input`);
+  const val=parseFloat(input.value);
+  if(isNaN(val)||val<=0)return;
+  input.disabled=true;
+  document.getElementById(`e${idx}-submit`).disabled=true;
+  const resultEl=document.getElementById(`e${idx}-result`);
+  resultEl.classList.add('show');
+  const fnKey=`e${idx}resultLow`;
+  resultEl.textContent=T[lang][fnKey](val);
+  document.getElementById(`e${idx}-next`).classList.add('show');
+  expDone[idx]=true;
+  renderExpTabs();
+}
+function nextExp(idx){
+  document.getElementById(`exp-box-${idx-1}`).style.display='none';
+  document.getElementById(`exp-box-${idx}`).style.display='block';
+  currentExp=idx;
+  renderExpTabs();
+  document.getElementById(`exp-box-${idx}`).scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function showNego(){
+  document.getElementById('exp-box-2').style.display='none';
+  currentExp=3;renderExpTabs();
+  negoRoundIdx=0;negoScore=0;
+  renderNego();
+  document.getElementById('sec-nego').scrollIntoView({behavior:'smooth'});
+}
+
+/* NEGOTIATION GAME */
+function renderNego(){
+  const area=document.getElementById('nego-area');
+  const rounds=T[lang].negoRounds;
+  document.getElementById('nego-round-badge').textContent=`${T[lang].negoRoundLbl} ${Math.min(negoRoundIdx+1,4)}/4`;
+  if(negoRoundIdx===0){
+    area.innerHTML=`
+      <div class="chat-bubble consultant">
+        <div class="chat-bubble-label consultant-label">CONSULTOR</div>
+        <div class="chat-bubble-text">${T[lang].negoOpening}</div>
+      </div>
+      <div class="chat-bubble consultant" style="margin-top:-.5rem">
+        <div class="chat-bubble-text">${rounds[0].consultantText}</div>
+      </div>
+      <div class="nego-options" id="nego-opts">
+        ${rounds[0].opts.map((o,i)=>`<button class="nego-opt" onclick="answerNego(0,${i})">${o.label}</button>`).join('')}
+      </div>
+      <div class="nego-feedback" id="nego-fb-0"></div>`;
+    return;
+  }
+  if(negoRoundIdx>=rounds.length){
+    showNegoFinal();
+    return;
+  }
+}
+function answerNego(roundIdx,optIdx){
+  const round=T[lang].negoRounds[roundIdx];
+  const opt=round.opts[optIdx];
+  negoScore+=opt.delta;
+  document.querySelectorAll('.nego-opt').forEach((b,i)=>{b.disabled=true;if(i===optIdx)b.classList.add('chosen');});
+  const fb=document.getElementById(`nego-fb-${roundIdx}`);
+  fb.classList.add('show');
+  fb.textContent=opt.feedback;
+  negoRoundIdx++;
+  setTimeout(()=>{
+    if(negoRoundIdx<T[lang].negoRounds.length){
+      const nextRound=T[lang].negoRounds[negoRoundIdx];
+      const area=document.getElementById('nego-area');
+      const newBubble=document.createElement('div');
+      newBubble.innerHTML=`
+        <div class="chat-bubble consultant" style="margin-top:1.25rem">
+          <div class="chat-bubble-text">${nextRound.consultantText}</div>
+        </div>
+        <div class="nego-options" id="nego-opts-${negoRoundIdx}">
+          ${nextRound.opts.map((o,i)=>`<button class="nego-opt" onclick="answerNego(${negoRoundIdx},${i})">${o.label}</button>`).join('')}
+        </div>
+        <div class="nego-feedback" id="nego-fb-${negoRoundIdx}"></div>`;
+      area.appendChild(newBubble);
+      document.getElementById('nego-round-badge').textContent=`${T[lang].negoRoundLbl} ${Math.min(negoRoundIdx+1,4)}/4`;
+      newBubble.scrollIntoView({behavior:'smooth',block:'nearest'});
+    } else {
+      showNegoFinal();
+    }
+  },1300);
+}
+function showNegoFinal(){
+  document.getElementById('nego-final').classList.add('show');
+  document.getElementById('nf-title').textContent=T[lang].negoFinalTitle;
+  document.getElementById('nf-text').textContent = negoScore>=15 ? T[lang].negoFinalGood : T[lang].negoFinalBad;
+  setTimeout(()=>document.getElementById('nego-final').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+/* THEORY */
+function showTheory(){document.getElementById('sec-theory').scrollIntoView({behavior:'smooth'});}
+function renderTheoryCards(){
+  const wrap=document.getElementById('theory-cards');if(!wrap)return;
+  wrap.innerHTML='';
+  T[lang].theories.forEach(th=>{
+    const card=document.createElement('div');card.className='theory-card';
+    card.innerHTML=`
+      <div class="theory-header" onclick="this.parentElement.classList.toggle('open')">
+        <div style="display:flex;align-items:center;gap:.65rem"><span>${th.icon}</span><span class="theory-name">${th.name}</span></div>
+        <span class="theory-chevron">▾</span>
+      </div>
+      <div class="theory-body">${th.body}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+/* TEST */
+function showTest(){document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});}
+function chooseDilemma(type,el){
+  if(dilemmaChosen)return;dilemmaChosen=true;
+  document.querySelectorAll('.dilemma-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cons-low').classList.toggle('show',type==='low');
+  document.getElementById('cons-anchor').classList.toggle('show',type==='anchor');
+  dilemmaScore=type==='anchor'?30:0;
+  document.getElementById('btn-d1').disabled=false;
+}
+function goToMCQ(){document.getElementById('step-dilema').classList.remove('active');document.getElementById('step-mcq').classList.add('active');mcqIdx=0;mcqScore=0;renderMCQ();}
+function renderMCQ(){
+  const area=document.getElementById('mcq-area');if(!area)return;
+  const mcqs=T[lang].mcqs;
+  if(mcqIdx>=mcqs.length){document.getElementById('step-mcq').classList.remove('active');document.getElementById('step-reflection').classList.add('active');return;}
+  const q=mcqs[mcqIdx];const letters=['A','B','C','D'];
+  area.innerHTML=`
+    <div class="test-number">MCQ · 0${mcqIdx+2}</div>
+    <div class="test-q">${q.q}</div>
+    <div class="mcq-options">
+      ${q.opts.map((o,i)=>`<button class="mcq-btn" onclick="answerMCQ(${i},${q.correct},${mcqIdx})"><span class="mcq-letter">${letters[i]}</span>${o}</button>`).join('')}
+    </div>
+    <div class="feedback-box" id="mcq-fb"></div>
+    <button class="btn-next" id="mcq-nxt" onclick="nextMCQ()" disabled>${mcqIdx<mcqs.length-1?(lang==='es'?'Siguiente →':'Next →'):(lang==='es'?'Continuar →':'Continue →')}</button>`;
+}
+function answerMCQ(chosen,correct,idx){
+  document.querySelectorAll('.mcq-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.mcq-btn')[chosen].classList.add(chosen===correct?'correct':'wrong');
+  if(chosen!==correct)document.querySelectorAll('.mcq-btn')[correct].classList.add('correct');
+  const fb=document.getElementById('mcq-fb');
+  fb.className='feedback-box show '+(chosen===correct?'ok':'ko');
+  fb.textContent=chosen===correct?T[lang].mcqs[idx].feedOk:T[lang].mcqs[idx].feedKo;
+  if(chosen===correct)mcqScore+=35;
+  document.getElementById('mcq-nxt').disabled=false;
+}
+function nextMCQ(){mcqIdx++;renderMCQ();}
+function renderChips(){
+  const area=document.getElementById('chips-area');if(!area)return;
+  area.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const el=document.createElement('span');el.className='chip';el.textContent=c;
+    el.onclick=()=>{el.classList.toggle('active');const ta=document.getElementById('reflection-text');if(el.classList.contains('active'))ta.value=ta.value?ta.value+'\n'+c:c;};
+    area.appendChild(el);
+  });
+}
+function showScore(){
+  document.getElementById('step-reflection').classList.remove('active');
+  document.getElementById('step-score').classList.add('active');
+  const total=dilemmaScore+mcqScore;
+  const texts=T[lang].scoreTexts;
+  let chosen=texts[0];for(const s of texts)if(total>=s.min)chosen=s;
+  document.getElementById('sc-emoji').textContent=chosen.emoji;
+  document.getElementById('sc-title').textContent=chosen.title;
+  document.getElementById('sc-desc').textContent=chosen.desc;
+  document.getElementById('sc-taleb').textContent=chosen.taleb;
+  document.getElementById('sc-pct').textContent=total+'%';
+  const fill=document.getElementById('sc-fill');fill.style.background=chosen.color;
+  setTimeout(()=>{fill.style.width=total+'%';},100);
+  document.getElementById('sec-test').scrollIntoView({behavior:'smooth'});
+}
+renderAll();
+</script>
+</body>
+</html>
